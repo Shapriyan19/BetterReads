@@ -1,11 +1,11 @@
 import React from "react";
 import "./Logo.css";
-import logo from "C:/Users/mani7/Desktop/NTU CEG/Y2S2/SC2006/Logo.png";
+import logo from "../assets/Logo.png";
 
 const Logo = () => {
     return(
         <div className="logo-container">
-            <img src={logo} alt="Logo" className={Logo} />
+            <img src={logo} alt="Logo" className="logo" />
         </div>
     );
 };

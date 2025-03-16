@@ -17,7 +17,7 @@ html, body{
     justify-content: center; 
     align-items: center;
     margin-bottom: 300px;
-    gap: 0px;
+    gap: 20px;
 }
 
 /*styling the login box
