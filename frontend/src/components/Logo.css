@@ -1,0 +1,31 @@
+/*center the logo inside its container*/
+.logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column; /*stack logo abv login box*/
+    margin-top: 300px;
+    margin-bottom: -30px;
+}
+
+.logo {
+    width: 120px;
+    height: auto;
+    transition: box-shadow 0.3s ease-in-out; /*enables smooth animation when adding/removing a shadow*/
+    animation: flashWhite 1.5s infinite alternate; /*animation cycle lasts 1.5s and brightness increase then decreases*/
+}
+
+.logo:hover {
+    background-color: #0056b3;
+    /*filter: drop-shadow(0 0 2em #145da0);*/
+  }
+
+/*animation called flashWhite that will make the logo flash*/
+@keyframes flashWhite {
+    0% {
+        filter: brightness(1);
+    }
+    100% {
+        filter: brightness(2); /* Increases brightness for the "flashing" effect */
+    }
+}
