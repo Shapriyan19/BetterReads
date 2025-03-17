@@ -1,6 +1,7 @@
 import { generateToken } from "../lib/utils.js";
 import User from "../models/users.model.js";
 import bcrypt from "bcryptjs";
+import transporter from "../lib/nodemailer.js";
 
 export const signup =async (req,res)=>{
     const {email,firstName,lastName,password,profilePic,preferences,location}=req.body;
@@ -43,6 +44,17 @@ export const signup =async (req,res)=>{
                 preferences: preferences,
                 location: location
             });
+            try{
+                const info = await transporter.sendMail({
+                    from: '"Betterreads" <hailee0@ethereal.email>',
+                    to: email,
+                    subject: "Welcome to BetterReads",
+                    text: "Thanks for signing up fot BetterReads",
+                });
+                console.log("Message sent",info.messageId);
+            }catch(error){
+                console.log("Error in sending mail",error.message);
+            }
         } else{
             res.status(400).json({message: "Invalid user data"});
         }
