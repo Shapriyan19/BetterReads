@@ -23,9 +23,7 @@ const LoginPage = () => { //creating component called LoginPage
     }
 
     return (
-        <div className="login-container"> 
             <div className="login-box"> 
-                <h2>Login</h2>
 
                 {/*show error message if there is an error*/}
                 {error && <p className="error-message">{error}</p>} 
@@ -56,7 +54,6 @@ const LoginPage = () => { //creating component called LoginPage
                     <button type= "submit">Login</button>
                 </form>
             </div>
-        </div>
     );     
 };
 
