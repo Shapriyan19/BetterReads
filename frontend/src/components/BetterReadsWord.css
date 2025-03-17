@@ -1,15 +1,15 @@
 /*center the logo inside its container*/
-.logo-container {
+.brword-container {
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column; /*stack logo abv login box*/
-    margin-top: 300px;
-    margin-bottom: -30px;
+    margin-top: 100px;
+    margin-bottom: 0px;
 }
 
-.logo {
-    width: 150px;
+.brword {
+    width: 100px;
     height: auto;
     transition: box-shadow 0.3s ease-in-out; /*enables smooth animation when adding/removing a shadow*/
     animation: flashWhite 2s infinite alternate; /*animation cycle lasts 1.5s and brightness increase then decreases*/
@@ -21,6 +21,6 @@
         filter: brightness(1);
     }
     100% {
-        filter: brightness(2); /* Increases brightness for the "flashing" effect */
+        filter: brightness(1.2); /* Increases brightness for the "flashing" effect */
     }
 }
