@@ -1,8 +1,9 @@
 import React, { useState } from "react"; //importing React and useState which is a 
                                          //React Hook that lets us store data inside a component
 import "./SignUpPage.css"; 
+import { Link } from "react-router-dom";
 
-const LoginPage = () => { //creating component called LoginPage
+const SignUpPage = () => { //creating component called LoginPage
     const [username, setUsername] = useState(""); //username:store user's username, setUsername: updates username when user types
     const [password, setPassword] = useState(""); //password: store user's password input, setPassword: updates password when user types
     const [email,setEmail] = useState("");
@@ -67,6 +68,7 @@ const LoginPage = () => { //creating component called LoginPage
                     </div>
 
                     <button type= "submit">Sign Up</button>
+                    <Link to="/">Log In?</Link>
                 </form>
             </div>
         </div>

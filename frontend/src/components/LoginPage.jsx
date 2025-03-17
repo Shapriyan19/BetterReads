@@ -1,6 +1,7 @@
 import React, { useState } from "react"; //importing React and useState which is a 
                                          //React Hook that lets us store data inside a component
 import "./LoginPage.css"; 
+import { Link } from "react-router-dom";
 
 const LoginPage = () => { //creating component called LoginPage
     const [username, setUsername] = useState(""); //username:store user's username, setUsername: updates username when user types
@@ -50,8 +51,8 @@ const LoginPage = () => { //creating component called LoginPage
                             required //ensures input is mandatory
                         />
                     </div>
-
                     <button type= "submit">Login</button>
+                    <Link to="/signup">Sign Up?</Link>
                 </form>
             </div>
     );     

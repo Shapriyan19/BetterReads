@@ -1,7 +1,8 @@
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useState } from 'react'
+import SignUpPage from './components/SignUpPage';
 import LoginPage from './components/LoginPage'
 import Logo from './components/BetterReadsWord'
-
 import './App.css'
 
 function App() {
@@ -11,10 +12,13 @@ function App() {
     <>
       {/*display the Logo at the top of page*/}
       <Logo />
-
-      {/*adding login page*/}
-      <LoginPage />
     
+      <Router>
+            <Routes>
+                <Route path="/" element={<LoginPage />} />
+                <Route path="/signup" element={<SignUpPage />} />
+            </Routes>
+      </Router>
     </>
   )
 }
