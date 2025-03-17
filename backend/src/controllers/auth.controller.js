@@ -2,6 +2,8 @@ import { generateToken } from "../lib/utils.js";
 import User from "../models/users.model.js";
 import bcrypt from "bcryptjs";
 import transporter from "../lib/nodemailer.js";
+import {passwordStrength} from "check-password-strength";
+import passwordcheck from "../lib/passwordcheck.js";
 
 export const signup =async (req,res)=>{
     const {email,firstName,lastName,password,profilePic,preferences,location}=req.body;
@@ -14,7 +16,13 @@ export const signup =async (req,res)=>{
             return res.status(400).json({message: "Password must be at least 8 characters"});
         }
 
-        const user=await User.findOne({email}) //finding if user exist with same email adddress
+        const passwordSecurity=passwordStrength(password,passwordcheck).value;
+
+        if (passwordSecurity==="Too weak" || passwordSecurity==="Weak"){
+            return res.status(400).json({message: "Your password must include atleast 1 uppercase, 1 lowercase character, a number and a symbol"});
+        }
+
+        const user=await User.findOne({email}); //finding if user exist with same email adddress
         
         if (user) return res.status(400).json({message:"Email already exist"});
         //hashing
