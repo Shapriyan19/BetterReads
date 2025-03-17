@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import LoginPage from './components/LoginPage'
-import Logo from './components/Logo'
+import Logo from './components/BetterReadsWord'
 
 import './App.css'
 
