@@ -8,6 +8,7 @@ const userSchema=new mongoose.Schema({
     profilePic:  {type: String, default: ""},
     preferences: {type:[String], required: true},
     location: {type: String, required: true},
+    forgotPasswordPin: {type:String,required: true},
 },{timestamps: true});
 
 const User=mongoose.model("User",userSchema);
