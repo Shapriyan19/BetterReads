@@ -39,7 +39,7 @@ const SignUpPage = () => { //creating component called LoginPage
                         <input 
                             type="email"
                             placeholder="Enter your email" //textbox for username
-                            value={username}
+                            value={email}
                             onChange={(e) => setEmail(e.target.value)} //updates username when user types
                             required //ensures input is mandatory
                         />
