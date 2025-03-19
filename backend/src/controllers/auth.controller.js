@@ -60,7 +60,6 @@ export const signup =async (req,res)=>{
                     subject: "Welcome to BetterReads",
                     text: "Thanks for signing up fot BetterReads",
                 });
-                console.log("Message sent",info.messageId);
             }catch(error){
                 console.log("Error in sending mail",error.message);
             }
