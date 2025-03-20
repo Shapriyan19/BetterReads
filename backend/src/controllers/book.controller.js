@@ -1,4 +1,11 @@
 import User from "../models/users.model.js";
+import {GoogleGenerativeAI} from "@google/generative-ai";
+import dotenv from "dotenv";
+
+dotenv.config();
+const genAI=new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
 
 export const searchBook= async (req,res)=>{
     try{
@@ -69,3 +76,21 @@ export const recommendedBooks= async (req,res)=>{
         res.status(500).json({message:"Internal server error"});
     }
 };
+
+export const aiReviewSummary= async (req,res)=>{
+    try {
+        const {book_name,auth_name}=req.body;
+        const prompt = `can you give summarization of review for the book ${book_name} by author ${auth_name} based on review of readers`;
+        // console.log(process.env.GEMINI_API_KEY);
+        const result=await model.generateContent(prompt);
+        if(!result){
+            return res.status(400).json({message:"no result"});
+        }
+        //console.log(result.response.text);
+        const summary = result.response.text();
+        return res.status(200).json({ book: book_name, author: auth_name, summary });
+    } catch (error) {
+        console.log("error in aiReviewSummary: ",error);
+        res.status(500).json({message:"Internal server error"});
+    }
+}
