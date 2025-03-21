@@ -9,28 +9,13 @@ html, body{
 /*ensuring everything inside fills the page
   stack logo and login box vertically*/
 #root, .login-container {
-    width: 90%;
-    height: 100vh;
-    margin: 0 auto;
+    width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center; 
     align-items: center;
-    margin-bottom: 300px;
-    gap: 20px;
 }
 
-/*styling the login box
-  border-radius ensures rounded corners
-  padding is spacing inside box*/
-.login-box{
-    width: 350px;
-    padding: 20px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(125, 55, 8, 0.1);
-    text-align: center;
-}
 
 /*wraps input and label*/
 .input-group {
@@ -54,6 +39,7 @@ html, body{
 }
 
 button {
+    margin-bottom: 10px;
     width: 100%;
     padding: 10px;
     border: none;

@@ -3,6 +3,7 @@ import { useState } from 'react'
 import SignUpPage from './components/SignUpPage';
 import LoginPage from './components/LoginPage'
 import Logo from './components/BetterReadsWord'
+import ForgotPassword from './components/ForgotPassword'
 import './App.css'
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<LoginPage />} />
                 <Route path="/signup" element={<SignUpPage />} />
+                <Route path="/forgotpassword" element={<ForgotPassword />} />
             </Routes>
       </Router>
     </>

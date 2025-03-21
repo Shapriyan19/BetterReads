@@ -54,6 +54,7 @@ html, body{
 }
 
 button {
+    margin-bottom: 10px;
     width: 100%;
     padding: 10px;
     border: none;
@@ -66,4 +67,13 @@ button {
   
 button:hover {
     background-color: #678578;
+}
+
+.signup{
+    display: flex;
+    justify-content: left;
+}
+.forgotpassword{
+    display: flex;
+    justify-content: right;
 }
