@@ -1,6 +1,7 @@
 import User from "../models/users.model.js";
 import {GoogleGenerativeAI} from "@google/generative-ai";
 import dotenv from "dotenv";
+import Review from "../models/reviews.model.js";
 
 dotenv.config();
 const genAI=new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
@@ -93,4 +94,50 @@ export const aiReviewSummary= async (req,res)=>{
         console.log("error in aiReviewSummary: ",error);
         res.status(500).json({message:"Internal server error"});
     }
-}
+};
+
+export const postReview=async (req,res,next)=>{
+    try {
+        const {firstname,lastname,bookName,profilePic,stars,review}=req.body;
+        var userName=firstname+lastname;
+        if(!userName || !bookName || !stars){
+            res.status(400).json({message: "All field except review are required"});
+        }
+
+        const newReview=new Review({
+            userName,
+            bookName,
+            profilePic,
+            stars,
+            review,
+        });
+        await newReview.save();
+        if(newReview){
+            req.body.bookName=bookName;
+            next();
+        };
+    } catch (error) {
+        console.log("error in postReview: ",error);
+        res.status(500).json({message:"Internal server error"});
+    }
+};
+
+export const getReview=async (req,res)=>{
+    try {
+        const {bookName}=req.body;
+        if (!bookName){
+            res.status(400).json({message: "All field except review are required"});
+        }
+        const reviews=await Review.find({bookName:bookName});
+        if(!reviews){
+            return res.status(200).json({message:"No reviews found"});
+        }
+        else{
+            res.status(200).json({reviews});
+        }
+
+    } catch (error) {
+        console.log("error in getReview: ",error);
+        res.status(500).json({message:"Internal server error"});
+    }
+};
