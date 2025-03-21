@@ -27,7 +27,7 @@ const SignUpPage = () => { //creating component called LoginPage
     return (
         <div className="login-container"> 
             <div className="login-box"> 
-                <h2>Login</h2>
+                <h2>Sign Up</h2>
 
                 {/*show error message if there is an error*/}
                 {error && <p className="error-message">{error}</p>} 
