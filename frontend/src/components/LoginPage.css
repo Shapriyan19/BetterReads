@@ -1,79 +1,102 @@
-/*ensuring full-page has brown background*/
-html, body{
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    background-color: #443329;
+/* Login container */
+.login-box {
+    width: 320px; /* Slightly wider for better layout */
+    margin: 50px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
 }
 
-/* login container full height */
-/* 
-.login-container {
+/* Fix Logo Overlap */
+.logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin-bottom: 15px; /* Space between logo and form */
+    position: relative;
+    z-index: 10;
+}
+
+/* Logo Styling */
+.logo {
+    width: 120px; /* Adjust size */
+    height: auto;
+    display: block;
+    margin-bottom: 10px;
+}
+
+/* Title */
+h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* Form Groups */
+.input-group {
     display: flex;
     flex-direction: column;
-    justify-content: center; 
-    align-items: center;
-    width: 100%;
-    height: 100%;
-    gap: 20px; 
-} */
-
-/*styling the login box
-  border-radius ensures rounded corners
-  padding is spacing inside box*/
-.login-box{
-    width: 30%;
-    padding: 25px;
-    padding-top: 5%;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(125, 55, 8, 0.1);
-    text-align: center;
-    background-color:#b9af9a;
+    align-items: flex-start;
+    margin: 15px 0;
 }
 
-/*wraps input and label*/
-.input-group {
-    margin-bottom: 15px;
+.input-group label {
+    font-weight: bold;
+    margin-bottom: 5px;
     text-align: left;
 }
 
-/*bold labels*/
-.input-group label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-
-/*full-width input fields*/
 .input-group input {
-    width: 95%;
+    width: 100%;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    font-size: 14px;
+    box-sizing: border-box;
 }
 
+/* Login Button */
 button {
-    margin-bottom: 10px;
     width: 100%;
     padding: 10px;
-    border: none;
-    background-color: #92bca9;
+    background-color: #007bff;
     color: white;
-    font-size: 16px;
+    border: none;
     border-radius: 5px;
+    font-size: 16px;
     cursor: pointer;
-}
-  
-button:hover {
-    background-color: #678578;
+    margin-top: 10px;
 }
 
-.signup{
-    display: flex;
-    justify-content: left;
+button:hover {
+    background-color: #0056b3;
 }
-.forgotpassword{
-    display: flex;
-    justify-content: right;
+
+/* Error Message */
+.error-message {
+    color: red;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+/* Sign Up & Forgot Password Links */
+.signup,
+.forgotpass {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 14px;
+    text-decoration: none;
+    color: #6c63ff;
+}
+
+.signup {
+    margin-right: 10px;
+}
+
+.forgotpass:hover,
+.signup:hover {
+    text-decoration: underline;
 }
