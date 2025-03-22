@@ -1,12 +1,15 @@
 import React, { useState } from "react"; 
 import "./LoginPage.css"; 
 import { Link } from "react-router-dom";
-import logo from "../assets/logo.png"; // Ensure the correct path to your logo
+import Logo from './BetterReadsWord';
+import {useNavigate} from "react-router-dom";
 
 const LoginPage = () => { 
     const [username, setUsername] = useState(""); 
     const [password, setPassword] = useState(""); 
     const [error, setError] = useState(""); 
+
+    const navigate = useNavigate();
 
     const handleSubmit = (e) => { 
         e.preventDefault(); 
@@ -17,49 +20,59 @@ const LoginPage = () => {
         }
 
         setError(""); 
+
         console.log("Logging in with:", { username, password }); 
         alert("Login successful! (Simulated)"); 
+        navigate("/home");
     }
 
     return (
-        <div className="login-box"> 
+        <div className="login-layout">
 
-            <h2>Login</h2>
+            <div className="login-box"> 
 
-            {/* Show error message if there is an error */}
-            {error && <p className="error-message">{error}</p>} 
-            
-            <form onSubmit={handleSubmit}>
-                <div className="input-group">
-                    <label>Username</label>
-                    <input 
-                        type="text"
-                        placeholder="Enter your username" 
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)} 
-                        required 
-                    />
-                </div>
+                <h2>Login</h2>
 
-                <div className="input-group">
-                    <label>Password</label>
-                    <input 
-                        type="password"
-                        placeholder="Enter your password" 
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)} 
-                        required 
-                    />
-                </div>
+                {/* Show error message if there is an error */}
+                {error && <p className="error-message">{error}</p>} 
+                
+                <form onSubmit={handleSubmit}>
+                    <div className="input-group">
+                        <label>Username</label>
+                        <input 
+                            type="text"
+                            placeholder="Enter your username" 
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)} 
+                            required 
+                        />
+                    </div>
 
-                <button type="submit">Login</button>
+                    <div className="input-group">
+                        <label>Password</label>
+                        <input 
+                            type="password"
+                            placeholder="Enter your password" 
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)} 
+                            required 
+                        />
+                    </div>
 
-                {/* Sign Up & Forgot Password Links */}
-                <div>
-                    <Link to="/signup" className="signup">Sign Up?</Link>
-                    <Link to="/forgotpassword" className="forgotpass">Forgot Password?</Link>
-                </div>
-            </form>
+                    <button type="submit">Login</button>
+
+                    {/* Sign Up & Forgot Password Links */}
+                    <div>
+                        <Link to="/signup" className="signup">Sign Up?</Link>
+                        <Link to="/forgotpassword" className="forgotpass">Forgot Password?</Link>
+                    </div>
+                </form>
+            </div>
+
+            <div className = "logo-side">
+                <Logo />
+            </div>
+
         </div>
     );     
 };

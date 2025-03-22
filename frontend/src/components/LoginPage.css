@@ -1,3 +1,13 @@
+/*login layout*/
+.login-layout {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    height: 100vh;
+    padding: 20px;
+}
+
 /* Login container */
 .login-box {
     width: 320px; /* Slightly wider for better layout */
@@ -14,19 +24,25 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-direction: column;
-    margin-bottom: 15px; /* Space between logo and form */
+    /*flex-direction: column;*/
+    /*margin-bottom: 15px;*/ /* Space between logo and form */
     position: relative;
     z-index: 10;
 }
 
-/* Logo Styling */
-.logo {
-    width: 120px; /* Adjust size */
-    height: auto;
-    display: block;
-    margin-bottom: 10px;
+.logo-side {
+    width: 150px;
+    height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
+
+.logo-side img {
+    height: auto;
+    width: 200px;
+    margin-top: 20px;
+  }
 
 /* Title */
 h2 {
