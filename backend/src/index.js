@@ -4,6 +4,8 @@ import cookieParser from "cookie-parser"; //this allows to get cookies
 import { connectDB } from "./lib/db.js";
 import authRoutes from "./routes/auth.routes.js";
 import bookRoutes from "./routes/book.routes.js";
+import clubRoutes from "./routes/club.routes.js";
+import membershipRoutes from "./routes/membership.routes.js";
 
 dotenv.config();
 const app = express();
@@ -14,6 +16,8 @@ app.use(cookieParser());
 
 app.use("/api/auth",authRoutes);
 app.use("/api/book",bookRoutes);
+app.use('/api/clubs', clubRoutes);
+app.use('/api/clubs', membershipRoutes);
 
 app.listen(PORT, ()=>{
     console.log(`server is running on port ${PORT}`);
