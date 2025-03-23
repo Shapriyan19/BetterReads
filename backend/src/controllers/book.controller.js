@@ -10,7 +10,11 @@ const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
 export const searchBook= async (req,res)=>{
     try{
-        const {book}=req.body;
+        const {book}=req.query;
+
+        if (!book) {
+            return res.status(400).json({ message: "Book name is required" });
+          }
         const result=await fetch(`https://openlibrary.org/search.json?q=${book}`).then(a=>a.json());
         if (!result){
             return res.status(400).json({message:"Book not found"});
@@ -26,9 +30,17 @@ export const searchBook= async (req,res)=>{
 export const sortBook = async (req,res)=>{
     try {
         const {book,sort}=req.body;
+
+        if (!book) {
+            return res.status(400).json({ message: "Book name is required" });
+        }
+          
+        if (!sort) {
+            return res.status(400).json({ message: "Sort parameter is required" });
+        }
         const result=await fetch(`https://openlibrary.org/search.json?q=${book}&sort=${sort}`).then(a=>a.json());
-        if (!result){
-            return res.status(400).json({message:"Book not found"});
+        if (!result || result.numFound === 0) {
+            return res.status(404).json({ message: "No books found matching your search" });
         }
         return res.status(200).json(result);
     } catch (error) {
@@ -39,10 +51,15 @@ export const sortBook = async (req,res)=>{
 
 export const searchAuthor = async (req,res)=>{
     try{
-        const{author}=req.body;
+        const{author}=req.query;
+
+        if (!author) {
+            return res.status(400).json({ message: "Author search term is required" });
+        }
+        
         const result=await fetch (`https://openlibrary.org/search/authors.json?q=${author}`).then(a=>a.json());        
-        if (!result){
-            return res.status(400).json({message:"Author not found"});
+        if (!result || result.numFound === 0) {
+            return res.status(404).json({ message: "No authors found matching your search" });
         }
         return res.status(200).json(result);
     }catch(error){
@@ -54,6 +71,11 @@ export const searchAuthor = async (req,res)=>{
 export const recommendedBooks= async (req,res)=>{
     try{
         const {email}=req.body;
+
+        if (!email) {
+            return res.status(400).json({ message: "Email is required" });
+        }
+        
         const user=await User.findOne({email});
 
         if(!user){
@@ -80,13 +102,17 @@ export const recommendedBooks= async (req,res)=>{
 
 export const aiReviewSummary= async (req,res)=>{
     try {
-        const {book_name,auth_name}=req.body;
+        const {book_name,auth_name}=req.query;
+
+        if (!book_name || !auth_name) {
+            return res.status(400).json({ message: "Book name and author name are required" });
+          }
         const prompt = `can you give summarization of review for the book ${book_name} by author ${auth_name} based on review of readers`;
         // console.log(process.env.GEMINI_API_KEY);
         const result=await model.generateContent(prompt);
-        if(!result){
-            return res.status(400).json({message:"no result"});
-        }
+        if (!result || !result.response) {
+            return res.status(500).json({ message: "Failed to generate AI review summary" });
+          }
         //console.log(result.response.text);
         const summary = result.response.text();
         return res.status(200).json({ book: book_name, author: auth_name, summary });
@@ -102,6 +128,11 @@ export const postReview=async (req,res,next)=>{
         var userName=firstname+lastname;
         if(!userName || !bookName || !stars){
             res.status(400).json({message: "All field except review are required"});
+        }
+
+        // Validate star rating
+        if (stars < 1 || stars > 5 || !Number.isInteger(stars)) {
+            return res.status(400).json({ message: "Star rating must be an integer between 1 and 5" });
         }
 
         const newReview=new Review({
@@ -124,13 +155,14 @@ export const postReview=async (req,res,next)=>{
 
 export const getReview=async (req,res)=>{
     try {
-        const {bookName}=req.body;
+        const bookName = req.body.bookName || req.query.bookName;
+
         if (!bookName){
             res.status(400).json({message: "All field except review are required"});
         }
         const reviews=await Review.find({bookName:bookName});
-        if(!reviews){
-            return res.status(200).json({message:"No reviews found"});
+        if (!reviews || reviews.length === 0) {
+            return res.status(200).json({ message: "No reviews found for this book", reviews: [] });
         }
         else{
             res.status(200).json({reviews});
