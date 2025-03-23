@@ -1,33 +1,39 @@
-import React, { useState } from "react"; //importing React and useState which is a 
-                                         //React Hook that lets us store data inside a component
+import React, { useState } from "react"; 
 import "./LoginPage.css"; 
 import { Link } from "react-router-dom";
+import Logo from './BetterReadsWord';
+import {useNavigate} from "react-router-dom";
 
-const LoginPage = () => { //creating component called LoginPage
-    const [username, setUsername] = useState(""); //username:store user's username, setUsername: updates username when user types
-    const [password, setPassword] = useState(""); //password: store user's password input, setPassword: updates password when user types
-    const [error, setError] = useState(""); //error: stores error messages if fields are empty, setError: updates error when validation fails
+const LoginPage = () => { 
+    const [username, setUsername] = useState(""); 
+    const [password, setPassword] = useState(""); 
+    const [error, setError] = useState(""); 
 
+    const navigate = useNavigate();
 
-    const handleSubmit = (e) => { //function runs when login button is clicked
-        e.preventDefault(); //stops pages from refreshing when form is submitted
+    const handleSubmit = (e) => { 
+        e.preventDefault(); 
 
         if (!username || !password) {
             setError("Both fields are required.");
             return;
         }
 
-        setError(""); //clears error messages if fields are filled
+        setError(""); 
 
-        console.log("Logging in with:", { username, password }); //prints email & pw to console for debugging
-        alert("Login successful! (Simulated)"); // displays an alert, TO BE REPLACED w real authentication
+        console.log("Logging in with:", { username, password }); 
+        alert("Login successful! (Simulated)"); 
+        navigate("/home");
     }
 
     return (
-            <div className="login-box"> 
-             <h2>Login</h2>
+        <div className="login-layout">
 
-                {/*show error message if there is an error*/}
+            <div className="login-box"> 
+
+                <h2>Login</h2>
+
+                {/* Show error message if there is an error */}
                 {error && <p className="error-message">{error}</p>} 
                 
                 <form onSubmit={handleSubmit}>
@@ -35,10 +41,10 @@ const LoginPage = () => { //creating component called LoginPage
                         <label>Username</label>
                         <input 
                             type="text"
-                            placeholder="Enter your username" //textbox for username
+                            placeholder="Enter your username" 
                             value={username}
-                            onChange={(e) => setUsername(e.target.value)} //updates username when user types
-                            required //ensures input is mandatory
+                            onChange={(e) => setUsername(e.target.value)} 
+                            required 
                         />
                     </div>
 
@@ -46,17 +52,28 @@ const LoginPage = () => { //creating component called LoginPage
                         <label>Password</label>
                         <input 
                             type="password"
-                            placeholder="Enter your password" //textbox for password
+                            placeholder="Enter your password" 
                             value={password}
-                            onChange={(e) => setPassword(e.target.value)} //updates password when user types
-                            required //ensures input is mandatory
+                            onChange={(e) => setPassword(e.target.value)} 
+                            required 
                         />
                     </div>
-                    <button type= "submit">Login</button>
-                    <Link to="/signup" className="signup" >Sign Up?</Link>
-                    <Link to="/forgotpassword" className="forgotpass">Forgot Password?</Link>
+
+                    <button type="submit">Login</button>
+
+                    {/* Sign Up & Forgot Password Links */}
+                    <div>
+                        <Link to="/signup" className="signup">Sign Up?</Link>
+                        <Link to="/forgotpassword" className="forgotpass">Forgot Password?</Link>
+                    </div>
                 </form>
             </div>
+
+            <div className = "logo-side">
+                <Logo />
+            </div>
+
+        </div>
     );     
 };
 
