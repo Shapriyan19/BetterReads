@@ -5,6 +5,7 @@ import transporter from "../lib/nodemailer.js";
 import {passwordStrength} from "check-password-strength";
 import passwordcheck from "../lib/passwordcheck.js";
 import pingenertation from "../lib/pingeneration.js";
+import BookVault from "../models/bookvaults.model.js";
 
 export const signup =async (req,res)=>{
     const {email,firstName,lastName,password,profilePic,preferences,location}=req.body;
@@ -123,7 +124,7 @@ export const updateProfile= async(req,res)=>{
         }
 
         const uploadResponse=await cloudinary.uploader.upload(profilePic);
-        const updateUser=await findByIdAndUpdate(
+        const updateUser=await User.findByIdAndUpdate(
             userId,
             {profilePic: uploadResponse.secure_url},
             {new: true} //sends updated user
@@ -233,6 +234,76 @@ export const updatePassword = async (req,res)=>{
         res.status(200).json(updateUser);
     }catch(error){
         console.log("Error in updatePassword controller", error.message);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+}
+
+export const addToBookVault = async (req,res)=>{
+    try {
+        const {email,vaultName,bookName}=req.body;
+        if(!email || !vaultName){
+            return res.status(400).json({message: "Vault Name is required"});
+        }
+
+        const user=await User.findOne({email});
+        if(!user){
+            return res.status(400).json({message:"User Not found"});
+        }
+
+        const userBookVault=await BookVault.find({email});
+        for (var i=0;i<userBookVault.length;i++){
+            if(userBookVault[i].vaultName===vaultName){
+                console.log(userBookVault[i].vaultName);
+                const updatedBookList = [...userBookVault[i].bookList, bookName];
+                const updateUserBookVault= await BookVault.findByIdAndUpdate(
+                userBookVault[i]._id,
+                {bookList: updatedBookList},
+                {new: true}
+                );
+
+                return res.status(200).json(updateUserBookVault);
+            }
+        }
+
+        const newUserBookVault=new BookVault({
+            email,
+            vaultName,
+            bookList: [bookName],
+        });
+
+        if(newUserBookVault){
+            await newUserBookVault.save();
+            res.status(201).json({
+                email: email,
+                vaultName: vaultName,
+                bookList: [bookName]
+            });
+        }
+        else{
+            res.status(400).json({message: "Invalid bookVault data"});
+        }
+    } catch (error) {
+        console.log("Error in addToBookVault controller", error.message);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+export const getBookVault=async(req,res)=>{
+    try {
+        const {email}=req.body;
+        if(!email){
+            return res.status(400).json({message: "Could not find user"});
+        }
+
+        const userBookVault=await BookVault.find({email});
+        if(!userBookVault){
+            res.status(200).json({message:"No BookVault found. Start adding books to your book Vault"});
+        }
+        else{
+            res.status(200).json(userBookVault);
+        }
+    } catch (error) {
+        console.log("Error in addToBookVault controller", error.message);
         res.status(500).json({ message: "Internal Server Error" });
     }
 }
