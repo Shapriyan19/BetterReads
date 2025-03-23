@@ -10,7 +10,7 @@ router.post("/logout",logout);
 router.put("/update-profile", protectRoute, updateProfile);
 router.get("/check",protectRoute,checkAuth);
 router.put("/forgot-password",sendForgotPasswordPin,forgotPassword,updatePassword);
-router.post("/add-to-bookvault",addToBookVault);
-router.get("/get-bookvault",getBookVault);
+router.post("/add-to-bookvault",protectRoute,addToBookVault);
+router.get("/get-bookvault",protectRoute,getBookVault);
 
 export default router;

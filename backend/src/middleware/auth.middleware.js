@@ -1,9 +1,10 @@
 import jwt from "jsonwebtoken";
 import User from "../models/users.model.js";
+import Club from "../models/clubs.model.js"
 
 export const protectRoute=async(req,res,next)=>{
     try {
-        const token=req.cookies.jwt
+        const token=req.cookies.jwt;
         if(!token){
             return res.status(401).json({message:"Unauthorized-No Token Provided"});
         }
@@ -31,7 +32,7 @@ export const protectRoute=async(req,res,next)=>{
 // Check if user is admin of the club
 export const isClubAdmin = async (req, res, next) => {
     const clubId = req.params.clubId;
-    const Club = await import("../models/club.routes.js");
+    
     
     try {
         const club = await Club.default.findById(clubId);
@@ -45,13 +46,14 @@ export const isClubAdmin = async (req, res, next) => {
             role => role.role === 'admin' && role.user === req.user._id.toString()
         );
         
-        if (isAdmin || club.adminName === `${req.user.firstName} ${req.user.lastName}`) {
+        if (isAdmin) {
             req.club = club;
             return next();
         }
         
         return res.status(403).json({ success: false, message: 'Not authorized as a club admin' });
     } catch (error) {
+        console.log("Error in isClubAdmin middleware:", error.message);
         return res.status(500).json({ success: false, message: 'Server error' });
     }
 };
@@ -59,7 +61,6 @@ export const isClubAdmin = async (req, res, next) => {
 // Check if user is a member of the club
 export const isClubMember = async (req, res, next) => {
     const clubId = req.params.clubId;
-    const Club = await import("../models/Club.js");
     
     try {
         const club = await Club.default.findById(clubId);
@@ -79,6 +80,7 @@ export const isClubMember = async (req, res, next) => {
         
         return res.status(403).json({ success: false, message: 'Not authorized as a club member' });
     } catch (error) {
+        console.log("Error in isClubMember middleware:", error.message);
         return res.status(500).json({ success: false, message: 'Server error' });
     }
 };

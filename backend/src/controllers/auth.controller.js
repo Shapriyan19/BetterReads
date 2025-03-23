@@ -6,6 +6,7 @@ import {passwordStrength} from "check-password-strength";
 import passwordcheck from "../lib/passwordcheck.js";
 import pingenertation from "../lib/pingeneration.js";
 import BookVault from "../models/bookvaults.model.js";
+import cloudinary from "../lib/cloudinary.js";
 
 export const signup =async (req,res)=>{
     const {email,firstName,lastName,password,profilePic,preferences,location}=req.body;
@@ -164,8 +165,11 @@ export const sendForgotPasswordPin = async(req,res,next)=>{
             const info = await transporter.sendMail({
                 from: '"Betterreads" <hailee0@ethereal.email>',
                 to: email,
-                subject: "Pin to reset password",
-                text:  `Your pin to reset your password for email ${email} is ${forgot_password_pin}`,
+                subject: "Reset Your Password",
+                text: `A password reset was requested for your BetterReads account. Use the following PIN to reset your password: ${forgot_password_pin}`,
+                html: `<p>A password reset was requested for your BetterReads account.</p>
+                       <p>Use the following PIN to reset your password: <strong>${forgot_password_pin}</strong></p>
+                       <p>If you didn't request this, please ignore this email.</p>`
             });
         }catch(error){
             console.log("Error in sending mail",error.message);
@@ -190,7 +194,7 @@ export const forgotPassword = async (req,res,next)=>{
         }
 
         if(forgotPasswordPin!==user.forgotPasswordPin){
-            return res.status(400).json({message:"Forgot Password Pin is invalid."});
+            return res.status(400).json({message:"Invalid PIN. Please try again."});
         }
 
         req.body.user=user;
@@ -205,6 +209,14 @@ export const updatePassword = async (req,res)=>{
     try{
         const {newPassword} = req.body;
         const userId=req.body.user._id;
+
+        if (!newPassword) {
+            return res.status(400).json({ message: "New Password is required" });
+        }
+        
+        if (newPassword.length < 8) {
+            return res.status(400).json({ message: "Password must be at least 8 characters" });
+        }
 
         const passwordSecurity=passwordStrength(newPassword,passwordcheck).value;
 
@@ -240,14 +252,9 @@ export const updatePassword = async (req,res)=>{
 
 export const addToBookVault = async (req,res)=>{
     try {
-        const {email,vaultName,bookName}=req.body;
-        if(!email || !vaultName){
+        const {vaultName,bookName}=req.body;
+        if(!vaultName || !BookVault){
             return res.status(400).json({message: "Vault Name is required"});
-        }
-
-        const user=await User.findOne({email});
-        if(!user){
-            return res.status(400).json({message:"User Not found"});
         }
 
         const userBookVault=await BookVault.find({email});
@@ -271,17 +278,8 @@ export const addToBookVault = async (req,res)=>{
             bookList: [bookName],
         });
 
-        if(newUserBookVault){
-            await newUserBookVault.save();
-            res.status(201).json({
-                email: email,
-                vaultName: vaultName,
-                bookList: [bookName]
-            });
-        }
-        else{
-            res.status(400).json({message: "Invalid bookVault data"});
-        }
+        await newUserBookVault.save();
+        res.status(201).json(newUserBookVault);
     } catch (error) {
         console.log("Error in addToBookVault controller", error.message);
         res.status(500).json({ message: "Internal Server Error" });
@@ -290,7 +288,7 @@ export const addToBookVault = async (req,res)=>{
 
 export const getBookVault=async(req,res)=>{
     try {
-        const {email}=req.body;
+        const {email}=req.user.email;
         if(!email){
             return res.status(400).json({message: "Could not find user"});
         }
