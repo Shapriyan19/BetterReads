@@ -8,11 +8,11 @@ import bookCover from "../assets/placeholder.jpg";
 export default function HomePage () {
     const books = [
         { id: 1, title: "The Midnight Library", author: "Matt Haig", category: "Fiction", coverImage: bookCover },
-        { id: 2, title: "Atomic Habits", author: "James Clear", category: "Self-Help", coverImage: bookCover },
+        { id: 2, title: "Atomic Habits", author: "James Clear", category: "SelfHelp", coverImage: bookCover },
         { id: 3, title: "Educated", author: "Tara Westover", category: "Memoir", coverImage: bookCover },
         { id: 4, title: "The Silent Patient", author: "Alex Michaelides", category: "Thriller", coverImage: bookCover },
         { id: 5, title: "Becoming", author: "Michelle Obama", category: "Biography", coverImage: bookCover },
-        { id: 6, title: "Dune", author: "Frank Herbert", category: "Sci-Fi", coverImage: bookCover },
+        { id: 6, title: "Dune", author: "Frank Herbert", category: "SciFi", coverImage: bookCover },
         { id: 7, title: "The Hobbit", author: "J.R.R. Tolkien", category: "Fantasy", coverImage: bookCover },
         { id: 8, title: "Sapiens", author: "Yuval Noah Harari", category: "History", coverImage: bookCover },
       ];
@@ -29,10 +29,10 @@ export default function HomePage () {
                 </div>
 
                 <div className="user-actions">
-                    <div className="profile-icon">
+                    <button className="profile-icon">
                         <User size={20} />
-                    </div>
-                    <button className="logout-button">LogOut</button>
+                    </button>
+                    <button className="logout-button">Log Out</button>
                 </div>
             </header>
 
@@ -55,7 +55,7 @@ export default function HomePage () {
                     </div>
                                 
                 <h1 className="section-title">Recommended For You</h1>
-                
+
             </main>
         </div>
     );

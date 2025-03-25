@@ -3,22 +3,22 @@
     background-color: #443329;
     display: flex;
     flex-direction: column;
-    padding-bottom: 40px;
+    padding: 10px;
 }
 
 .home-header {
-    width: 100%;  
+    width: 100vw;  
     background-color: #d8942eaa;
     backdrop-filter: blur(6px);
     box-sizing: border-box;  
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 32px;
+    padding: 30px 50px;
 }
 
 .home-title {
-    font-size: 24px;
+    font-size: 30px;
     font-weight: bold;
     color: #ffffffaa; 
 }
@@ -32,13 +32,13 @@
 
 .search-icon {
     position: absolute;
-    top: 0px;
-    left: -20px;
+    top: 5px;
+    left: 5px;
     color: #888;
 }
 
 .search-input {
-    width: 1005;
+    width: 100%;
     padding: 8px 8px 8px 32px;
     border: 1px solid #eee;
     border-radius: 6px;
@@ -52,39 +52,49 @@
 }
 
 .profile-icon {
-    width: 32px;
-    height: 32px;
-    background-color: #eee;
+    width: 40px;
+    height: auto;
+    background-color: #0e0904;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
 }
 
 .logout-button {
     display: flex;
+    justify-content: center;
     align-items: center;
     gap: 6px;
-    padding: 6px 12px;
-    font-size: 14px;
+    padding: 6px 30px;
+    font-size: 20px;
     cursor: pointer;
+    background-color: #0e0904;
 }
 
 .main-section{
-    padding: 32px;
+    width: 100%;
+    margin: 0 auto;
+    display:flex;
+    flex-direction: column;
+    gap: 24px;
+    overflow-y: auto;
 }
 
 .section-title {
-    padding: 32px;
+    padding: 0px 50px;
     font-weight: bold;
     margin-bottom: 24px;
     color: #ffffffaa;
+    text-align: left;
 }
 
 .grid-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 24px;
+    padding: 0px 50px;
 }
 
 .card {
@@ -98,7 +108,7 @@
 
 .card:hover {
     transform: scale(1.10);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 16px rgba(203, 133, 133, 0.2);
 }
 
 .card-img {
@@ -110,13 +120,12 @@
 }
 
 .card-body {
-    padding: 15px;
+    padding: 5px;
 }
 
 .book-title {
     font-size: 15px;
     font-weight: 600;
-    margin-bottom: 4px;
 }
 
 .book-author {
@@ -126,21 +135,22 @@
 
 .card-footer {
     display: flex; 
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    padding: 0 16px 16px 16px;
+    gap: 12px;
 }
 
 .category-badge {
-    background-color: #eee;
-    padding: 4px 8px;
+    background-color: #b9b7b7;
+    padding: 4px 10px;
+    border: 1px solid #646363;
     border-radius: 12px;
     font-size: 12px;
     color: #555;
 }
 
 .details-button {
-    padding: 4px 10px;
+    padding: 4px 8px;
     font-size: 12px;
     background-color: rgb(136, 125, 189);
     border: 1px solid #aaa;
