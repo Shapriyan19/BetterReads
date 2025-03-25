@@ -55,21 +55,7 @@ export default function HomePage () {
                     </div>
                                 
                 <h1 className="section-title">Recommended For You</h1>
-                <div className="grid-container">
-                        {books.map((book) =>(
-                            <div key={book.id} className="card">
-                                <img src={book.coverImage} alt={book.title} className="card-img" />
-                                <div className="card-body">
-                                    <h3 className="book-title">{book.title}</h3>
-                                    <p className="book-author">{book.author}</p>
-                                </div>
-                                <div className="card-footer">
-                                    <span className="category-badge">{book.category}</span>
-                                    <button className="details-button">Details</button>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                
             </main>
         </div>
     );
