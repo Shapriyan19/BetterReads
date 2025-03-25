@@ -1,8 +1,7 @@
 import React, { useState } from "react"; 
 import "./LoginPage.css"; 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Logo from './BetterReadsWord';
-import {useNavigate} from "react-router-dom";
 
 const LoginPage = () => { 
     const [username, setUsername] = useState(""); 

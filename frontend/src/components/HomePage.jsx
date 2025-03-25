@@ -1,6 +1,6 @@
 import React, { useState } from "react"; 
 import "./HomePage.css"; 
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {Search, User, LogOut } from "lucide-react";
 
 import bookCover from "../assets/placeholder.jpg";
@@ -16,6 +16,12 @@ export default function HomePage () {
         { id: 7, title: "The Hobbit", author: "J.R.R. Tolkien", category: "Fantasy", coverImage: bookCover },
         { id: 8, title: "Sapiens", author: "Yuval Noah Harari", category: "History", coverImage: bookCover },
       ];
+
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        navigate('/');
+      };
     
     return (
         <div className="home-container">
@@ -32,7 +38,9 @@ export default function HomePage () {
                     <button className="profile-icon">
                         <User size={20} />
                     </button>
-                    <button className="logout-button">Log Out</button>
+                    <button className="logout-button" onClick={handleLogout}>
+                        Log Out
+                    </button>
                 </div>
             </header>
 
