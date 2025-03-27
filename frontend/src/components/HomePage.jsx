@@ -1,7 +1,7 @@
 import React, { useState } from "react"; 
 import "./HomePage.css"; 
 import { useNavigate } from "react-router-dom";
-import {Search, User, LogOut } from "lucide-react";
+import {Search, User } from "lucide-react";
 
 import bookCover from "../assets/placeholder.jpg";
 
@@ -21,7 +21,8 @@ export default function HomePage () {
 
     const handleLogout = () => {
         navigate('/');
-      };
+    };
+
     
     return (
         <div className="home-container">
@@ -56,7 +57,9 @@ export default function HomePage () {
                                 </div>
                                 <div className="card-footer">
                                     <span className="category-badge">{book.category}</span>
-                                    <button className="details-button">Details</button>
+                                    <button className="details-button" onClick = {() => openModal(book)}>
+                                        Details
+                                    </button>
                                 </div>
                             </div>
                         ))}
@@ -65,6 +68,8 @@ export default function HomePage () {
                 <h1 className="section-title">Recommended For You</h1>
 
             </main>
+
+
         </div>
     );
 }

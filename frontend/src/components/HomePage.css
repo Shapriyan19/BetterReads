@@ -1,6 +1,6 @@
 .home-container {
     min-height: 100vh;
-    background-color: #443329;
+    background-color: #b6a6a6;
     display: flex;
     flex-direction: column;
     padding: 10px;
@@ -8,13 +8,13 @@
 
 .home-header {
     width: 100vw;  
-    background-color: #d8942eaa;
+    background-color: #000000aa;
     backdrop-filter: blur(6px);
     box-sizing: border-box;  
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 30px 50px;
+    padding: 5px 50px;
 }
 
 .home-title {
