@@ -173,3 +173,33 @@ export const getReview=async (req,res)=>{
         res.status(500).json({message:"Internal server error"});
     }
 };
+
+export const getAvailabilityInfo= async (req,res)=>{
+    const baseUrl = "https://openweb.nlb.gov.sg/api/v2/Catalogue";
+    const endpoint = "/GetAvailabilityInfo";
+    const API_KEY="8(I<YgZlt6JB-BHg@G18#TTTe`w).eai"
+    const APP_CODE="DEV-Shanmugapriyan"
+    try{
+        const {bookName}=req.body;
+        const url = `${baseUrl}${endpoint}?ISBN=${bookName}`;
+
+        const response = await fetch(url, {
+            method: "GET",
+            headers: {
+                "X-Api-Key": API_KEY,
+                "X-App-Code":APP_CODE,
+                "Content-Type": "application/json"
+            }
+        });
+    
+        if (!response.ok) {
+            console.log("Error:", response);
+            return;
+        }
+        const data = await response.json();
+        res.status(200).json({data});
+    }catch(error){
+        console.log("error in getAvailabilityInfo: ",error);
+        res.status(500).json({message:"Internal server error"});
+    }
+}
