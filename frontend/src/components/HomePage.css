@@ -1,6 +1,6 @@
 .home-container {
     min-height: 100vh;
-    background-color: #b6a6a6;
+    background-color: #c97272;
     display: flex;
     flex-direction: column;
     padding: 10px;
@@ -8,7 +8,7 @@
 
 .home-header {
     width: 100vw;  
-    background-color: #000000aa;
+    background-color: #000000;
     backdrop-filter: blur(6px);
     box-sizing: border-box;  
     display: flex;
@@ -20,7 +20,7 @@
 .home-title {
     font-size: 30px;
     font-weight: bold;
-    color: #ffffffaa; 
+    color: #c7c8d7; 
 }
 
 .search-container {
@@ -54,12 +54,23 @@
 .profile-icon {
     width: 40px;
     height: auto;
-    background-color: #0e0904;
+    background-color: #775591;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
+}
+
+.bookclub-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    padding: 6px 30px;
+    font-size: 10px;
+    cursor: pointer;
+    background-color: #775591;
 }
 
 .logout-button {
@@ -68,9 +79,9 @@
     align-items: center;
     gap: 6px;
     padding: 6px 30px;
-    font-size: 20px;
+    font-size: 10px;
     cursor: pointer;
-    background-color: #0e0904;
+    background-color: #775591;
 }
 
 .main-section{
@@ -86,7 +97,7 @@
     padding: 0px 50px;
     font-weight: bold;
     margin-bottom: 24px;
-    color: #ffffffaa;
+    color: #000000;
     text-align: left;
 }
 
@@ -158,3 +169,25 @@
     cursor: pointer;
 }
 
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 24px;
+    border-radius: 16px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}

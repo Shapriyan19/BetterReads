@@ -23,6 +23,15 @@ export default function HomePage () {
         navigate('/');
     };
 
+    const [selectedBook, setSelectedBook] = useState(null);
+
+    const openModal = (book) => {
+        setSelectedBook(book);
+    };
+
+    const closeModal = () => {
+        setSelectedBook(null);
+    };
     
     return (
         <div className="home-container">
@@ -38,6 +47,9 @@ export default function HomePage () {
                 <div className="user-actions">
                     <button className="profile-icon">
                         <User size={20} />
+                    </button>
+                    <button className= "bookclub-button">
+                        My Book Club
                     </button>
                     <button className="logout-button" onClick={handleLogout}>
                         Log Out
@@ -69,6 +81,16 @@ export default function HomePage () {
 
             </main>
 
+            {selectedBook && (
+                <div className="modal-overlay" onClick={closeModal}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <h2>{selectedBook.title}</h2>
+                        <p><strong>Author:</strong> {selectedBook.author}</p>
+                        <p><strong>Category:</strong> {selectedBook.category}</p>
+                        <button onClick={closeModal}>Close</button>
+                    </div>
+                </div>
+            )}
 
         </div>
     );
