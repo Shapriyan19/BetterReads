@@ -27,51 +27,51 @@ const LoginPage = () => {
 
     return (
         <div className="login-layout">
-
             <div className="login-box"> 
-
-                <h2>Login</h2>
-
-                {/* Show error message if there is an error */}
-                {error && <p className="error-message">{error}</p>} 
-                
-                <form onSubmit={handleSubmit}>
-                    <div className="input-group">
-                        <label>Username</label>
-                        <input 
-                            type="text"
-                            placeholder="Enter your username" 
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)} 
-                            required 
-                        />
+                <div className="login-content">
+                    <div className="logo-container">
+                        <Logo />
                     </div>
+                    <div className="form-container">
+                        <h2>Login</h2>
 
-                    <div className="input-group">
-                        <label>Password</label>
-                        <input 
-                            type="password"
-                            placeholder="Enter your password" 
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)} 
-                            required 
-                        />
+                        {/* Show error message if there is an error */}
+                        {error && <p className="error-message">{error}</p>} 
+                        
+                        <form onSubmit={handleSubmit}>
+                            <div className="input-group">
+                                <label>Username</label>
+                                <input 
+                                    type="text"
+                                    placeholder="Enter your username" 
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)} 
+                                    required 
+                                />
+                            </div>
+
+                            <div className="input-group">
+                                <label>Password</label>
+                                <input 
+                                    type="password"
+                                    placeholder="Enter your password" 
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)} 
+                                    required 
+                                />
+                            </div>
+
+                            <button type="submit">Login</button>
+
+                            {/* Sign Up & Forgot Password Links */}
+                            <div className="form-links">
+                                <Link to="/signup" className="signup">Sign Up?</Link>
+                                <Link to="/forgotpassword" className="forgotpass">Forgot Password?</Link>
+                            </div>
+                        </form>
                     </div>
-
-                    <button type="submit">Login</button>
-
-                    {/* Sign Up & Forgot Password Links */}
-                    <div>
-                        <Link to="/signup" className="signup">Sign Up?</Link>
-                        <Link to="/forgotpassword" className="forgotpass">Forgot Password?</Link>
-                    </div>
-                </form>
+                </div>
             </div>
-
-            <div className = "logo-side">
-                <Logo />
-            </div>
-
         </div>
     );     
 };
