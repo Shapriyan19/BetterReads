@@ -83,11 +83,19 @@ export default function HomePage () {
 
             {selectedBook && (
                 <div className="modal-overlay" onClick={closeModal}>
-                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                        <h2>{selectedBook.title}</h2>
-                        <p><strong>Author:</strong> {selectedBook.author}</p>
-                        <p><strong>Category:</strong> {selectedBook.category}</p>
-                        <button onClick={closeModal}>Close</button>
+                    <div className="modal" onClick={(e) => e.stopPropagation()}>
+                        <span className = "close-icon" onClick = {closeModal}>&times;</span>
+                        <img src={selectedBook.coverImage} alt={selectedBook.title} className="details-img" />
+                            <div className = "modal-content">
+                                <h2>{selectedBook.title}</h2>
+                                <p><strong>Author:</strong> {selectedBook.author}</p>
+                                <p><strong>Category:</strong> {selectedBook.category}</p>
+                                <p><strong>Description:</strong></p>
+                                <p>Tara Westover was 17 the first time she set foot in a classroom. Born to survivalists in the mountains of Idaho, she prepared for the end of the world by stockpiling home-canned peaches and sleeping with her "head-for-the-hills bag". In the summer she stewed herbs for her mother, a midwife and healer, and in the winter she salvaged in her father's junkyard.</p>
+                                <p>Her father forbade hospitals, so Tara never saw a doctor or nurse. Gashes and concussions, even burns from explosions, were all treated at home with herbalism. The family was so isolated from mainstream society that there was no one to ensure the children received an education and no one to intervene when one of Tara's older brothers became violent.</p>
+                                <p>Then, lacking any formal education, Tara began to educate herself. She taught herself enough mathematics and grammar to be admitted to Brigham Young University, where she studied history, learning for the first time about important world events like the Holocaust and the civil rights movement. Her quest for knowledge transformed her, taking her over oceans and across continents, to Harvard and to Cambridge. Only then would she wonder if she'd traveled too far, if there was still a way home.</p>
+                                <p>Educated is an account of the struggle for self-invention. It is a tale of fierce family loyalty and of the grief that comes with severing the closest of ties. With the acute insight that distinguishes all great writers, Westover has crafted a universal coming-of-age story that gets to the heart of what an education is and what it offers: the perspective to see one's life through new eyes and the will to change it.</p>
+                            </div>
                     </div>
                 </div>
             )}

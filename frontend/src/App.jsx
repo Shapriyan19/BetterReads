@@ -13,15 +13,6 @@ function AppContent() {
     <>
       {/*display the Logo at the top of page in header*/}
       {/*show this header only on login/signup/forgotpassword pages*/}
-      {
-      ["/", "/signup", "/forgotpassword"].includes(location.pathname) && (
-          <header className="site-header">
-              <div className ="header-inner">
-                <Logo />
-              </div>
-          </header>
-      )
-      }
 
           <Routes>
             <Route path="/" element={<LoginPage />} />
