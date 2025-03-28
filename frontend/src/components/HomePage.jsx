@@ -1,7 +1,9 @@
-import React, { useState } from "react"; 
+import React, { useState, useEffect } from "react"; 
 import "./HomePage.css"; 
 import { useNavigate } from "react-router-dom";
 import {Search, User } from "lucide-react";
+
+import Rating from '@mui/material/Rating';
 
 import bookCover from "../assets/placeholder.jpg";
 
@@ -23,6 +25,10 @@ export default function HomePage () {
         navigate('/');
     };
 
+    const handleProfile = () => {
+        navigate('/profile');
+    };
+
     const [selectedBook, setSelectedBook] = useState(null);
 
     const openModal = (book) => {
@@ -32,6 +38,17 @@ export default function HomePage () {
     const closeModal = () => {
         setSelectedBook(null);
     };
+
+    const [rating, setRating] = useState(null);
+
+    useEffect(() => {
+        const modal = document.querySelector('.modal');
+        if (modal) {
+            setTimeout(() => {
+                modal.classList.add('show');
+            }, 10);
+        }
+    }, [selectedBook]);
     
     return (
         <div className="home-container">
@@ -45,7 +62,7 @@ export default function HomePage () {
                 </div>
 
                 <div className="user-actions">
-                    <button className="profile-icon">
+                    <button className="profile-icon" onClick ={handleProfile}>
                         <User size={20} />
                     </button>
                     <button className= "bookclub-button">
@@ -90,11 +107,29 @@ export default function HomePage () {
                                 <h2>{selectedBook.title}</h2>
                                 <p><strong>Author:</strong> {selectedBook.author}</p>
                                 <p><strong>Category:</strong> {selectedBook.category}</p>
+                                {rating && (
+                                    <div className = "total-book-rating">
+                                            <Rating name="read-only" value={rating} readOnly />
+                                            <span className = "rating-text"> {rating} out of 5 </span>
+                                    </div>
+                                )}
                                 <p><strong>Description:</strong></p>
                                 <p>Tara Westover was 17 the first time she set foot in a classroom. Born to survivalists in the mountains of Idaho, she prepared for the end of the world by stockpiling home-canned peaches and sleeping with her "head-for-the-hills bag". In the summer she stewed herbs for her mother, a midwife and healer, and in the winter she salvaged in her father's junkyard.</p>
                                 <p>Her father forbade hospitals, so Tara never saw a doctor or nurse. Gashes and concussions, even burns from explosions, were all treated at home with herbalism. The family was so isolated from mainstream society that there was no one to ensure the children received an education and no one to intervene when one of Tara's older brothers became violent.</p>
                                 <p>Then, lacking any formal education, Tara began to educate herself. She taught herself enough mathematics and grammar to be admitted to Brigham Young University, where she studied history, learning for the first time about important world events like the Holocaust and the civil rights movement. Her quest for knowledge transformed her, taking her over oceans and across continents, to Harvard and to Cambridge. Only then would she wonder if she'd traveled too far, if there was still a way home.</p>
                                 <p>Educated is an account of the struggle for self-invention. It is a tale of fierce family loyalty and of the grief that comes with severing the closest of ties. With the acute insight that distinguishes all great writers, Westover has crafted a universal coming-of-age story that gets to the heart of what an education is and what it offers: the perspective to see one's life through new eyes and the will to change it.</p>
+                                <div className="rating-container">
+                                    <h3 className="modal-label"><strong> Give a Rating: </strong></h3>
+                                    <Rating
+                                        name="simple-controlled"
+                                        value={rating}
+                                        onChange={(event, newValue) => { setRating(newValue); 
+                                        }}
+                                    />
+                                </div>
+                                <div className="review-container">
+                                    <h3 className="modal-label"><strong> Make a Review: </strong></h3>
+                                </div>
                             </div>
                     </div>
                 </div>

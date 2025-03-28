@@ -21,7 +21,6 @@ const LoginPage = () => {
         setError(""); 
 
         console.log("Logging in with:", { username, password }); 
-        alert("Login successful! (Simulated)"); 
         navigate("/home");
     }
 
@@ -37,7 +36,7 @@ const LoginPage = () => {
                 
                 <form onSubmit={handleSubmit}>
                     <div className="input-group">
-                        <label>Username</label>
+                        <label className = "labeltext">Username</label>
                         <input 
                             type="text"
                             placeholder="Enter your username" 
@@ -48,7 +47,7 @@ const LoginPage = () => {
                     </div>
 
                     <div className="input-group">
-                        <label>Password</label>
+                        <label className = "labeltext">Password</label>
                         <input 
                             type="password"
                             placeholder="Enter your password" 
@@ -68,7 +67,7 @@ const LoginPage = () => {
                 </form>
             </div>
 
-            <div className = "logo-side">
+            <div className = "logo-box">
                 <Logo />
             </div>
 

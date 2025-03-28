@@ -1,9 +1,10 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import SignUpPage from './components/SignUpPage';
 import LoginPage from './components/LoginPage';
-import Logo from './components/BetterReadsWord';
+import ProfilePage from './components/ProfilePage';
 import ForgotPassword from './components/ForgotPassword';
 import HomePage from './components/HomePage';
+
 import './App.css';
 
 function AppContent() {
@@ -19,6 +20,7 @@ function AppContent() {
             <Route path="/signup" element={<SignUpPage />} />
             <Route path="/forgotpassword" element={<ForgotPassword />} />
             <Route path="/home" element={<HomePage />} />
+            <Route path="/profile" element={<ProfilePage />} />
           </Routes>
     </>
   );

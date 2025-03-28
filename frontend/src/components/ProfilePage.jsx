@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ProfilePage.css';
 
-function ProfilePage() {
-  const [name, setName] = useState('Jane Smith');
-  const [email, setEmail] = useState('jane.smith@example.com');
+export default function ProfilePage() {
+  const [name, setName] = useState(null);
+  const [email, setEmail] = useState(null);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -51,6 +51,7 @@ function ProfilePage() {
             <label htmlFor="name">Name</label>
             <input
               type="text"
+              placeholder ="Name"
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -62,6 +63,7 @@ function ProfilePage() {
             <label htmlFor="email">Email</label>
             <input
               type="email"
+              placeholder="Email"
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -109,4 +111,3 @@ function ProfilePage() {
   );
 }
 
-export default ProfilePage;

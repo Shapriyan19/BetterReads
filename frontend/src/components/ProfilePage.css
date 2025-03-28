@@ -13,10 +13,10 @@ html, body {
     background-color: #121212;
     color: #e0e0e0;
     padding: 20px;
-    width: 80%;
-    max-width: 1200px;
+    width: 100%;
     margin: 0 auto;
     box-sizing: border-box;
+    overflow-y: auto;
   }
   
   .profile-title {
@@ -31,7 +31,9 @@ html, body {
   
   .profile-content {
     display: flex;
-    gap: 20px;
+    gap: 40px;
+    align-items: flex-start;
+    margin: 20px 20px;
   }
   
   .profile-photo-section {
@@ -94,8 +96,8 @@ html, body {
     padding: 10px;
     border: 1px solid #555;
     border-radius: 4px;
-    background-color: #333;
-    color: #e0e0e0;
+    color: #000000;
+    background-color: #e0e0e0;
   }
   
   /* Add spacing between stacked inputs */
@@ -129,6 +131,7 @@ html, body {
   
   .back-button {
     position: absolute;
+    width: 10%;
     top: 20px;
     left: 20px;
     padding: 0.5rem 1rem;
