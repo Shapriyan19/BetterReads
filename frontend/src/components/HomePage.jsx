@@ -29,6 +29,10 @@ export default function HomePage () {
         navigate('/profile');
     };
 
+    const handleBCL = () => {
+        navigate('/bcl');
+    };
+
     const [selectedBook, setSelectedBook] = useState(null);
 
     const openModal = (book) => {
@@ -65,7 +69,7 @@ export default function HomePage () {
                     <button className="profile-icon" onClick ={handleProfile}>
                         <User size={20} />
                     </button>
-                    <button className= "bookclub-button">
+                    <button className= "bookclub-button" onClick ={handleBCL}>
                         My Book Club
                     </button>
                     <button className="logout-button" onClick={handleLogout}>

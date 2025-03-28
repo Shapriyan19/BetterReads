@@ -4,6 +4,7 @@ import LoginPage from './components/LoginPage';
 import ProfilePage from './components/ProfilePage';
 import ForgotPassword from './components/ForgotPassword';
 import HomePage from './components/HomePage';
+import BookClubListingPage from './components/BookClubListing';
 
 import './App.css';
 
@@ -21,6 +22,7 @@ function AppContent() {
             <Route path="/forgotpassword" element={<ForgotPassword />} />
             <Route path="/home" element={<HomePage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/bcl" element={<BookClubListingPage />} />
           </Routes>
     </>
   );
