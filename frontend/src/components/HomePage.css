@@ -112,12 +112,17 @@
 }
 
 .card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 50vh;
     border: 0.5px solid #d9d7e1;
     border-radius: 8px;
     overflow: hidden;
     background-color: #eee;
-    transition: box-shadow 0.3s ease, box-shadow 0.3s ease;
+    transition: box-shadow 0.3s ease;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .card:hover {
@@ -127,19 +132,27 @@
 
 .card-img {
     width: 100%;
-    height: auto;
     aspect-ratio: 2/3;
     object-fit: cover;
     background-color: #ddd;
+    flex-shrink: 0;
 }
 
 .card-body {
-    padding: 5px;
+    flex-grow: 1;
+    padding: 5px 5px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
 }
 
 .book-title {
     font-size: 15px;
     font-weight: 600;
+    line-height: 1.2;
+    white-space: wrap;
 }
 
 .book-author {
@@ -148,10 +161,12 @@
 }
 
 .card-footer {
+    height: 20%;
     display: flex; 
     justify-content: center;
     align-items: center;
     gap: 12px;
+    padding: 0px;
 }
 
 .category-badge {

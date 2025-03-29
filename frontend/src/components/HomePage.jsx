@@ -17,7 +17,29 @@ export default function HomePage () {
         { id: 6, title: "Dune", author: "Frank Herbert", category: "SciFi", coverImage: bookCover },
         { id: 7, title: "The Hobbit", author: "J.R.R. Tolkien", category: "Fantasy", coverImage: bookCover },
         { id: 8, title: "Sapiens", author: "Yuval Noah Harari", category: "History", coverImage: bookCover },
-      ];
+        { id: 9, title: "1984", author: "George Orwell", category: "Dystopian", coverImage: bookCover },
+        { id: 10, title: "The Alchemist", author: "Paulo Coelho", category: "Philosophical", coverImage: bookCover },
+        { id: 11, title: "Pride and Prejudice", author: "Jane Austen", category: "Romance", coverImage: bookCover },
+        { id: 12, title: "To Kill a Mockingbird", author: "Harper Lee", category: "Classic", coverImage: bookCover },
+        { id: 13, title: "The Book Thief", author: "Markus Zusak", category: "Historical Fiction", coverImage: bookCover },
+        { id: 14, title: "The Power of Now", author: "Eckhart Tolle", category: "Spirituality", coverImage: bookCover },
+        { id: 15, title: "Thinking, Fast and Slow", author: "Daniel Kahneman", category: "Psychology", coverImage: bookCover },
+        { id: 16, title: "It Ends With Us", author: "Colleen Hoover", category: "Contemporary", coverImage: bookCover },
+        { id: 17, title: "The 5 AM Club", author: "Robin Sharma", category: "SelfHelp", coverImage: bookCover },
+        { id: 18, title: "The Seven Husbands of Evelyn Hugo", author: "Taylor Jenkins Reid", category: "Drama", coverImage: bookCover },
+        { id: 19, title: "Outliers", author: "Malcolm Gladwell", category: "NonFiction", coverImage: bookCover },
+        { id: 20, title: "The Subtle Art of Not Giving a F*ck", author: "Mark Manson", category: "SelfHelp", coverImage: bookCover },
+        { id: 21, title: "Harry Potter and the Philosopher's Stone", author: "J.K. Rowling", category: "Fantasy", coverImage: bookCover },
+        { id: 22, title: "Little Fires Everywhere", author: "Celeste Ng", category: "Fiction", coverImage: bookCover },
+        { id: 23, title: "Normal People", author: "Sally Rooney", category: "Contemporary", coverImage: bookCover },
+        { id: 24, title: "Girl, Wash Your Face", author: "Rachel Hollis", category: "Motivational", coverImage: bookCover },
+        { id: 25, title: "A Court of Thorns and Roses", author: "Sarah J. Maas", category: "Fantasy", coverImage: bookCover },
+        { id: 26, title: "Where the Crawdads Sing", author: "Delia Owens", category: "Mystery", coverImage: bookCover },
+        { id: 27, title: "Can't Hurt Me", author: "David Goggins", category: "Biography", coverImage: bookCover },
+        { id: 28, title: "Hunger Games", author: "Suzanne Collins", category: "Dystopian", coverImage: bookCover },
+        { id: 29, title: "The Four Agreements", author: "Don Miguel Ruiz", category: "Philosophy", coverImage: bookCover },
+        { id: 30, title: "How to Win Friends and Influence People", author: "Dale Carnegie", category: "SelfHelp", coverImage: bookCover },
+    ];
 
     const navigate = useNavigate();
 
