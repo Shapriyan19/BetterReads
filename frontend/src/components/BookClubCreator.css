@@ -1,0 +1,214 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background-color: #443329;
+    font-family: sans-serif;
+  }
+  .club-creator-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #443329;
+    padding: 40px;
+    box-sizing: border-box;
+  }
+  
+  .creator-card {
+    width: 700px;
+    max-width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 30px 40px;
+    background-color: #a98373;
+    border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+  }
+  
+  
+  .creator-container {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  .creator-box {
+    background-color: #91857f;
+    padding: 30px 40px;
+    border-radius: 14px;
+    max-width: 700px;
+    width: 100%;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+  }
+  
+  .creator-box h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #443329;
+  }
+  
+  .creator-dropdown {
+    background-color: #775591;
+    color: #cbbeb6;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  
+  .creator-dropdown:after {
+    content: '▼';
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .input-group {
+    margin-bottom: 20px;
+    width: 100%;
+    border: none;
+  }
+  
+  .input-group textarea,
+  .input-group input {
+    margin: 10px 0px;
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+    border-radius: 6px;
+    border: none;
+    background-color: #cbbeb6;
+    resize: vertical;
+  }
+  
+  
+  .input-group textarea {
+    resize: vertical;
+  }
+  
+  .category-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
+    border: none;
+  }
+  
+  .cat-tag {
+    display: inline-block;
+    padding: 8px 14px;
+    background-color: #cbbeb6;
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.3s ease;
+    margin: 4px;
+  }
+  .cat-tag.selected {
+    background-color: #775591;
+  }
+  
+  .inline-group {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    gap: 16px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+
+
+  
+  .inline-group > * {
+    flex: 1; /* gives equal width to all children */
+    min-width: 100px; /* allows wrapping on small screens */
+  }
+
+
+
+  .privacy-toggle {
+    width: 20%;
+    display: flex;
+    border-radius: 8px;
+    overflow: hidden;
+    height: 40px;
+  }
+  
+  .toggle-option {
+    flex: 1;
+    text-align: center;
+    line-height: 40px;
+    cursor: pointer;
+    background-color: #eee;
+    font-weight: bold;
+    color: #78716d;
+    transition: background-color 0.3s ease;
+  }
+  
+  .toggle-option.selected {
+    background-color: #775591;
+    color: white;
+  }
+.book-ids{
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    gap: 16px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+
+
+  
+  .book-ids > * {
+    flex: 1; /* gives equal width to all children */
+    min-width: 100px; /* allows wrapping on small screens */
+  }
+
+  .book-picker {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    border: none;
+    background-color: #cbbeb6;
+  }
+  
+  .book-picker input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: none;
+  }
+  
+  button[type="submit"] {
+    margin-top: 20px;
+    width: 100%;
+    padding: 12px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    font-size: 15px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  button[type="submit"]:hover {
+    background-color: #0056b3;
+  }
+  
+  .form-header-image {
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  
+  .form-header-image img {
+    max-width: 120px;
+    height: auto;
+    display: inline-block;
+  }

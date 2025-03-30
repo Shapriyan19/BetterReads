@@ -5,6 +5,8 @@ import ProfilePage from './components/ProfilePage';
 import ForgotPassword from './components/ForgotPassword';
 import HomePage from './components/HomePage';
 import BookClubListingPage from './components/BookClubListing';
+import BookClubCreator from './components/BookClubCreator';
+import BookClubDetails from './components/BookClubDetails';
 
 import './App.css';
 
@@ -23,6 +25,8 @@ function AppContent() {
             <Route path="/home" element={<HomePage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/bcl" element={<BookClubListingPage />} />
+            <Route path="/bookclub/create" element={<BookClubCreator />} />
+            <Route path="/bookclub/:id" element={<BookClubDetails />} />
           </Routes>
     </>
   );

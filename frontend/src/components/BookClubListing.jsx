@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useState,  useEffect } from 'react';
 import './BookClubListing.css';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const BookClubListing = () => {
+  const [joinedClubs, setJoinedClubs] = useState([]);
+  const [appliedClubs, setAppliedClubs] = useState([]);
+
   const navigate = useNavigate(); // Initialize useNavigate
 
   const bookClubs = [
@@ -29,14 +32,32 @@ const BookClubListing = () => {
     },
     // Add more book clubs as needed...
   ];
+  
+
+  const [previewClub, setPreviewClub] = useState(null);
+  const [clubDesc, setclubDesc] = useState(null);
 
   const handleBack = () => {
     navigate(-1); // Go back to the previous page
   };
 
+  const joinClub = (id) => {
+    setJoinedClubs((prev) => [...prev, id]);
+  };
+  
+  const applyToClub = (id) => {
+    setAppliedClubs((prev) => [...prev, id]);
+  };
+  
+
   return (
+    
     <div className="book-club-page">
+      
       <div className="book-club-listing">
+        <button className="create-button" onClick={() => navigate('/bookclub/create')}>
+          + Create a Club
+        </button>
         <button className="back-button" onClick={handleBack}>
           &lt; Back
         </button>
@@ -52,7 +73,18 @@ const BookClubListing = () => {
 
         <div className="book-clubs-grid">
           {bookClubs.map((club) => (
-            <div className="book-club-item" key={club.id}>
+           <div
+           key={club.id}
+           className={`book-club-item ${joinedClubs.includes(club.id) ? '' : 'clickable-unjoined'}`}
+           onClick={() => {
+             if (!joinedClubs.includes(club.id)) {
+               setPreviewClub(club); // open modal only if not joined
+             } else {
+               navigate(`/bookclub/${club.id}`);
+             }
+           }}
+         >
+         
               <div className="club-image"></div>
               <div className="club-details">
                 <h2>{club.name}</h2>
@@ -63,14 +95,30 @@ const BookClubListing = () => {
                     <span key={index} className="genre-tag">{tag}</span>
                   ))}
                 </div>
-                <button className="join-button">
-                  {club.name === 'Sci-Fi Explorers' ? 'Apply to Join' : 'Join'}
-                </button>
+                {joinedClubs.includes(club.id) ? (
+                  <span ></span>
+                  ): appliedClubs.includes(club.id) ? (
+                  <span className="applied-text">Applied...</span>
+                  ): ( <button className="join-button" onClick={(e) => { e.stopPropagation(); club.name === "Sci-Fi Explorers" ? applyToClub(club.id) : joinClub(club.id); }} >
+                    {club.name === "Sci-Fi Explorers" ? "Apply to Join" : "Join"}
+                  </button>
+                )}
               </div>
             </div>
           ))}
         </div>
       </div>
+      {previewClub && (
+  <div className="modal-overlay" onClick={() => setPreviewClub(null)}>
+    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      <h2>{previewClub.name}</h2>
+      <p>{previewClub.description}</p>
+      <p><strong>Genres:</strong> {previewClub.genre.join(', ')}</p>
+      <p><em>You must join this club to access full features.</em></p>
+      <button onClick={() => setPreviewClub(null)}>Close</button>
+    </div>
+  </div>
+)}
     </div>
   );
 };

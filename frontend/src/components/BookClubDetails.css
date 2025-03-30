@@ -1,0 +1,83 @@
+.club-details-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(20, 20, 20, 0.5); /* slightly darker overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .club-details-card {
+    background-color: #ab9688; /* soft cream background */
+    width: 80%;
+    max-width: 800px;
+    height: 80vh;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Tabs row */
+  .tabs {
+    display: flex;
+    justify-content: space-around;
+    border-bottom: 2px solid #cbbeb6;
+    margin-bottom: 20px;
+  }
+  
+  /* Individual tab */
+  .tab {
+    flex: 1;
+    text-align: center;
+    padding: 12px 0;
+    cursor: pointer;
+    font-weight: bold;
+    color: #775591;
+    background-color: #e8dcd3;
+    border-bottom: 3px solid transparent;
+    transition: background-color 0.3s, border-color 0.3s;
+  }
+  
+  /* Hover effect */
+  .tab:hover {
+    background-color: #d6c2b7;
+  }
+  
+  /* Active tab */
+  .tab.active {
+    background-color: #cbbeb6;
+    border-bottom: 3px solid #775591;
+    color: #443329;
+  }
+  
+  .tab-content {
+    padding: 10px 20px;
+    color: #443329;
+    flex-grow: 1;
+  }
+  
+  .tab-panel ul {
+    padding-left: 20px;
+  }
+  
+  .tab-panel li {
+    margin-bottom: 8px;
+  }
+  
+  /* Optional: smooth fade-in for panel content */
+  .tab-panel {
+    animation: fadeIn 0.3s ease;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  

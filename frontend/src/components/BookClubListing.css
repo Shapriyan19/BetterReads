@@ -94,7 +94,7 @@
     font-size: 0.8em;
 }
 
-.book-club-page .join-button {
+.join-button {
     background-color: #007bff;
     color: white;
     border: none;
@@ -103,3 +103,96 @@
     cursor: pointer;
     align-self: flex-start;
 }
+
+.book-club-page .book-club-listing {
+    position: relative;
+    font-family: sans-serif;
+    padding: 20px;
+    color: white;
+  }
+  
+
+.create-button {
+    position: absolute;
+  top: 20px;
+  right: 20px;
+  background-color: #775591;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  width: auto;
+  max-width: 200px;
+  white-space: nowrap;
+  transition: background-color 0.3s ease;
+}
+  
+.create-button:hover {
+    background-color: #684b81;
+}
+
+.book-club-item.clickable {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+  
+  .book-club-item.clickable:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 12px rgba(0,0,0,0.2);
+  }
+  .book-club-item.clickable-unjoined {
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .book-club-item.clickable-unjoined:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(119, 85, 145, 0.3); /* purple-ish glow */
+  }
+
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+  }
+  
+  .modal-content {
+    background-color: #f7f2ef;
+    padding: 30px 40px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    color: #443329;
+    text-align: left;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  }
+  .modal-content h2 {
+    margin-bottom: 10px;
+  }
+  
+  .modal-content p {
+    margin: 8px 0;
+  }
+  
+  .modal-content button {
+    margin-top: 20px;
+    padding: 10px 16px;
+    background-color: #775591;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .modal-content button:hover {
+    background-color: #684b81;
+  }
