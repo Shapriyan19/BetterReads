@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './BookClubDetails.css';
 import { useNavigate } from 'react-router-dom';
+import BookClubChat from './BookClubChat';
 
 const BookClubDetails = ({ isOwner = false }) => {
   const [activeTab, setActiveTab] = useState('details');
@@ -36,7 +37,7 @@ const BookClubDetails = ({ isOwner = false }) => {
         return (
           <div className="tab-panel">
             <h3>Club Chat</h3>
-            <p>(Chat UI placeholder)</p>
+            <BookClubChat />
           </div>
         );
       case 'settings':
