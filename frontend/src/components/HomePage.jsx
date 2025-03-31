@@ -5,8 +5,10 @@ import {Search, User } from "lucide-react";
 import singaporeMap from "../assets/SingaporeMapFrame.webp";
 import Rating from '@mui/material/Rating';
 import bookCover from "../assets/placeholder.jpg";
+import { useAuthStore } from "../store/useAuthStore";
 
 export default function HomePage () {
+    const { logout } = useAuthStore();
     const books = [
         { id: 1, title: "The Midnight Library", author: "Matt Haig", category: "Fiction", coverImage: bookCover },
         { id: 2, title: "Atomic Habits", author: "James Clear", category: "SelfHelp", coverImage: bookCover },
@@ -58,8 +60,13 @@ export default function HomePage () {
 
     const navigate = useNavigate();
 
-    const handleLogout = () => {
-        navigate('/');
+    const handleLogout = async () => {
+        try {
+            await logout();
+            navigate('/login');
+        } catch (error) {
+            console.error('Logout failed:', error);
+        }
     };
 
     const handleProfile = () => {

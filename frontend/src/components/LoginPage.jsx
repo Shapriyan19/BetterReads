@@ -2,33 +2,43 @@ import React, { useState } from "react";
 import "./LoginPage.css"; 
 import { Link, useNavigate } from "react-router-dom";
 import Logo from './BetterReadsWord';
+import { useAuthStore } from "../store/useAuthStore";
 
 const LoginPage = () => { 
-    const [username, setUsername] = useState(""); 
+    const [email, setEmail] = useState(""); 
     const [password, setPassword] = useState(""); 
     const [error, setError] = useState(""); 
-
+    const { login, isLoggingIn } = useAuthStore();
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => { 
+    const handleSubmit = async (e) => { 
         e.preventDefault(); 
 
-        if (!username || !password) {
+        if (!email || !password) {
             setError("Both fields are required.");
+            return;
+        }
+
+        // Basic email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            setError("Please enter a valid email address.");
             return;
         }
 
         setError(""); 
 
-        console.log("Logging in with:", { username, password }); 
-        navigate("/home");
+        try {
+            await login({ email, password });
+            navigate("/home");
+        } catch (error) {
+            setError(error.message || "Login failed. Please try again.");
+        }
     }
 
     return (
         <div className="login-layout">
-
             <div className="login-box"> 
-
                 <h2>Login</h2>
 
                 {/* Show error message if there is an error */}
@@ -36,28 +46,32 @@ const LoginPage = () => {
                 
                 <form onSubmit={handleSubmit}>
                     <div className="input-group">
-                        <label className = "labeltext">Username</label>
+                        <label className="labeltext">Email</label>
                         <input 
-                            type="text"
-                            placeholder="Enter your username" 
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)} 
+                            type="email"
+                            placeholder="Enter your email" 
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)} 
                             required 
+                            disabled={isLoggingIn}
                         />
                     </div>
 
                     <div className="input-group">
-                        <label className = "labeltext">Password</label>
+                        <label className="labeltext">Password</label>
                         <input 
                             type="password"
                             placeholder="Enter your password" 
                             value={password}
                             onChange={(e) => setPassword(e.target.value)} 
                             required 
+                            disabled={isLoggingIn}
                         />
                     </div>
 
-                    <button type="submit">Login</button>
+                    <button type="submit" disabled={isLoggingIn}>
+                        {isLoggingIn ? "Logging in..." : "Login"}
+                    </button>
 
                     {/* Sign Up & Forgot Password Links */}
                     <div>
@@ -67,10 +81,9 @@ const LoginPage = () => {
                 </form>
             </div>
 
-            <div className = "logo-box">
+            <div className="logo-box">
                 <Logo />
             </div>
-
         </div>
     );     
 };

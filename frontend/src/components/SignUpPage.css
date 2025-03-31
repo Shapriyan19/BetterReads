@@ -1,55 +1,154 @@
-/*ensuring full-page has brown background*/
-html, body{
+/* Basic reset and container styles */
+html, body {
     margin: 0;
     padding: 0;
     height: 100%;
     background-color: #443329;
-}
-
-/*ensuring everything inside fills the page
-  stack logo and login box vertically*/
-#root, .login-container {
+    font-family: Arial, sans-serif;
+  }
+  
+  .login-container {
     width: 100%;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    box-sizing: border-box;
+  }
+  
+  .login-box {
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 450px;
+    max-height: 95vh;
+    overflow-y: auto;
+  }
+  
+  .login-box h2 {
+    text-align: center;
+    margin: 0 0 10px 0;
+    color: #443329;
+    font-size: 1.3rem;
+  }
+  
+  .form-grid {
     display: flex;
     flex-direction: column;
-    justify-content: center; 
-    align-items: center;
-}
-
-
-/*wraps input and label*/
-.input-group {
-    margin-bottom: 15px;
+    gap: 8px;
+  }
+  
+  /* Input groups */
+  .input-group {
+    margin-bottom: 0;
     text-align: left;
-}
-
-/*bold labels*/
-.input-group label {
+  }
+  
+  .input-group label {
     display: block;
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-
-/*full-width input fields*/
-.input-group input {
-    width: 95%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-button {
-    margin-bottom: 10px;
+    font-weight: 500;
+    margin-bottom: 3px;
+    color: #443329;
+    font-size: 0.8rem;
+  }
+  
+  .input-group input {
     width: 100%;
-    padding: 10px;
+    padding: 6px 8px;
+    border: none;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 0.9rem;
+    background-color: #E6DEDD;
+  }
+  
+  /* Preferences grid */
+  .preferences-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 5px;
+    margin-top: 3px;
+  }
+  
+  .preference-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.8rem;
+    cursor: pointer;
+  }
+  
+  .preference-checkbox input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    margin: 0;
+    accent-color: #443329;
+  }
+  
+  /* Profile picture section */
+  .profile-upload {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 3px;
+  }
+  
+  .profile-preview {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: #E6DEDD;
+  }
+  
+  .profile-upload-btn {
+    display: inline-block;
+    padding: 5px 10px;
+    background-color: #E6DEDD;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: #443329;
+  }
+  
+  .profile-upload input[type="file"] {
+    display: none;
+  }
+  
+  /* Form submission and errors */
+  button {
+    margin: 10px 0 5px 0;
+    width: 100%;
+    padding: 8px;
     border: none;
     background-color: #007bff;
     color: white;
-    font-size: 16px;
-    border-radius: 5px;
+    font-size: 0.9rem;
+    border-radius: 4px;
     cursor: pointer;
-}
+  }
   
-button:hover {
-    background-color: #0056b3;
-}
+  .error-message {
+    color: #dc3545;
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 0.8rem;
+  }
+  
+  .login-link {
+    text-align: center;
+    display: block;
+    color: #007bff;
+    text-decoration: none;
+    margin-top: 3px;
+    font-size: 0.8rem;
+  }
+  
+  /* Make sure there's some space at the bottom */
+  form {
+    margin-bottom: 5px;
+  }
