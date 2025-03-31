@@ -84,25 +84,32 @@ export const recommendedBooks= async (req,res)=>{
 
         const preferences=user.preferences;
         
-        let books=[];
+        let booksMap = new Map(); // Use a Map to store unique books by key
+        
         for (let i=0;i<preferences.length;i++){
-            const preference_book=await fetch(`https://openlibrary.org/search.json?q=subject:${preferences[i]}&fields=key,title,author_name,first_publish_year,cover_i,subject,edition_count`).then(a=>a.json());
+            const preference_book=await fetch(`https://openlibrary.org/search.json?q=subject:${preferences[i]}&fields=key,title,author_name,first_publish_year,cover_i,subject,edition_count,isbn`).then(a=>a.json());
             if (preference_book["docs"]) {
                 for (let j = 0; j < Math.min(10, preference_book["docs"].length); j++) {
                     const book = preference_book["docs"][j];
-                    // Find the first subject that matches user's preferences
-                    const matchingSubject = book.subject?.find(subject => 
-                        preferences.some(pref => 
-                            subject.toLowerCase().includes(pref.toLowerCase())
-                        )
-                    );
-                    
-                    // If no matching subject found, use the first available subject or the current preference
-                    book.primary_subject = matchingSubject || book.subject?.[0] || preferences[i];
-                    books.push(book);
+                    // Only add the book if we haven't seen its key before
+                    if (!booksMap.has(book.key)) {
+                        // Find the first subject that matches user's preferences
+                        const matchingSubject = book.subject?.find(subject => 
+                            preferences.some(pref => 
+                                subject.toLowerCase().includes(pref.toLowerCase())
+                            )
+                        );
+                        
+                        // If no matching subject found, use the first available subject or the current preference
+                        book.primary_subject = matchingSubject || book.subject?.[0] || preferences[i];
+                        booksMap.set(book.key, book);
+                    }
                 }
             }
         }
+        
+        // Convert Map values back to array
+        const books = Array.from(booksMap.values());
         return res.status(200).json(books);
     }catch(error){
         console.log("error in recommendedBooks: ",error);
@@ -213,3 +220,26 @@ export const getAvailabilityInfo= async (req,res)=>{
         res.status(500).json({message:"Internal server error"});
     }
 }
+
+export const getBookDetails=async (req,res)=>{
+    try {
+        const {bookISBN} = req.body;
+        if (!bookISBN) {
+            return res.status(400).json({ message: "Book ISBN is required" });
+        }
+        
+        // First try to get book details using ISBN
+        let result = await fetch(`https://openlibrary.org/isbn/${bookISBN}.json`).then(a=>a.json());
+        
+        // If no result with ISBN, try to get work details
+        if (result.works && result.works[0]) {
+            const workDetails = await fetch(`https://openlibrary.org${result.works[0].key}.json`).then(a=>a.json());
+            result = { ...result, ...workDetails };
+        }
+        
+        return res.status(200).json(result);
+    } catch(error) {
+        console.log("error in getBookDetails: ",error);
+        res.status(500).json({message:"Internal server error"});
+    }
+};

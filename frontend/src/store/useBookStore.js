@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 export const useBookStore = create((set) => ({
     recommendedBooks: [],
     isLoading: false,
+    isLoadingDetails: false,
     error: null,
 
     getRecommendedBooks: async (email) => {
@@ -20,6 +21,21 @@ export const useBookStore = create((set) => ({
             throw error;
         } finally {
             set({ isLoading: false });
+        }
+    },
+
+    getBookDetails: async (isbn) => {
+        set({ isLoadingDetails: true, error: null });
+        try {
+            const res = await axiosInstance.post("/book/get-book-details", { bookISBN: isbn });
+            set({ isLoadingDetails: false });
+            return res.data;
+        } catch (error) {
+            console.error('Error fetching book details:', error);
+            set({ error: error.response?.data?.message || "Failed to fetch book details" });
+            toast.error(error.response?.data?.message || "Failed to fetch book details");
+            set({ isLoadingDetails: false });
+            throw error;
         }
     },
 

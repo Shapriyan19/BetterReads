@@ -11,7 +11,7 @@ import toast from "react-hot-toast";
 
 export default function HomePage () {
     const { logout, authUser } = useAuthStore();
-    const { recommendedBooks, getRecommendedBooks, isLoading } = useBookStore();
+    const { recommendedBooks, getRecommendedBooks, getBookDetails, isLoading, isLoadingDetails } = useBookStore();
     
     /* displaying availability */
     const [branches, setBranches] = useState([]);
@@ -90,8 +90,24 @@ export default function HomePage () {
         return matchesSearch && matchesCategory;
     });
 
-    const openModal = (book) => {
-        setSelectedBook(book);
+    const openModal = async (book) => {
+        try {
+            setSelectedBook(book);
+            const isbn = book.isbn?.[0] || book.isbn_13?.[0] || book.isbn_10?.[0];
+            if (isbn) {
+                const bookDetails = await getBookDetails(isbn);
+                setSelectedBook(prev => ({
+                    ...prev,
+                    ...bookDetails
+                }));
+            } else {
+                console.log('No ISBN available for this book');
+                toast.error('Book details not available - ISBN missing');
+            }
+        } catch (error) {
+            console.error('Error fetching book details:', error);
+            toast.error('Failed to load book details');
+        }
     };
 
     const closeModal = () => {
@@ -170,7 +186,7 @@ export default function HomePage () {
                 ) : (
                     <div className="grid-container">
                         {filteredBooks.map((book) => {
-                            console.log('Rendering book:', book.title, 'subjects:', book.subject);
+                            // console.log('Rendering book:', book.title, 'subjects:', book.subject);
                             return (
                                 <div key={book.key} className="card">
                                     <img 
@@ -212,66 +228,76 @@ export default function HomePage () {
                     <div className="modal" onClick={(e) => e.stopPropagation()}>
                         <span className="close-icon" onClick={closeModal}>&times;</span>
                         <div className="modal-columns">
-                            <div className="modal-left">
-                                <img 
-                                    src={selectedBook.cover_i ? `https://covers.openlibrary.org/b/id/${selectedBook.cover_i}-L.jpg` : bookCover} 
-                                    alt={selectedBook.title} 
-                                    className="details-img" 
-                                />
-                                <div className="library-dropdown">
-                                    <select
-                                        value={selectedBranch}
-                                        onChange={(e) => setSelectedBranch(e.target.value)}
-                                        className="branch-select"
-                                    >
-                                        <option value="">View Availability</option>
-                                        {branches.map((branch) => {
-                                            const match = availability.find((a) => a.BranchName === branch.Name);
-                                            const count = match?.AvailableCount ?? 0;
-                                            return (
-                                                <option key={branch.ID} value={branch.ID}>
-                                                    {branch.Name} — {count} available
-                                                </option>
-                                            );
-                                        })}
-                                    </select>
-                                    <button className="view-map-button" onClick={() => setMapModalOpen(true)}>
-                                        View Locations
-                                    </button>
+                            {isLoadingDetails ? (
+                                <div className="modal-content loading-container">
+                                    <Loader2 className="animate-spin" size={24} />
+                                    <p>Loading book details...</p>
                                 </div>
-                            </div>
-                            
-                            <div className="modal-content">
-                                <h2>{selectedBook.title}</h2>
-                                <p><strong>Author:</strong> {selectedBook.author_name?.[0] || 'Unknown Author'}</p>
-                                <p><strong>First Published:</strong> {selectedBook.first_publish_date || 'Unknown'}</p>
-                                <p><strong>Categories:</strong> {selectedBook.subject?.join(', ') || 'Uncategorized'}</p>
-                                
-                                {rating && (
-                                    <div className="total-book-rating">
-                                        <Rating name="read-only" value={rating} readOnly />
-                                        <span className="rating-text">{rating} out of 5</span>
+                            ) : (
+                                <>
+                                    <div className="modal-left">
+                                        <img 
+                                            src={selectedBook.cover_i ? `https://covers.openlibrary.org/b/id/${selectedBook.cover_i}-L.jpg` : bookCover} 
+                                            alt={selectedBook.title} 
+                                            className="details-img" 
+                                        />
+                                        <div className="library-dropdown">
+                                            <select
+                                                value={selectedBranch}
+                                                onChange={(e) => setSelectedBranch(e.target.value)}
+                                                className="branch-select"
+                                            >
+                                                <option value="">View Availability</option>
+                                                {branches.map((branch) => {
+                                                    const match = availability.find((a) => a.BranchName === branch.Name);
+                                                    const count = match?.AvailableCount ?? 0;
+                                                    return (
+                                                        <option key={branch.ID} value={branch.ID}>
+                                                            {branch.Name} — {count} available
+                                                        </option>
+                                                    );
+                                                })}
+                                            </select>
+                                            <button className="view-map-button" onClick={() => setMapModalOpen(true)}>
+                                                View Locations
+                                            </button>
+                                        </div>
                                     </div>
-                                )}
-                                
-                                <p><strong>Description:</strong></p>
-                                <p>{selectedBook.description || 'No description available.'}</p>
-                                
-                                <div className="rating-container">
-                                    <h3 className="modal-label"><strong>Give a Rating:</strong></h3>
-                                    <Rating
-                                        name="simple-controlled"
-                                        value={rating}
-                                        onChange={(event, newValue) => {
-                                            setRating(newValue);
-                                        }}
-                                    />
-                                </div>
-                                
-                                <div className="review-container">
-                                    <h3 className="modal-label"><strong>Make a Review:</strong></h3>
-                                </div>
-                            </div>
+                                    
+                                    <div className="modal-content">
+                                        <h2>{selectedBook.title}</h2>
+                                        <p><strong>Author:</strong> {selectedBook.author_name?.[0] || selectedBook.authors?.[0]?.name || 'Unknown Author'}</p>
+                                        <p><strong>First Published:</strong> {selectedBook.first_publish_year || selectedBook.first_publish_date || 'Unknown'}</p>
+                                        <p><strong>Categories:</strong> {selectedBook.subject?.join(', ') || selectedBook.subjects?.join(', ') || 'Uncategorized'}</p>
+                                        <p><strong>ISBN:</strong> {selectedBook.isbn?.[0] || selectedBook.isbn_13?.[0] || selectedBook.isbn_10?.[0] || 'Not available'}</p>
+                                        
+                                        {rating && (
+                                            <div className="total-book-rating">
+                                                <Rating name="read-only" value={rating} readOnly />
+                                                <span className="rating-text">{rating} out of 5</span>
+                                            </div>
+                                        )}
+                                        
+                                        <p><strong>Description:</strong></p>
+                                        <p>{selectedBook.description?.value || selectedBook.description || 'No description available.'}</p>
+                                        
+                                        <div className="rating-container">
+                                            <h3 className="modal-label"><strong>Give a Rating:</strong></h3>
+                                            <Rating
+                                                name="simple-controlled"
+                                                value={rating}
+                                                onChange={(event, newValue) => {
+                                                    setRating(newValue);
+                                                }}
+                                            />
+                                        </div>
+                                        
+                                        <div className="review-container">
+                                            <h3 className="modal-label"><strong>Make a Review:</strong></h3>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>
