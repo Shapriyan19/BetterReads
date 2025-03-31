@@ -268,8 +268,9 @@
     padding: 20px;
     border-radius: 8px;
     display: flex;
-    justify-content: flex-start;
-    align-items: flex-start;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     gap: 50px;
     overflow: auto;
     text-align: left;
@@ -284,33 +285,34 @@
     transform: scale(1);
   }
 
-  .modal-columns {
+.modal-columns {
     display: flex;
     flex-direction: row;
     gap: 40px;
-  }
+    width: 100%;
+}
   
-  .modal-left {
+.modal-left {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 16px;
     max-width: 200px;
-  }
+}
   
-  .library-dropdown {
+.library-dropdown {
     display: flex;
     flex-direction: column;
     gap: 8px;
-  }
+}
   
-  .branch-select {
+.branch-select {
     padding: 6px 12px;
     border: 1px solid #ccc;
     border-radius: 4px;
-  }
+}
   
-  .view-map-button {
+.view-map-button {
     padding: 6px 12px;
     font-size: 12px;
     background-color: #775591;
@@ -318,7 +320,7 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
-  }
+}
 
 .close-icon {
     position: absolute;
@@ -401,4 +403,28 @@
     to {
         transform: rotate(360deg);
     }
+}
+
+.modal-content.loading-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+    width: 100%;
+    gap: 16px;
+    text-align: center;
+    padding: 40px;
+}
+
+.modal-content.loading-container p {
+    color: #666;
+    font-size: 14px;
+    margin: 0;
+}
+
+.modal-content.loading-container .animate-spin {
+    color: #775591;
+    width: 32px;
+    height: 32px;
 }
