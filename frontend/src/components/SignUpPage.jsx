@@ -128,16 +128,41 @@ const SignUpPage = () => {
     };
 
     return (
-        <div className="login-container"> 
-            <div className="login-box"> 
-                <h2>Sign Up</h2>
-                {error && <p className="error-message">{error}</p>} 
+        <div className="signup-container">
+            <div className="signup-box">
+                <h2 className="signup-title">Sign Up</h2>
+                {error && <p className="error-message">{error}</p>}
                 
-                <form onSubmit={handleSubmit}>
-                    <div className="form-grid">
-                        <div className="input-group">
-                            <label>First Name</label>
+                <form onSubmit={handleSubmit} className="signup-form">
+                    <div className="form-row">
+                        <div className="form-group full-width">
+                            <label className="form-label">Profile Picture</label>
+                            <div className="profile-section">
+                                <img 
+                                    src={previewUrl || '/default-avatar.png'} 
+                                    alt="Profile preview" 
+                                    className="profile-preview"
+                                />
+                                <label className="upload-btn">
+                                    {formData.profilePic ? 'Change Picture' : 'Upload Picture'}
+                                    <input
+                                        type="file"
+                                        ref={fileInputRef}
+                                        accept="image/*"
+                                        onChange={handleProfilePicChange}
+                                        disabled={isSigningUp}
+                                        style={{ display: 'none' }}
+                                    />
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="form-row">
+                        <div className="form-group">
+                            <label className="form-label">First Name</label>
                             <input 
+                                className="form-input"
                                 type="text"
                                 name="firstName"
                                 placeholder="First name"
@@ -148,9 +173,10 @@ const SignUpPage = () => {
                             />
                         </div>
 
-                        <div className="input-group">
-                            <label>Last Name</label>
+                        <div className="form-group">
+                            <label className="form-label">Last Name</label>
                             <input 
+                                className="form-input"
                                 type="text"
                                 name="lastName"
                                 placeholder="Last name"
@@ -160,10 +186,13 @@ const SignUpPage = () => {
                                 disabled={isSigningUp}
                             />
                         </div>
+                    </div>
 
-                        <div className="input-group">
-                            <label>Email</label>
+                    <div className="form-row">
+                        <div className="form-group">
+                            <label className="form-label">Email</label>
                             <input 
+                                className="form-input"
                                 type="email"
                                 name="email"
                                 placeholder="Email address"
@@ -174,9 +203,10 @@ const SignUpPage = () => {
                             />
                         </div>
 
-                        <div className="input-group">
-                            <label>Location</label>
+                        <div className="form-group">
+                            <label className="form-label">Location</label>
                             <input 
+                                className="form-input"
                                 type="text"
                                 name="location"
                                 placeholder="Your location"
@@ -186,10 +216,13 @@ const SignUpPage = () => {
                                 disabled={isSigningUp}
                             />
                         </div>
+                    </div>
 
-                        <div className="input-group">
-                            <label>Password</label>
+                    <div className="form-row">
+                        <div className="form-group">
+                            <label className="form-label">Password</label>
                             <input 
+                                className="form-input"
                                 type="password"
                                 name="password"
                                 placeholder="Min 8 characters"
@@ -200,9 +233,10 @@ const SignUpPage = () => {
                             />
                         </div>
 
-                        <div className="input-group">
-                            <label>Confirm Password</label>
+                        <div className="form-group">
+                            <label className="form-label">Confirm Password</label>
                             <input 
+                                className="form-input"
                                 type="password"
                                 name="confirmPassword"
                                 placeholder="Confirm password"
@@ -212,35 +246,17 @@ const SignUpPage = () => {
                                 disabled={isSigningUp}
                             />
                         </div>
+                    </div>
 
-                        <div className="input-group">
-                            <label>Profile Picture</label>
-                            <div className="profile-upload">
-                                <img 
-                                    src={previewUrl || '/default-avatar.png'} 
-                                    alt="Profile preview" 
-                                    className="profile-preview"
-                                />
-                                <label className="profile-upload-btn">
-                                    {formData.profilePic ? 'Change Picture' : 'Upload Picture'}
-                                    <input
-                                        type="file"
-                                        ref={fileInputRef}
-                                        accept="image/*"
-                                        onChange={handleProfilePicChange}
-                                        disabled={isSigningUp}
-                                    />
-                                </label>
-                            </div>
-                        </div>
-
-                        <div className="input-group">
-                            <label>Reading Preferences (Select at least one)</label>
-                            <div className="preferences-grid">
+                    <div className="form-row">
+                        <div className="form-group full-width">
+                            <label className="form-label">Reading Preferences (Select at least one)</label>
+                            <div className="preferences-section">
                                 {["Fiction", "Non-Fiction", "Mystery", "Romance", "Science Fiction", "Fantasy", "Biography", "History"].map((pref) => (
-                                    <label key={pref} className="preference-checkbox">
+                                    <label key={pref} className="preference-item">
                                         <input
                                             type="checkbox"
+                                            className="preference-checkbox"
                                             value={pref}
                                             checked={formData.preferences.includes(pref)}
                                             onChange={handlePreferenceChange}
@@ -251,12 +267,12 @@ const SignUpPage = () => {
                                 ))}
                             </div>
                         </div>
-
-                        <button type="submit" disabled={isSigningUp}>
-                            {isSigningUp ? "Signing up..." : "Sign Up"}
-                        </button>
-                        <Link to="/login" className="login-link">Already have an account? Log In</Link>
                     </div>
+
+                    <button type="submit" className="submit-btn" disabled={isSigningUp}>
+                        {isSigningUp ? "Signing up..." : "Sign Up"}
+                    </button>
+                    <Link to="/login" className="login-link">Already have an account? Log In</Link>
                 </form>
             </div>
         </div>

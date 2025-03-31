@@ -1,154 +1,217 @@
-/* Basic reset and container styles */
-html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    background-color: #443329;
-    font-family: Arial, sans-serif;
-  }
-  
-  .login-container {
-    width: 100%;
+/* Base styles */
+.signup-container {
     min-height: 100vh;
     display: flex;
-    justify-content: center;
     align-items: center;
-    padding: 10px;
-    box-sizing: border-box;
-  }
-  
-  .login-box {
-    background-color: white;
-    padding: 15px;
+    justify-content: center;
+    padding: 5px;
+    background-color: #443329;
+}
+
+.signup-box {
+    background: white;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    padding: 12px 20px;
     width: 100%;
-    max-width: 450px;
-    max-height: 95vh;
-    overflow-y: auto;
-  }
-  
-  .login-box h2 {
+    max-width: 700px;
+}
+
+.signup-title {
+    font-size: 1.2rem;
+    color: #333;
+    margin-bottom: 8px;
     text-align: center;
-    margin: 0 0 10px 0;
-    color: #443329;
-    font-size: 1.3rem;
-  }
-  
-  .form-grid {
+}
+
+/* Form styles */
+.signup-form {
     display: flex;
     flex-direction: column;
     gap: 8px;
-  }
-  
-  /* Input groups */
-  .input-group {
-    margin-bottom: 0;
-    text-align: left;
-  }
-  
-  .input-group label {
-    display: block;
-    font-weight: 500;
-    margin-bottom: 3px;
-    color: #443329;
-    font-size: 0.8rem;
-  }
-  
-  .input-group input {
-    width: 100%;
-    padding: 6px 8px;
-    border: none;
-    border-radius: 4px;
-    box-sizing: border-box;
-    font-size: 0.9rem;
-    background-color: #E6DEDD;
-  }
-  
-  /* Preferences grid */
-  .preferences-grid {
+}
+
+.form-row {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 5px;
-    margin-top: 3px;
-  }
-  
-  .preference-checkbox {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.form-label {
+    font-size: 0.875rem;
+    color: #4b5563;
+}
+
+.form-input {
+    padding: 4px 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    background-color: #f3f4f6;
+    width: 100%;
+    height: 28px;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    background-color: white;
+}
+
+.form-input:disabled {
+    background-color: #f3f4f6;
+    cursor: not-allowed;
+}
+
+/* Profile picture styles */
+.profile-section {
     display: flex;
     align-items: center;
-    gap: 5px;
-    font-size: 0.8rem;
-    cursor: pointer;
-  }
-  
-  .preference-checkbox input[type="checkbox"] {
-    width: 14px;
-    height: 14px;
-    margin: 0;
-    accent-color: #443329;
-  }
-  
-  /* Profile picture section */
-  .profile-upload {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 3px;
-  }
-  
-  .profile-preview {
-    width: 45px;
-    height: 45px;
+    gap: 12px;
+    justify-content: center;
+    padding: 4px 0;
+}
+
+.profile-preview {
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     object-fit: cover;
-    background-color: #E6DEDD;
-  }
-  
-  .profile-upload-btn {
-    display: inline-block;
-    padding: 5px 10px;
-    background-color: #E6DEDD;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.8rem;
-    color: #443329;
-  }
-  
-  .profile-upload input[type="file"] {
-    display: none;
-  }
-  
-  /* Form submission and errors */
-  button {
-    margin: 10px 0 5px 0;
-    width: 100%;
-    padding: 8px;
-    border: none;
-    background-color: #007bff;
+    border: 2px solid #d1d5db;
+}
+
+.upload-btn {
+    background-color: #3b82f6;
     color: white;
-    font-size: 0.9rem;
+    padding: 6px 12px;
     border-radius: 4px;
+    font-size: 0.875rem;
     cursor: pointer;
-  }
-  
-  .error-message {
-    color: #dc3545;
+    display: inline-block;
+    transition: background-color 0.2s;
+}
+
+.upload-btn:hover {
+    background-color: #2563eb;
+}
+
+.upload-btn:disabled {
+    background-color: #93c5fd;
+    cursor: not-allowed;
+}
+
+/* Preferences styles */
+.preferences-section {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    padding: 6px;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    background-color: #f3f4f6;
+}
+
+.preference-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    color: #4b5563;
+}
+
+.preference-checkbox {
+    width: 12px;
+    height: 12px;
+}
+
+.preference-checkbox:checked {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+}
+
+/* Button styles */
+.submit-btn {
+    background-color: #3b82f6;
+    color: white;
+    padding: 6px;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    margin-top: 6px;
+    height: 32px;
+    transition: background-color 0.2s;
+}
+
+.submit-btn:hover {
+    background-color: #2563eb;
+}
+
+.submit-btn:disabled {
+    background-color: #93c5fd;
+    cursor: not-allowed;
+}
+
+/* Link styles */
+.login-link {
     text-align: center;
-    margin-bottom: 10px;
-    font-size: 0.8rem;
-  }
-  
-  .login-link {
-    text-align: center;
-    display: block;
-    color: #007bff;
+    color: #4b5563;
+    font-size: 0.875rem;
     text-decoration: none;
-    margin-top: 3px;
-    font-size: 0.8rem;
-  }
-  
-  /* Make sure there's some space at the bottom */
-  form {
-    margin-bottom: 5px;
-  }
+    display: block;
+    margin-top: 6px;
+}
+
+.login-link:hover {
+    color: #3b82f6;
+}
+
+/* Error message */
+.error-message {
+    color: #dc2626;
+    text-align: center;
+    font-size: 0.875rem;
+    margin-bottom: 8px;
+}
+
+/* Loading spinner */
+.loading-spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid #ffffff;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 6px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Full width form groups */
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+@media (max-width: 640px) {
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    
+    .preferences-section {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .signup-box {
+        padding: 10px;
+    }
+}
