@@ -1,6 +1,6 @@
 .home-container {
     min-height: 100vh;
-    background-color: #c97272;
+    background-color: #F4F1F9;
     display: flex;
     flex-direction: column;
     padding: 10px;
@@ -270,14 +270,15 @@
     border-radius: 8px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
-    gap: 50px;
+    gap: 20px;
     text-align: left;
     opacity: 0;
     transform: scale(0.40);
     transition: opacity 0.3s ease, transform 0.5s ease;
     z-index: 1000;
+    overflow: hidden;
 }
 
 .modal.show {
@@ -294,6 +295,7 @@
     max-height: none;
     background-color: #fff;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    justify-content: center;
 }
 
 .modal-columns {
@@ -301,6 +303,8 @@
     flex-direction: row;
     gap: 40px;
     width: 100%;
+    height: 100%;
+    overflow: hidden;
 }
   
 .modal-left {
@@ -309,6 +313,7 @@
     align-items: flex-start;
     gap: 16px;
     max-width: 200px;
+    flex-shrink: 0;
 }
   
 .library-dropdown {
@@ -368,6 +373,40 @@
 
 .modal-label {
     font-size: 14px;
+}
+
+.modal-content {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 20px;
+    max-height: 70vh;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+}
+
+.modal-content p {
+    margin-bottom: 16px;
+}
+
+/* Custom scrollbar for modal content */
+.modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: #775591;
+    border-radius: 4px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background: #5d4372;
 }
 
 @media (max-width: 600px) {
