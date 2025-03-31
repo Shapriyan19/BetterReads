@@ -225,7 +225,7 @@ export default function HomePage () {
 
             {selectedBook && (
                 <div className="modal-overlay" onClick={closeModal}>
-                    <div className="modal" onClick={(e) => e.stopPropagation()}>
+                    <div className={`modal ${isLoadingDetails ? 'loading' : ''}`} onClick={(e) => e.stopPropagation()}>
                         <span className="close-icon" onClick={closeModal}>&times;</span>
                         {isLoadingDetails ? (
                             <div className="modal-content loading-container">
