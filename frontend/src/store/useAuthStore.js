@@ -90,4 +90,40 @@ export const useAuthStore = create((set,get)=>({
             throw error;
         }
     },
+
+    sendForgotPasswordPin: async (email) => {
+        try {
+            const res = await axiosInstance.post("/auth/forgot-password/send-pin", { email });
+            return res.data;
+        } catch (error) {
+            console.error('Error sending forgot password PIN:', error);
+            throw error;
+        }
+    },
+
+    verifyForgotPasswordPin: async (email, forgotPasswordPin) => {
+        try {
+            const res = await axiosInstance.post("/auth/forgot-password/verify-pin", { 
+                email,
+                forgotPasswordPin 
+            });
+            return res.data;
+        } catch (error) {
+            console.error('Error verifying forgot password PIN:', error);
+            throw error;
+        }
+    },
+
+    updatePassword: async (email, newPassword) => {
+        try {
+            const res = await axiosInstance.post("/auth/forgot-password/update", { 
+                email,
+                newPassword 
+            });
+            return res.data;
+        } catch (error) {
+            console.error('Error updating password:', error);
+            throw error;
+        }
+    },
 }));

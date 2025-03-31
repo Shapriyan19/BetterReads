@@ -197,7 +197,7 @@ export const checkAuth = (req,res)=>{
     }    
 };
 
-export const sendForgotPasswordPin = async(req,res,next)=>{
+export const sendForgotPasswordPin = async(req,res)=>{
     try{
         const {email}=req.body;
         if(!email){
@@ -221,24 +221,26 @@ export const sendForgotPasswordPin = async(req,res,next)=>{
                        <p>Use the following PIN to reset your password: <strong>${forgot_password_pin}</strong></p>
                        <p>If you didn't request this, please ignore this email.</p>`
             });
+            res.status(200).json({ message: "PIN sent successfully" });
         }catch(error){
             console.log("Error in sending mail",error.message);
             return res.status(500).json({ message: "Failed to send email. Please try again." });
         }
-
-        req.body.user=user;
-        next();
     }catch(error){
         console.log("Error in sendForgotPasswordPin controller", error.message);
         res.status(500).json({ message: "Internal Server Error" });
     }
 }
 
-export const forgotPassword = async (req,res,next)=>{
+export const verifyForgotPasswordPin = async (req,res)=>{
     try {
-        const {forgotPasswordPin}=req.body;
-        const user=req.body.user;
+        const {email, forgotPasswordPin}=req.body;
+        const user=await User.findOne({email});
         
+        if(!user){
+            return res.status(400).json({message: "User not found"});
+        }
+
         if(!forgotPasswordPin){
             return res.status(400).json({message: "Forgot Password Pin is required to reset password. Please Check you email."})
         }
@@ -247,8 +249,7 @@ export const forgotPassword = async (req,res,next)=>{
             return res.status(400).json({message:"Invalid PIN. Please try again."});
         }
 
-        req.body.user=user;
-        next();
+        res.status(200).json({ message: "PIN verified successfully" });
     }catch(error){
         console.log("Error in forgotPassword controller", error.message);
         res.status(500).json({ message: "Internal Server Error" });
@@ -257,8 +258,12 @@ export const forgotPassword = async (req,res,next)=>{
 
 export const updatePassword = async (req,res)=>{
     try{
-        const {newPassword} = req.body;
-        const userId=req.body.user._id;
+        const {email, newPassword} = req.body;
+        const user=await User.findOne({email});
+
+        if (!user) {
+            return res.status(400).json({ message: "User not found" });
+        }
 
         if (!newPassword) {
             return res.status(400).json({ message: "New Password is required" });
@@ -273,27 +278,21 @@ export const updatePassword = async (req,res)=>{
         if (passwordSecurity==="Too weak" || passwordSecurity==="Weak"){
             return res.status(400).json({message: "Your password must include atleast 1 uppercase, 1 lowercase character, a number and a symbol"});
         }
+
         //hashing
         const salt = await bcrypt.genSalt(10);
         const hashedPassword=await bcrypt.hash(newPassword,salt);
-
-        if(!newPassword){
-            return res.status(400).json({message: "New Password is required"});
-        }
-
-        if(!userId){
-            return res.status(400).json({message:"User not found"});
-        }
         const forgot_password_pin=pingenertation();
+
         const updateUser=await User.findByIdAndUpdate(
-            userId,
+            user._id,
             {password: hashedPassword,
             forgotPasswordPin: forgot_password_pin,
             },
             {new: true} //sends updated user
         );
 
-        res.status(200).json(updateUser);
+        res.status(200).json({ message: "Password updated successfully" });
     }catch(error){
         console.log("Error in updatePassword controller", error.message);
         res.status(500).json({ message: "Internal Server Error" });
