@@ -86,10 +86,20 @@ export const recommendedBooks= async (req,res)=>{
         
         let books=[];
         for (let i=0;i<preferences.length;i++){
-            const preference_book=await fetch(`https://openlibrary.org/search.json?q=subject:${preferences[i]}`).then(a=>a.json());
+            const preference_book=await fetch(`https://openlibrary.org/search.json?q=subject:${preferences[i]}&fields=key,title,author_name,first_publish_year,cover_i,subject,edition_count`).then(a=>a.json());
             if (preference_book["docs"]) {
                 for (let j = 0; j < Math.min(10, preference_book["docs"].length); j++) {
-                    books.push(preference_book["docs"][j]);
+                    const book = preference_book["docs"][j];
+                    // Find the first subject that matches user's preferences
+                    const matchingSubject = book.subject?.find(subject => 
+                        preferences.some(pref => 
+                            subject.toLowerCase().includes(pref.toLowerCase())
+                        )
+                    );
+                    
+                    // If no matching subject found, use the first available subject or the current preference
+                    book.primary_subject = matchingSubject || book.subject?.[0] || preferences[i];
+                    books.push(book);
                 }
             }
         }

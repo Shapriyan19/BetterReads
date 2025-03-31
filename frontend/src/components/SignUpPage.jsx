@@ -297,7 +297,7 @@ const SignUpPage = () => {
                         <div className="form-group full-width">
                             <label className="form-label">Reading Preferences (Select at least one)</label>
                             <div className="preferences-section">
-                                {["Fiction", "Non-Fiction", "Mystery", "Romance", "Science Fiction", "Fantasy", "Biography", "History"].map((pref) => (
+                                {["Fantasy", "Horror", "Thriller", "Romance", "Science Fiction", "Historical Fiction", "Computer Science", "Baby Books"].map((pref) => (
                                     <label key={pref} className="preference-item">
                                         <input
                                             type="checkbox"
