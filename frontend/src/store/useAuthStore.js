@@ -7,14 +7,11 @@ export const useAuthStore = create((set,get)=>({
     isSigningUp: false,
     isLoggingIn: false,
     isUpdatingProfile: false,
-
     isCheckingAuth: true,
 
     checkAuth: async () => {
       try {
-        console.log("Hello World");
         const res = await axiosInstance.get("/auth/check");
-        console.log("Hiii");
         set({ authUser: res.data });
       } catch (error) {
         console.log("Error in checkAuth:", error);
@@ -24,49 +21,73 @@ export const useAuthStore = create((set,get)=>({
       }
     },
 
+    // In useAuthStore.js, update the signup function
     signup: async (data) => {
       set({ isSigningUp: true });
       try {
-          const res = await axiosInstance.post("/auth/signup", data);
+          // Convert FormData to a more readable format for logging
+          const formDataObject = {};
+          for (let [key, value] of data.entries()) {
+              // Handle array-like keys (e.g., 'preferences[]')
+              if (key.endsWith('[]')) {
+                  const baseKey = key.slice(0, -2);
+                  if (!formDataObject[baseKey]) {
+                      formDataObject[baseKey] = [];
+                  }
+                  formDataObject[baseKey].push(value);
+              } else {
+                  formDataObject[key] = value;
+              }
+          }
+          console.log("Sending signup data:", formDataObject);
           
-          console.log("Signup response:", res); // Log entire response
+          const res = await axiosInstance.post("/auth/signup", data, {
+              headers: {
+                  'Content-Type': 'multipart/form-data'
+              }
+          });
           
           if (!res || !res.data) {
               throw new Error("Invalid response from server");
           }
-  
+
           set({ authUser: res.data });
-          console.log("AuthUser stored:", res.data); // Log stored data
-          console.log("SignUp successful")
           toast.success("Account created successfully");
+          return res.data;
       } catch (error) {
-          console.error("Error in signUp(useAuthStore):", error);
-          toast.error(error?.response?.data?.message || "Signup failed");
+          console.error("Signup error details:", {
+              message: error.response?.data?.message || error.message,
+              status: error.response?.status,
+              data: error.response?.data
+          });
+          throw error;
       } finally {
           set({ isSigningUp: false });
       }
-  },  
+    },
 
     login: async (data) => {
         set({ isLoggingIn: true });
         try {
-          const res = await axiosInstance.post("/auth/login", data);
-          set({ authUser: res.data });
-          toast.success("Logged in successfully");
+            const res = await axiosInstance.post("/auth/login", data);
+            set({ authUser: res.data });
+            toast.success("Logged in successfully");
         } catch (error) {
-          toast.error(error.response.data.message);
+            toast.error(error.response?.data?.message || "Login failed");
+            throw error;
         } finally {
-          set({ isLoggingIn: false });
+            set({ isLoggingIn: false });
         }
-      },
+    },
 
     logout: async () => {
         try {
-          await axiosInstance.post("/auth/logout");
-          set({ authUser: null });
-          toast.success("Logged out successfully");
+            await axiosInstance.post("/auth/logout");
+            set({ authUser: null });
+            toast.success("Logged out successfully");
         } catch (error) {
-          toast.error(error.response.data.message);
+            toast.error(error.response?.data?.message || "Logout failed");
+            throw error;
         }
     },
 }));

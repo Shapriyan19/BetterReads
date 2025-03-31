@@ -58,6 +58,7 @@ const SignUpPage = () => {
         }));
     };
 
+    // In SignUpPage.jsx, update the validateForm function
     const validateForm = () => {
         const { firstName, lastName, email, password, confirmPassword, location, preferences } = formData;
 
@@ -73,9 +74,19 @@ const SignUpPage = () => {
             return false;
         }
 
-        // Password validation (8+ characters)
+        // Password validation - match backend requirements
+        const hasUppercase = /[A-Z]/.test(password);
+        const hasLowercase = /[a-z]/.test(password);
+        const hasNumber = /[0-9]/.test(password);
+        const hasSymbol = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+        
         if (password.length < 8) {
             setError("Password must be at least 8 characters long.");
+            return false;
+        }
+        
+        if (!(hasUppercase && hasLowercase && hasNumber && hasSymbol)) {
+            setError("Password must include at least 1 uppercase letter, 1 lowercase letter, a number, and a symbol.");
             return false;
         }
 
@@ -94,6 +105,7 @@ const SignUpPage = () => {
         return true;
     };
 
+    // In handleSubmit function in SignUpPage.jsx
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
@@ -106,13 +118,16 @@ const SignUpPage = () => {
             const { confirmPassword, ...signupData } = formData;
             const formDataToSend = new FormData();
             
-            // Append all text fields
-            Object.keys(signupData).forEach(key => {
-                if (key === 'preferences') {
-                    formDataToSend.append(key, JSON.stringify(signupData[key]));
-                } else if (key !== 'profilePic') {
-                    formDataToSend.append(key, signupData[key]);
-                }
+            // Append all fields directly
+            formDataToSend.append('firstName', signupData.firstName);
+            formDataToSend.append('lastName', signupData.lastName);
+            formDataToSend.append('email', signupData.email);
+            formDataToSend.append('password', signupData.password);
+            formDataToSend.append('location', signupData.location);
+            
+            // Append each preference as a separate item in the array instead of stringifying
+            signupData.preferences.forEach(pref => {
+                formDataToSend.append('preferences[]', pref);
             });
             
             // Append profile picture if exists
@@ -120,10 +135,24 @@ const SignUpPage = () => {
                 formDataToSend.append('profilePic', signupData.profilePic);
             }
 
-            await signup(formDataToSend);
+            console.log('Form Data being sent:', {
+                firstName: signupData.firstName,
+                lastName: signupData.lastName,
+                email: signupData.email,
+                location: signupData.location,
+                preferences: signupData.preferences
+            });
+
+            const response = await signup(formDataToSend);
+            console.log('Signup successful:', response);
             navigate("/home");
         } catch (error) {
-            setError(error.message || "Signup failed. Please try again.");
+            console.error('Signup Error:', error);
+            if (error.response?.data?.message) {
+                setError(error.response.data.message);
+            } else {
+                setError("Signup failed. Please try again.");
+            }
         }
     };
 
