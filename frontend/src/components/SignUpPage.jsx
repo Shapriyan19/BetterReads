@@ -118,30 +118,43 @@ const SignUpPage = () => {
             const { confirmPassword, ...signupData } = formData;
             const formDataToSend = new FormData();
             
-            // Append all fields directly
-            formDataToSend.append('firstName', signupData.firstName);
-            formDataToSend.append('lastName', signupData.lastName);
-            formDataToSend.append('email', signupData.email);
-            formDataToSend.append('password', signupData.password);
-            formDataToSend.append('location', signupData.location);
-            
-            // Append each preference as a separate item in the array instead of stringifying
-            signupData.preferences.forEach(pref => {
-                formDataToSend.append('preferences[]', pref);
+            // Log the data we're about to send
+            console.log("Form data before sending:", {
+                firstName: signupData.firstName,
+                lastName: signupData.lastName,
+                email: signupData.email,
+                password: signupData.password ? "exists" : "missing",
+                location: signupData.location,
+                preferences: signupData.preferences,
+                profilePic: signupData.profilePic ? "exists" : "missing"
             });
+            
+            // Append all text fields
+            formDataToSend.append('firstName', signupData.firstName.trim());
+            formDataToSend.append('lastName', signupData.lastName.trim());
+            formDataToSend.append('email', signupData.email.trim());
+            formDataToSend.append('password', signupData.password);
+            formDataToSend.append('location', signupData.location.trim());
+            
+            // Make sure preferences is an array and not empty
+            if (!Array.isArray(signupData.preferences) || signupData.preferences.length === 0) {
+                setError("Please select at least one reading preference");
+                return;
+            }
+            
+            // Convert preferences array to string and append
+            formDataToSend.append('preferences', JSON.stringify(signupData.preferences));
             
             // Append profile picture if exists
             if (signupData.profilePic) {
                 formDataToSend.append('profilePic', signupData.profilePic);
             }
 
-            console.log('Form Data being sent:', {
-                firstName: signupData.firstName,
-                lastName: signupData.lastName,
-                email: signupData.email,
-                location: signupData.location,
-                preferences: signupData.preferences
-            });
+            // Log the FormData entries
+            console.log("FormData entries:");
+            for (let pair of formDataToSend.entries()) {
+                console.log(pair[0] + ': ' + pair[1]);
+            }
 
             const response = await signup(formDataToSend);
             console.log('Signup successful:', response);
@@ -150,6 +163,9 @@ const SignUpPage = () => {
             console.error('Signup Error:', error);
             if (error.response?.data?.message) {
                 setError(error.response.data.message);
+                if (error.response.data.missingFields) {
+                    console.error('Missing fields:', error.response.data.missingFields);
+                }
             } else {
                 setError("Signup failed. Please try again.");
             }

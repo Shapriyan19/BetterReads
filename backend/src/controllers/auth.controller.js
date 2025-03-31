@@ -8,70 +8,120 @@ import pingenertation from "../lib/pingeneration.js";
 import BookVault from "../models/bookvaults.model.js";
 import cloudinary from "../lib/cloudinary.js";
 
-export const signup =async (req,res)=>{
-    const {email,firstName,lastName,password,profilePic,preferences,location}=req.body;
-    try{    
-        if(!firstName || !lastName || !email || !preferences || !location){
-            return res.status(400).json({message: "All fields except profile picture is required"});
-        }
-
-        if (password.length<8){
-            return res.status(400).json({message: "Password must be at least 8 characters"});
-        }
-
-        const passwordSecurity=passwordStrength(password,passwordcheck).value;
-
-        if (passwordSecurity==="Too weak" || passwordSecurity==="Weak"){
-            return res.status(400).json({message: "Your password must include atleast 1 uppercase, 1 lowercase character, a number and a symbol"});
-        }
-
-        const user=await User.findOne({email}); //finding if user exist with same email adddress
+export const signup = async (req, res) => {
+    try {    
+        console.log("Raw request body:", req.body);
+        console.log("Content-Type:", req.headers['content-type']);
         
-        if (user) return res.status(400).json({message:"Email already exist"});
-        //hashing
+        const { email, firstName, lastName, password, location } = req.body;
+        let preferences;
+        
+        try {
+            preferences = JSON.parse(req.body.preferences);
+        } catch (error) {
+            console.error("Error parsing preferences:", error);
+            return res.status(400).json({ message: "Invalid preferences format" });
+        }
+        
+        console.log("Extracted fields:", {
+            email,
+            firstName,
+            lastName,
+            password: password ? "exists" : "missing",
+            preferences,
+            location
+        });
+
+        // Validate all required fields
+        const missingFields = [];
+        if (!firstName) missingFields.push("firstName");
+        if (!lastName) missingFields.push("lastName");
+        if (!email) missingFields.push("email");
+        if (!password) missingFields.push("password");
+        if (!location) missingFields.push("location");
+        if (!preferences || !Array.isArray(preferences) || preferences.length === 0) {
+            missingFields.push("preferences");
+        }
+
+        if (missingFields.length > 0) {
+            console.log("Missing fields:", missingFields);
+            return res.status(400).json({
+                message: "All fields except profile picture is required",
+                missingFields: missingFields
+            });
+        }
+
+        if (password.length < 8) {
+            return res.status(400).json({ message: "Password must be at least 8 characters" });
+        }
+
+        const passwordSecurity = passwordStrength(password, passwordcheck).value;
+
+        if (passwordSecurity === "Too weak" || passwordSecurity === "Weak") {
+            return res.status(400).json({ message: "Your password must include atleast 1 uppercase, 1 lowercase character, a number and a symbol" });
+        }
+
+        const existingUser = await User.findOne({ email });
+        if (existingUser) return res.status(400).json({ message: "Email already exists" });
+
+        // Hash password
         const salt = await bcrypt.genSalt(10);
-        const hashedPassword=await bcrypt.hash(password,salt);
-        const forgot_password_pin=pingenertation();
-        const newUser= new User({
-            firstName: firstName,
-            lastName: lastName,
-            email: email,
+        const hashedPassword = await bcrypt.hash(password, salt);
+        const forgot_password_pin = pingenertation();
+
+        // Handle profile picture if uploaded
+        let profilePic = "";
+        if (req.file) {
+            try {
+                const result = await cloudinary.uploader.upload(req.file.path);
+                profilePic = result.secure_url;
+            } catch (error) {
+                console.error("Error uploading to cloudinary:", error);
+                // Continue without profile pic if upload fails
+            }
+        }
+
+        const newUser = new User({
+            firstName,
+            lastName,
+            email,
             password: hashedPassword,
-            profilePic: profilePic,
-            preferences: preferences,
-            location: location,
+            profilePic,
+            preferences,
+            location,
             forgotPasswordPin: forgot_password_pin,
         });
 
-        if(newUser){
-            //generate jwt token 
-            generateToken(newUser._id,res);
-            await newUser.save(); //saving to the database
+        if (newUser) {
+            generateToken(newUser._id, res);
+            await newUser.save();
+            
             res.status(201).json({
-                firstName: firstName,
-                lastName: lastName,
-                email: email,
-                profilePic: profilePic,
-                preferences: preferences,
-                location: location
+                firstName,
+                lastName,
+                email,
+                profilePic,
+                preferences,
+                location
             });
-            try{
-                const info = await transporter.sendMail({
+
+            try {
+                await transporter.sendMail({
                     from: '"Betterreads" <hailee0@ethereal.email>',
                     to: email,
                     subject: "Welcome to BetterReads",
-                    text: "Thanks for signing up fot BetterReads",
+                    text: "Thanks for signing up for BetterReads",
                 });
-            }catch(error){
-                console.log("Error in sending mail",error.message);
+            } catch (error) {
+                console.log("Error in sending mail", error.message);
             }
-        } else{
-            res.status(400).json({message: "Invalid user data"});
+        } else {
+            res.status(400).json({ message: "Invalid user data" });
         }
 
-    }catch(error){
-        console.log("Error in signup controller",error.message);
-        res.status(500).json({message: "Internal Server Error"});
+    } catch (error) {
+        console.error("Error in signup controller:", error);
+        res.status(500).json({ message: "Internal Server Error" });
     }
 };
 
