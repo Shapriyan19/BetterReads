@@ -25,11 +25,12 @@ export default function HomePage () {
     const [selectedBook, setSelectedBook] = useState(null);
     const [displayedBooks, setDisplayedBooks] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
+    const [recommendedBooksLoaded, setRecommendedBooksLoaded] = useState(false);
 
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (authUser?.email) {
+        if (authUser?.email && !recommendedBooksLoaded) {
             getRecommendedBooks(authUser.email)
                 .then(books => {
                     console.log('Received books:', books);
@@ -38,12 +39,13 @@ export default function HomePage () {
                         console.log('First book subjects:', books[0].subject);
                     }
                     setDisplayedBooks(books);
+                    setRecommendedBooksLoaded(true);
                 })
                 .catch(error => {
                     console.error('Error loading recommended books:', error);
                 });
         }
-    }, [authUser?.email]);
+    }, [authUser?.email, recommendedBooksLoaded]);
 
     useEffect(() => {
         if (searchTerm.length > 2) {
@@ -123,6 +125,20 @@ export default function HomePage () {
         }
     }, [selectedBook]);
 
+    const handleSearchInputChange = (e) => {
+        const value = e.target.value;
+        setSearchTerm(value);
+        if (value.length === 0) {
+            setIsSearching(false);
+            // Use the stored recommended books instead of fetching again
+            if (recommendedBooksLoaded) {
+                setDisplayedBooks(recommendedBooks);
+            }
+        } else {
+            setIsSearching(true);
+        }
+    };
+
     const handleSearch = async () => {
         if (searchTerm.length > 2) {
             try {
@@ -144,24 +160,6 @@ export default function HomePage () {
             }
         } else {
             toast.error('Please enter at least 3 characters to search');
-        }
-    };
-
-    const handleSearchInputChange = (e) => {
-        const value = e.target.value;
-        setSearchTerm(value);
-        if (value.length === 0) {
-            setIsSearching(false);
-            // Reload recommended books when search is cleared
-            if (authUser?.email) {
-                getRecommendedBooks(authUser.email)
-                    .then(books => {
-                        setDisplayedBooks(books);
-                    })
-                    .catch(error => {
-                        console.error('Error loading recommended books:', error);
-                    });
-            }
         }
     };
 
