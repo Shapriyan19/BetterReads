@@ -24,6 +24,7 @@ export default function HomePage () {
     const [rating, setRating] = useState(null);
     const [selectedBook, setSelectedBook] = useState(null);
     const [displayedBooks, setDisplayedBooks] = useState([]);
+    const [isSearching, setIsSearching] = useState(false);
 
     const navigate = useNavigate();
 
@@ -32,7 +33,6 @@ export default function HomePage () {
             getRecommendedBooks(authUser.email)
                 .then(books => {
                     console.log('Received books:', books);
-                    // Log the first book's data structure
                     if (books.length > 0) {
                         console.log('First book data:', books[0]);
                         console.log('First book subjects:', books[0].subject);
@@ -126,6 +126,7 @@ export default function HomePage () {
     const handleSearch = async () => {
         if (searchTerm.length > 2) {
             try {
+                setIsSearching(true);
                 const searchResults = await searchBooks(searchTerm);
                 console.log('Search results:', searchResults);
                 
@@ -146,6 +147,24 @@ export default function HomePage () {
         }
     };
 
+    const handleSearchInputChange = (e) => {
+        const value = e.target.value;
+        setSearchTerm(value);
+        if (value.length === 0) {
+            setIsSearching(false);
+            // Reload recommended books when search is cleared
+            if (authUser?.email) {
+                getRecommendedBooks(authUser.email)
+                    .then(books => {
+                        setDisplayedBooks(books);
+                    })
+                    .catch(error => {
+                        console.error('Error loading recommended books:', error);
+                    });
+            }
+        }
+    };
+
     return (
         <div className="home-container">
             <header className="home-header">
@@ -158,7 +177,7 @@ export default function HomePage () {
                             placeholder="Search for a book..." 
                             className="search-input" 
                             value={searchTerm} 
-                            onChange={(e) => setSearchTerm(e.target.value)}
+                            onChange={handleSearchInputChange}
                         />
                         <button 
                             className="search-button"
@@ -205,7 +224,7 @@ export default function HomePage () {
             </header>
 
             <main className="main-section">
-                <h1 className="section-title">Recommended Books</h1>
+                <h1 className="section-title">{isSearching ? "Search Results" : "Recommended Books"}</h1>
                 {isLoading ? (
                     <div className="loading-container">
                         <Loader2 className="animate-spin" size={24} />
