@@ -14,7 +14,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 5px 50px;
+    padding: 5px 30px;
+    height: 60px;
 }
 
 .home-title {
@@ -25,27 +26,34 @@
 
 .search-bar-group {
     display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
     align-items: center;
-    margin: 0% 7%; 
+    margin: 0 7%;
     flex: 1;
+    height: 40px;
+    gap: 12px;
+    flex-wrap: nowrap;
 }
 
 .search-container {
     position: relative;
-    width: 60%;
+    width: 50%;
     min-width: 200px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    height: 40px;
 }
 
 .search-input {
     width: 100%;
-    padding: 8px 40px 8px 12px;
+    padding: 8px 12px;
     border: 1px solid #eee;
     border-radius: 6px;
     font-size: 15px;
     background-color: #fff;
     color: #000;
+    height: 40px;
+    box-sizing: border-box;
 }
 
 .search-icon {
@@ -57,43 +65,64 @@
     pointer-events: none;
 }
 
+.search-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    background-color: #775591;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+.search-button:hover {
+    background-color: #5d4372;
+}
+
+.search-button svg {
+    width: 16px;
+    height: 16px;
+}
+
 .user-actions {
     display: flex;
     align-items: center;
     gap: 16px;
+    height: 40px;
 }
 
 .profile-icon {
     width: 40px;
-    height: auto;
+    height: 40px;
     background-color: #775591;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
+    box-sizing: border-box;
+    padding: 8px;
 }
 
-.bookclub-button {
+.bookclub-button, .logout-button, .category-filter {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 30px;
-    padding: 6px 30px;
-    font-size: 10px;
+    height: 40px;
+    padding: 0 30px;
+    font-size: 14px;
     cursor: pointer;
     background-color: #775591;
-}
-
-.logout-button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 30px;
-    font-size: 10px;
-    cursor: pointer;
-    background-color: #775591;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    box-sizing: border-box;
+    white-space: nowrap;
 }
 
 .main-section{
@@ -205,16 +234,6 @@
     text-overflow: ellipsis;
     max-width: 150px;
     text-align: center;
-}
-
-.category-filter {
-    background-color: #775591;
-    color: white;
-    padding: 6px 30px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 10px;
 }
 
 .details-button {
@@ -478,4 +497,22 @@
     color: #775591;
     width: 24px;
     height: 24px;
+}
+
+.category-filter {
+    width: auto;
+    min-width: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 40px;
+    padding: 0 20px;
+    font-size: 14px;
+    cursor: pointer;
+    background-color: #775591;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    box-sizing: border-box;
+    white-space: nowrap;
 }

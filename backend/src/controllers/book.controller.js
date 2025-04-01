@@ -8,23 +8,48 @@ const genAI=new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
 
-export const searchBook= async (req,res)=>{
-    try{
-        const {book}=req.query;
+export const searchBook = async (req,res) => {
+    try {
+        const {book} = req.query;
 
         if (!book) {
             return res.status(400).json({ message: "Book name is required" });
-          }
-        const result=await fetch(`https://openlibrary.org/search.json?q=${book}`).then(a=>a.json());
-        if (!result){
-            return res.status(400).json({message:"Book not found"});
         }
-        return res.status(200).json(result);
-    }catch(error){
-        console.log("error in searchBook: ",error);
-        res.status(500).json({message:"Internal server error"});
+
+        // Use the same URL format as recommendedBooks
+        const result = await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(book)}&fields=key,title,author_name,first_publish_year,cover_i,subject,edition_count,isbn`).then(a => a.json());
+
+        if (!result || !result.docs || result.docs.length === 0) {
+            return res.status(404).json({ message: "No books found" });
+        }
+
+        // Process books similar to recommendedBooks
+        const formattedBooks = result.docs
+            .filter(book => book.title && book.author_name) // Only include books with title and author
+            .map(book => {
+                // Get subjects or use default
+                const subjects = book.subject || [];
+                
+                return {
+                    key: book.key,
+                    title: book.title,
+                    author_name: book.author_name,
+                    cover_i: book.cover_i,
+                    first_publish_year: book.first_publish_year || 'Unknown',
+                    subject: subjects,
+                    // Use first subject as primary or default to Fiction
+                    primary_subject: subjects[0] || 'Fiction',
+                    isbn: book.isbn || [],
+                    edition_count: book.edition_count || 0
+                };
+            });
+
+        // Return the formatted books directly
+        return res.status(200).json(formattedBooks);
+    } catch(error) {
+        console.log("error in searchBook: ", error);
+        res.status(500).json({message: "Internal server error"});
     }
-    
 };
 
 export const sortBook = async (req,res)=>{

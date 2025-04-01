@@ -11,7 +11,7 @@ import toast from "react-hot-toast";
 
 export default function HomePage () {
     const { logout, authUser } = useAuthStore();
-    const { recommendedBooks, getRecommendedBooks, getBookDetails, isLoading, isLoadingDetails } = useBookStore();
+    const { recommendedBooks, getRecommendedBooks, getBookDetails, searchBooks, isLoading, isLoadingDetails } = useBookStore();
     
     /* displaying availability */
     const [branches, setBranches] = useState([]);
@@ -123,6 +123,29 @@ export default function HomePage () {
         }
     }, [selectedBook]);
 
+    const handleSearch = async () => {
+        if (searchTerm.length > 2) {
+            try {
+                const searchResults = await searchBooks(searchTerm);
+                console.log('Search results:', searchResults);
+                
+                if (searchResults && searchResults.length > 0) {
+                    setDisplayedBooks(searchResults);
+                    setSelectedCategory("All");
+                } else {
+                    setDisplayedBooks([]);
+                    toast.error('No books found');
+                }
+            } catch (error) {
+                console.error('Error searching books:', error);
+                toast.error('Failed to search books');
+                setDisplayedBooks([]);
+            }
+        } else {
+            toast.error('Please enter at least 3 characters to search');
+        }
+    };
+
     return (
         <div className="home-container">
             <header className="home-header">
@@ -137,7 +160,12 @@ export default function HomePage () {
                             value={searchTerm} 
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
-                        <Search className="search-icon"/>
+                        <button 
+                            className="search-button"
+                            onClick={handleSearch}
+                        >
+                            <Search size={16} />
+                        </button>
                     </div>
                     <select 
                         className="category-filter" 
@@ -225,7 +253,7 @@ export default function HomePage () {
 
             {selectedBook && (
                 <div className="modal-overlay" onClick={closeModal}>
-                    <div className={`modal ${isLoadingDetails ? 'loading' : ''}`} onClick={(e) => e.stopPropagation()}>
+                    <div className="modal" onClick={(e) => e.stopPropagation()}>
                         <span className="close-icon" onClick={closeModal}>&times;</span>
                         {isLoadingDetails ? (
                             <div className="modal-content loading-container">
