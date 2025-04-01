@@ -26,6 +26,7 @@ export default function HomePage () {
     const [displayedBooks, setDisplayedBooks] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
     const [recommendedBooksLoaded, setRecommendedBooksLoaded] = useState(false);
+    const [showAllCategories, setShowAllCategories] = useState(false);
 
     const navigate = useNavigate();
 
@@ -312,7 +313,24 @@ export default function HomePage () {
                                     <h2>{selectedBook.title}</h2>
                                     <p><strong>Author:</strong> {selectedBook.author_name?.[0] || selectedBook.authors?.[0]?.name || 'Unknown Author'}</p>
                                     <p><strong>First Published:</strong> {selectedBook.first_publish_year || selectedBook.first_publish_date || 'Unknown'}</p>
-                                    <p><strong>Categories:</strong> {selectedBook.subject?.join(', ') || selectedBook.subjects?.join(', ') || 'Uncategorized'}</p>
+                                    <p><strong>Categories:</strong></p>
+                                    <div className="categories-container">
+                                        {(selectedBook.subject || selectedBook.subjects || ['Uncategorized'])
+                                            .slice(0, showAllCategories ? undefined : 3)
+                                            .map((category, index) => (
+                                                <span key={index} className="modal-category-badge">
+                                                    {category}
+                                                </span>
+                                            ))}
+                                        {(selectedBook.subject?.length > 3 || selectedBook.subjects?.length > 3) && (
+                                            <span 
+                                                className="view-more-text"
+                                                onClick={() => setShowAllCategories(!showAllCategories)}
+                                            >
+                                                {showAllCategories ? 'show less' : 'view more'}
+                                            </span>
+                                        )}
+                                    </div>
                                     <p><strong>ISBN:</strong> {selectedBook.isbn?.[0] || selectedBook.isbn_13?.[0] || selectedBook.isbn_10?.[0] || 'Not available'}</p>
                                     
                                     {rating && (
@@ -323,7 +341,9 @@ export default function HomePage () {
                                     )}
                                     
                                     <p><strong>Description:</strong></p>
-                                    <p>{selectedBook.description?.value || selectedBook.description || 'No description available.'}</p>
+                                    <div className="description-section">
+                                        <p>{selectedBook.description?.value || selectedBook.description || 'No description available.'}</p>
+                                    </div>
                                     
                                     <div className="rating-container">
                                         <h3 className="modal-label"><strong>Give a Rating:</strong></h3>
