@@ -39,50 +39,51 @@ const LoginPage = () => {
     return (
         <div className="login-layout">
             <div className="login-box"> 
-                <h2>Login</h2>
+                <div className="login-content">
+                    <h2>Login</h2>
 
-                {/* Show error message if there is an error */}
-                {error && <p className="error-message">{error}</p>} 
-                
-                <form onSubmit={handleSubmit}>
-                    <div className="input-group">
-                        <label className="labeltext">Email</label>
-                        <input 
-                            type="email"
-                            placeholder="Enter your email" 
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)} 
-                            required 
-                            disabled={isLoggingIn}
-                        />
-                    </div>
+                    {/* Show error message if there is an error */}
+                    {error && <p className="error-message">{error}</p>} 
+                    
+                    <form onSubmit={handleSubmit}>
+                        <div className="input-group">
+                            <label className="labeltext">Email</label>
+                            <input 
+                                type="email"
+                                placeholder="Enter your email" 
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)} 
+                                required 
+                                disabled={isLoggingIn}
+                            />
+                        </div>
 
-                    <div className="input-group">
-                        <label className="labeltext">Password</label>
-                        <input 
-                            type="password"
-                            placeholder="Enter your password" 
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)} 
-                            required 
-                            disabled={isLoggingIn}
-                        />
-                    </div>
+                        <div className="input-group">
+                            <label className="labeltext">Password</label>
+                            <input 
+                                type="password"
+                                placeholder="Enter your password" 
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)} 
+                                required 
+                                disabled={isLoggingIn}
+                            />
+                        </div>
 
-                    <button type="submit" disabled={isLoggingIn}>
-                        {isLoggingIn ? "Logging in..." : "Login"}
-                    </button>
+                        <button type="submit" disabled={isLoggingIn}>
+                            {isLoggingIn ? "Logging in..." : "Login"}
+                        </button>
 
-                    {/* Sign Up & Forgot Password Links */}
-                    <div>
-                        <Link to="/signup" className="signup">Sign Up?</Link>
-                        <Link to="/forgotpassword" className="forgotpass">Forgot Password?</Link>
-                    </div>
-                </form>
-            </div>
-
-            <div className="logo-box">
-                <Logo />
+                        {/* Sign Up & Forgot Password Links */}
+                        <div>
+                            <Link to="/signup" className="signup">Sign Up?</Link>
+                            <Link to="/forgotpassword" className="forgotpass">Forgot Password?</Link>
+                        </div>
+                    </form>
+                </div>
+                <div className="logo-box">
+                    <Logo />
+                </div>
             </div>
         </div>
     );     
