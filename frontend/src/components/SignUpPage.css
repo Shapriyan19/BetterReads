@@ -2,24 +2,48 @@
 .signup-container {
     min-height: 100vh;
     display: flex;
-    align-items: center;
     justify-content: center;
-    padding: 5px;
-    background-color: #443329;
+    align-items: center;
+    background-color: #8a88a4;
+    padding: 15px;
+    margin: 0;
+    width: 100%;
 }
 
 .signup-box {
+    width: 450px;
+    padding: 15px;
     background: white;
     border-radius: 8px;
-    padding: 12px 20px;
-    width: 100%;
-    max-width: 700px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
 
+.signup-content {
+    width: 100%;
+    text-align: center;
+}
+
+.logo-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 250px;
+    height: 250px;
+}
+
+.logo-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Title */
 .signup-title {
-    font-size: 1.2rem;
+    margin: 0;
+    font-size: 16px;
+    font-weight: bold;
     color: #333;
-    margin-bottom: 8px;
+    margin-bottom: 2px;
     text-align: center;
 }
 
@@ -27,40 +51,45 @@
 .signup-form {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
 }
 
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    gap: 4px;
 }
 
 .form-group {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 1px;
+    margin-bottom: 2px;
 }
 
 .form-label {
-    font-size: 0.875rem;
+    font-size: 0.7rem;
     color: #4b5563;
+    font-weight: bold;
+    text-align: left;
+    margin-bottom: 1px;
 }
 
 .form-input {
-    padding: 4px 8px;
-    border: 1px solid #d1d5db;
+    padding: 2px 6px;
+    border: 1px solid #ccc;
     border-radius: 4px;
-    font-size: 0.875rem;
-    background-color: #f3f4f6;
+    font-size: 12px;
+    background-color: #fff;
+    color: #000;
     width: 100%;
-    height: 28px;
+    box-sizing: border-box;
+    height: 24px;
 }
 
 .form-input:focus {
     outline: none;
-    border-color: #3b82f6;
-    background-color: white;
+    border-color: #007bff;
 }
 
 .form-input:disabled {
@@ -68,25 +97,31 @@
     cursor: not-allowed;
 }
 
+.form-input::placeholder {
+    font-size: 11px;
+    color: #9ca3af;
+}
+
 /* Profile picture styles */
 .profile-section {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 4px;
     justify-content: center;
-    padding: 4px 0;
+    padding: 0;
+    margin: 2px 0;
 }
 
 .profile-preview {
-    width: 60px;
-    height: 60px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid #d1d5db;
+    border: 1px solid #d1d5db;
 }
 
 .upload-btn {
-    background-color: #3b82f6;
+    background-color: #007bff;
     color: white;
     padding: 6px 12px;
     border-radius: 4px;
@@ -97,7 +132,7 @@
 }
 
 .upload-btn:hover {
-    background-color: #2563eb;
+    background-color: #0056b3;
 }
 
 .upload-btn:disabled {
@@ -105,52 +140,49 @@
     cursor: not-allowed;
 }
 
-/* Preferences styles */
+/* Reading Preferences */
 .preferences-section {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 6px;
-    padding: 6px;
-    border: 1px solid #d1d5db;
-    border-radius: 4px;
-    background-color: #f3f4f6;
+    gap: 2px;
+    padding: 0;
+    margin: 2px 0;
 }
 
 .preference-item {
     display: flex;
     align-items: center;
-    gap: 4px;
-    font-size: 0.75rem;
+    gap: 2px;
+    font-size: 0.65rem;
     color: #4b5563;
 }
 
 .preference-checkbox {
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
+    margin: 0;
+    cursor: pointer;
 }
 
 .preference-checkbox:checked {
-    background-color: #3b82f6;
-    border-color: #3b82f6;
+    accent-color: #007bff;
 }
 
 /* Button styles */
 .submit-btn {
-    background-color: #3b82f6;
+    width: 100%;
+    padding: 4px;
+    background-color: #007bff;
     color: white;
-    padding: 6px;
-    border-radius: 4px;
-    font-size: 0.875rem;
-    font-weight: 500;
-    cursor: pointer;
     border: none;
-    margin-top: 6px;
-    height: 32px;
-    transition: background-color 0.2s;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    margin-top: 4px;
 }
 
 .submit-btn:hover {
-    background-color: #2563eb;
+    background-color: #0056b3;
 }
 
 .submit-btn:disabled {
@@ -161,23 +193,23 @@
 /* Link styles */
 .login-link {
     text-align: center;
-    color: #4b5563;
-    font-size: 0.875rem;
+    color: #6c63ff;
+    font-size: 11px;
     text-decoration: none;
     display: block;
-    margin-top: 6px;
+    margin-top: 4px;
 }
 
 .login-link:hover {
-    color: #3b82f6;
+    text-decoration: underline;
 }
 
 /* Error message */
 .error-message {
-    color: #dc2626;
+    color: red;
+    font-size: 12px;
+    margin-bottom: 4px;
     text-align: center;
-    font-size: 0.875rem;
-    margin-bottom: 8px;
 }
 
 /* Loading spinner */

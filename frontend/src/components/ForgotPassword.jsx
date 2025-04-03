@@ -125,139 +125,132 @@ const ForgotPassword = () => {
     return (
         <div className="forgot-password-container">
             <div className="forgot-password-form">
-                <div className="text-center mb-8">
-                    <div className="flex flex-col items-center gap-2 group">
-                        <div className="size-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                            <Lock className="size-6 text-primary" />
+                <div className="forgot-password-content">
+                    <div className="text-center mb-8">
+                        <div className="flex flex-col items-center gap-2 group">
+                            <div className="size-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                                <Lock className="size-6 text-primary" />
+                            </div>
+                            <h1 className="text-2xl font-bold mt-2">Reset Password</h1>
+                            <p className="text-base-content/60">
+                                {step === 1 && "Enter your email to receive a PIN"}
+                                {step === 2 && "Enter the PIN sent to your email"}
+                                {step === 3 && "Enter your new password"}
+                            </p>
                         </div>
-                        <h1 className="text-2xl font-bold mt-2">Reset Password</h1>
-                        <p className="text-base-content/60">
-                            {step === 1 && "Enter your email to receive a PIN"}
-                            {step === 2 && "Enter the PIN sent to your email"}
-                            {step === 3 && "Enter your new password"}
-                        </p>
                     </div>
-                </div>
 
-                <form onSubmit={step === 1 ? handleSendPIN : step === 2 ? handleVerifyPIN : handleUpdatePassword} className="space-y-6">
-                    {step === 1 && (
-                        <div className="form-control">
-                            <label className="label">
-                                <span className="label-text font-medium">Email</span>
-                            </label>
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Mail className="size-5 text-base-content/40" />
+                    <form onSubmit={step === 1 ? handleSendPIN : step === 2 ? handleVerifyPIN : handleUpdatePassword} className="space-y-6">
+                        {step === 1 && (
+                            <div className="form-control">
+                                <label className="label">
+                                    <span className="label-text font-medium">Email</span>
+                                </label>
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <Mail className="size-5 text-base-content/40" />
+                                    </div>
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        className="input"
+                                        placeholder="you@example.com"
+                                        value={formData.email}
+                                        onChange={handleChange}
+                                    />
                                 </div>
+                            </div>
+                        )}
+
+                        {step === 2 && (
+                            <div className="form-control">
+                                <label className="label">
+                                    <span className="label-text font-medium">PIN</span>
+                                </label>
                                 <input
-                                    type="email"
-                                    name="email"
+                                    type="text"
+                                    name="forgotPasswordPin"
                                     className="input"
-                                    placeholder="you@example.com"
-                                    value={formData.email}
+                                    placeholder="Enter the PIN sent to your email"
+                                    value={formData.forgotPasswordPin}
                                     onChange={handleChange}
                                 />
                             </div>
-                        </div>
-                    )}
-
-                    {step === 2 && (
-                        <div className="form-control">
-                            <label className="label">
-                                <span className="label-text font-medium">PIN</span>
-                            </label>
-                            <input
-                                type="text"
-                                name="forgotPasswordPin"
-                                className="input"
-                                placeholder="Enter the PIN sent to your email"
-                                value={formData.forgotPasswordPin}
-                                onChange={handleChange}
-                            />
-                        </div>
-                    )}
-
-                    {step === 3 && (
-                        <>
-                            <div className="form-control">
-                                <label className="label">
-                                    <span className="label-text font-medium">New Password</span>
-                                </label>
-                                <div className="relative">
-                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <Lock className="size-5 text-base-content/40" />
-                                    </div>
-                                    <input
-                                        type={showPassword ? "text" : "password"}
-                                        name="newPassword"
-                                        className="input"
-                                        placeholder="••••••••"
-                                        value={formData.newPassword}
-                                        onChange={handleChange}
-                                    />
-                                    <button
-                                        type="button"
-                                        className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                                        onClick={() => setShowPassword(!showPassword)}
-                                    >
-                                        {showPassword ? (
-                                            <EyeOff className="size-5 text-base-content/40" />
-                                        ) : (
-                                            <Eye className="size-5 text-base-content/40" />
-                                        )}
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div className="form-control">
-                                <label className="label">
-                                    <span className="label-text font-medium">Confirm New Password</span>
-                                </label>
-                                <div className="relative">
-                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <Lock className="size-5 text-base-content/40" />
-                                    </div>
-                                    <input
-                                        type={showPassword ? "text" : "password"}
-                                        name="confirmPassword"
-                                        className="input"
-                                        placeholder="••••••••"
-                                        value={formData.confirmPassword}
-                                        onChange={handleChange}
-                                    />
-                                </div>
-                            </div>
-                        </>
-                    )}
-
-                    <button type="submit" className="btn" disabled={isLoading}>
-                        {isLoading ? (
-                            <>
-                                <Loader2 className="size-5 animate-spin" />
-                                {step === 1 ? "Sending PIN..." : step === 2 ? "Verifying PIN..." : "Updating Password..."}
-                            </>
-                        ) : (
-                            step === 1 ? "Send PIN" : step === 2 ? "Verify PIN" : "Update Password"
                         )}
-                    </button>
-                </form>
 
-                <div className="text-center mt-6">
-                    <p className="text-base-content/60">
-                        Remember your password?{" "}
-                        <Link to="/login" className="link">
-                            Sign in
-                        </Link>
-                    </p>
-                </div>
-            </div>
+                        {step === 3 && (
+                            <>
+                                <div className="form-control">
+                                    <label className="label">
+                                        <span className="label-text font-medium">New Password</span>
+                                    </label>
+                                    <div className="relative">
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <Lock className="size-5 text-base-content/40" />
+                                        </div>
+                                        <input
+                                            type={showPassword ? "text" : "password"}
+                                            name="newPassword"
+                                            className="input"
+                                            placeholder="••••••••"
+                                            value={formData.newPassword}
+                                            onChange={handleChange}
+                                        />
+                                        <button
+                                            type="button"
+                                            className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                                            onClick={() => setShowPassword(!showPassword)}
+                                        >
+                                            {showPassword ? (
+                                                <EyeOff className="size-5 text-base-content/40" />
+                                            ) : (
+                                                <Eye className="size-5 text-base-content/40" />
+                                            )}
+                                        </button>
+                                    </div>
+                                </div>
 
-            <div className="forgot-password-pattern">
-                <div className="max-w-md text-center">
-                    <h2 className="text-3xl font-bold mb-4">Reset Your Password</h2>
-                    <p className="text-base-content/70">
-                        Follow the steps to reset your password and regain access to your account.
-                    </p>
+                                <div className="form-control">
+                                    <label className="label">
+                                        <span className="label-text font-medium">Confirm New Password</span>
+                                    </label>
+                                    <div className="relative">
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <Lock className="size-5 text-base-content/40" />
+                                        </div>
+                                        <input
+                                            type={showPassword ? "text" : "password"}
+                                            name="confirmPassword"
+                                            className="input"
+                                            placeholder="••••••••"
+                                            value={formData.confirmPassword}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+                                </div>
+                            </>
+                        )}
+
+                        <button type="submit" className="btn" disabled={isLoading}>
+                            {isLoading ? (
+                                <>
+                                    <Loader2 className="size-5 animate-spin" />
+                                    {step === 1 ? "Sending PIN..." : step === 2 ? "Verifying PIN..." : "Updating Password..."}
+                                </>
+                            ) : (
+                                step === 1 ? "Send PIN" : step === 2 ? "Verify PIN" : "Update Password"
+                            )}
+                        </button>
+                    </form>
+
+                    <div className="text-center mt-6">
+                        <p className="text-base-content/60">
+                            Remember your password?{" "}
+                            <Link to="/login" className="link">
+                                Sign in
+                            </Link>
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>

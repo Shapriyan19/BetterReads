@@ -214,7 +214,7 @@ export default function HomePage () {
                         <User size={20} />
                     </button>
                     <button className="bookclub-button" onClick={handleBCL}>
-                        My Book Club
+                        Book Clubs
                     </button>
                     <button className="logout-button" onClick={handleLogout}>
                         Log Out

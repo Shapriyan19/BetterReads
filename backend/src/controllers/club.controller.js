@@ -214,3 +214,22 @@ export const deleteClub= async (req, res) => {
         });
     }
 };
+
+export const getUserClubs = async (req, res) => {
+    try {
+        const clubs = await Club.find({
+            'roles.user': req.user._id.toString()
+        });
+        
+        res.status(200).json({
+            success: true,
+            count: clubs.length,
+            data: clubs
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Server error'
+        });
+    }
+};

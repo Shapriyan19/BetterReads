@@ -29,9 +29,10 @@ const GENRE_OPTIONS = [
 
 const BookClubListing = () => {
   const navigate = useNavigate();
-  const { clubs, isLoading, error, getClubs, createClub } = useClubStore();
+  const { clubs, userClubs, isLoading, error, getClubs, createClub, getUserClubs } = useClubStore();
   const { authUser } = useAuthStore();
   const [searchQuery, setSearchQuery] = useState('');
+  const [showMyClubs, setShowMyClubs] = useState(false);
   const [previewClub, setPreviewClub] = useState(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newClub, setNewClub] = useState({
@@ -46,10 +47,16 @@ const BookClubListing = () => {
   const [clubImage, setClubImage] = useState(null);
   const [description, setDescription] = useState('');
 
+  // Fetch both all clubs and user clubs on component mount
   useEffect(() => {
-    console.log('Component mounted, fetching clubs...');
-    getClubs();
-  }, [getClubs]);
+    const fetchData = async () => {
+      await getClubs();
+      if (authUser) {
+        await getUserClubs();
+      }
+    };
+    fetchData();
+  }, [getClubs, getUserClubs, authUser]);
 
   useEffect(() => {
     console.log('Current user state:', authUser);
@@ -147,10 +154,12 @@ const BookClubListing = () => {
     }));
   };
 
-  const filteredClubs = Array.isArray(clubs) ? clubs.filter(club => 
-    club.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    club.description.toLowerCase().includes(searchQuery.toLowerCase())
-  ) : [];
+  // Filter clubs based on search query
+  const filteredClubs = Array.isArray(showMyClubs ? userClubs : clubs) ? 
+    (showMyClubs ? userClubs : clubs).filter(club => 
+      club.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      club.description.toLowerCase().includes(searchQuery.toLowerCase())
+    ) : [];
 
   console.log('Filtered clubs:', filteredClubs);
 
@@ -187,12 +196,21 @@ const BookClubListing = () => {
           &lt; Back
         </button>
 
-        {console.log('Rendering create button, authUser:', authUser)}
-        {authUser && (
-            <button className="create-club-btn" onClick={() => setShowCreateModal(true)}>
+        <div className="action-buttons">
+          {authUser && (
+            <>
+              <button 
+                className={`my-clubs-btn ${showMyClubs ? 'active' : ''}`} 
+                onClick={() => setShowMyClubs(!showMyClubs)}
+              >
+                {showMyClubs ? 'All Clubs' : 'My Book Clubs'}
+              </button>
+              <button className="create-club-btn" onClick={() => setShowCreateModal(true)}>
                 Create Club
-            </button>
-        )}
+              </button>
+            </>
+          )}
+        </div>
 
         <h1>Book Clubs</h1>
         <p>Discover and join online book discussion forums that match your reading interests. Connect with fellow readers and participate in thoughtful literary conversations.</p>
@@ -225,29 +243,57 @@ const BookClubListing = () => {
                     <span key={index} className="genre-tag">{genre}</span>
                   ))}
                 </div>
-                {club.roles?.some(role => role.user === authUser?._id) ? (
-                  <button 
-                    className="join-button joined"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/bookclub/${club._id}`);
-                    }}
-                  >
-                    Enter Club
-                  </button>
-                ) : club.applications?.includes(authUser?._id) ? (
-                  <span className="applied-text">Application Pending...</span>
-                ) : (
-                  <button 
-                    className="join-button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleApplyToClub(club._id);
-                    }}
-                  >
-                    Apply to Join
-                  </button>
-                )}
+                {(() => {
+                  console.log('Club:', club.name);
+                  console.log('Club roles:', club.roles);
+                  console.log('Auth user:', authUser);
+                  const isMember = club.roles?.some(role => {
+                    console.log('Checking role:', role);
+                    // Compare both the role.user (string ID) and role.user._id (object ID) cases
+                    return role.user === authUser?._id || role.user?._id === authUser?._id;
+                  });
+                  console.log('Is member:', isMember);
+                  
+                  if (authUser && isMember) {
+                    return (
+                      <button 
+                        className="join-button joined"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/bookclub/${club._id}`);
+                        }}
+                      >
+                        Enter Club
+                      </button>
+                    );
+                  } else if (!authUser) {
+                    return (
+                      <button 
+                        className="join-button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toast.error('Please log in to join clubs');
+                        }}
+                      >
+                        Apply to Join
+                      </button>
+                    );
+                  } else if (club.applications?.includes(authUser._id)) {
+                    return <span className="applied-text">Application Pending...</span>;
+                  } else {
+                    return (
+                      <button 
+                        className="join-button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleApplyToClub(club._id);
+                        }}
+                      >
+                        Apply to Join
+                      </button>
+                    );
+                  }
+                })()}
               </div>
             </div>
           ))}

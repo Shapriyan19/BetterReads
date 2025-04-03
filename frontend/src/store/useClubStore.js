@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 
 export const useClubStore = create((set) => ({
     clubs: [],
+    userClubs: [],
     currentClub: null,
     isLoading: false,
     error: null,
@@ -34,8 +35,6 @@ export const useClubStore = create((set) => ({
         set({ isLoading: true, error: null });
         try {
             const res = await axiosInstance.get("/clubs");
-            console.log('Raw API response:', res.data);
-            console.log('Clubs data:', res.data.data);
             
             // Process the clubs data to ensure members is properly handled
             const processedClubs = res.data.data.map(club => ({
@@ -44,16 +43,13 @@ export const useClubStore = create((set) => ({
                 membersCount: club.roles.length
             }));
             
-            console.log('Processed clubs:', processedClubs);
-            set({ clubs: processedClubs });
+            set({ clubs: processedClubs, isLoading: false });
             return processedClubs;
         } catch (error) {
             console.error('Error fetching book clubs:', error);
-            set({ error: error.response?.data?.message || "Failed to fetch book clubs" });
+            set({ error: error.response?.data?.message || "Failed to fetch book clubs", isLoading: false });
             toast.error(error.response?.data?.message || "Failed to fetch book clubs");
             throw error;
-        } finally {
-            set({ isLoading: false });
         }
     },
 
@@ -113,6 +109,26 @@ export const useClubStore = create((set) => ({
             throw error;
         } finally {
             set({ isLoading: false });
+        }
+    },
+
+    // Get user's clubs
+    getUserClubs: async () => {
+        set({ isLoading: true, error: null });
+        try {
+            const res = await axiosInstance.get("/clubs/my-clubs");
+            const processedClubs = res.data.data.map(club => ({
+                ...club,
+                members: club.roles.map(role => role.user),
+                membersCount: club.roles.length
+            }));
+            set({ userClubs: processedClubs, isLoading: false });
+            return processedClubs;
+        } catch (error) {
+            console.error('Error fetching user clubs:', error);
+            set({ error: error.response?.data?.message || "Failed to fetch your clubs", isLoading: false });
+            toast.error(error.response?.data?.message || "Failed to fetch your clubs");
+            throw error;
         }
     }
 })); 
