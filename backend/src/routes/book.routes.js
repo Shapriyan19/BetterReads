@@ -13,5 +13,6 @@ router.get("/get-review",getReview);
 router.post("/post-review",protectRoute,postReview,getReview);
 router.get("/get-availability",getAvailabilityInfo);
 router.post("/get-book-details",getBookDetails);
+// router.post("/get-playlist",getPlaylist,getTracks);
 
 export default router;

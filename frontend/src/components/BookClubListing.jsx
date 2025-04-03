@@ -1,106 +1,251 @@
-import React, { useState,  useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import './BookClubListing.css';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
+import { useClubStore } from '../store/useClubStore';
+import { useAuthStore } from '../store/useAuthStore';
+import { FiUpload } from 'react-icons/fi';
+import { toast } from 'react-hot-toast';
+
+const GENRE_OPTIONS = [
+  'Fiction',
+  'Non-Fiction',
+  'Mystery',
+  'Science Fiction',
+  'Fantasy',
+  'Romance',
+  'Thriller',
+  'Horror',
+  'Historical Fiction',
+  'Biography',
+  'Self-Help',
+  'Poetry',
+  'Drama',
+  'Adventure',
+  'Children\'s Literature',
+  'Young Adult',
+  'Classic Literature',
+  'Contemporary Literature'
+];
 
 const BookClubListing = () => {
-  const [joinedClubs, setJoinedClubs] = useState([]);
-  const [appliedClubs, setAppliedClubs] = useState([]);
-
-  const navigate = useNavigate(); // Initialize useNavigate
-
-  const bookClubs = [
-    {
-      id: 1,
-      name: 'The Literary Circle',
-      description: 'We discuss classic literature and contemporary fiction with a focus on character development...',
-      members: 24,
-      genre: ['Fiction', 'Classics', 'Contemporary'],
-    },
-    {
-      id: 2,
-      name: 'Sci-Fi Explorers',
-      description: 'Exploring new worlds and technologies through science fiction literature. Join our discussions...',
-      members: 18,
-      genre: ['Science Fiction', 'Fantasy'],
-    },
-    {
-      id: 3,
-      name: 'Mystery Lovers',
-      description: 'For those who enjoy solving puzzles and unraveling mysteries in literature. Our forum is...',
-      members: 15,
-      genre: ['Mystery', 'Thriller', 'Crime'],
-    },
-    // Add more book clubs as needed...
-  ];
-  
-
+  const navigate = useNavigate();
+  const { clubs, isLoading, error, getClubs, createClub } = useClubStore();
+  const { authUser } = useAuthStore();
+  const [searchQuery, setSearchQuery] = useState('');
   const [previewClub, setPreviewClub] = useState(null);
-  const [clubDesc, setclubDesc] = useState(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [newClub, setNewClub] = useState({
+    name: '',
+    description: '',
+    genres: [],
+    adminName: '',
+    roles: []
+  });
+  const [selectedGenre, setSelectedGenre] = useState('');
+  const [clubName, setClubName] = useState('');
+  const [clubImage, setClubImage] = useState(null);
+  const [description, setDescription] = useState('');
+
+  useEffect(() => {
+    console.log('Component mounted, fetching clubs...');
+    getClubs();
+  }, [getClubs]);
+
+  useEffect(() => {
+    console.log('Current user state:', authUser);
+  }, [authUser]);
+
+  useEffect(() => {
+    console.log('Clubs data updated:', clubs);
+  }, [clubs]);
 
   const handleBack = () => {
-    navigate(-1); // Go back to the previous page
+    navigate(-1);
   };
 
-  const joinClub = (id) => {
-    setJoinedClubs((prev) => [...prev, id]);
+  const handleCreateClub = async (e) => {
+    e.preventDefault();
+    try {
+        if (!authUser) {
+            console.error('User not logged in');
+            toast.error('Please log in to create a club');
+            return;
+        }
+
+        // Validate required fields
+        if (!clubName.trim()) {
+            toast.error('Club name is required');
+            return;
+        }
+
+        if (!description.trim()) {
+            toast.error('Description is required');
+            return;
+        }
+
+        // Create FormData object to handle file upload
+        const formData = new FormData();
+        formData.append('name', clubName.trim());
+        formData.append('description', description.trim());
+        formData.append('genres', JSON.stringify(newClub.genres || []));
+        formData.append('adminName', `${authUser.firstName} ${authUser.lastName}`);
+        formData.append('roles', JSON.stringify([{ 
+            role: 'admin', 
+            user: authUser._id 
+        }]));
+
+        if (clubImage) {
+            formData.append('image', clubImage);
+        }
+
+        // Debug: Log FormData contents
+        console.log('FormData contents:');
+        for (let pair of formData.entries()) {
+            console.log(pair[0] + ': ' + pair[1]);
+        }
+
+        const result = await createClub(formData);
+        
+        if (result.success) {
+            toast.success('Club created successfully!');
+            // Reset form
+            setShowCreateModal(false);
+            setClubName('');
+            setDescription('');
+            setClubImage(null);
+            setNewClub({ 
+                name: '', 
+                description: '', 
+                genres: [],
+                adminName: '',
+                roles: []
+            });
+            
+            // Refresh the clubs list
+            getClubs();
+        }
+    } catch (error) {
+        console.error('Error creating club:', error);
+        toast.error(error.response?.data?.message || 'Failed to create club. Please try again.');
+    }
   };
-  
-  const applyToClub = (id) => {
-    setAppliedClubs((prev) => [...prev, id]);
+
+  const handleAddGenre = () => {
+    if (selectedGenre && !newClub.genres.includes(selectedGenre)) {
+      setNewClub(prev => ({
+        ...prev,
+        genres: [...prev.genres, selectedGenre]
+      }));
+      setSelectedGenre('');
+    }
   };
-  
+
+  const handleRemoveGenre = (genreToRemove) => {
+    setNewClub(prev => ({
+      ...prev,
+      genres: prev.genres.filter(genre => genre !== genreToRemove)
+    }));
+  };
+
+  const filteredClubs = Array.isArray(clubs) ? clubs.filter(club => 
+    club.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    club.description.toLowerCase().includes(searchQuery.toLowerCase())
+  ) : [];
+
+  console.log('Filtered clubs:', filteredClubs);
+
+  const handleJoinClub = async (clubId) => {
+    try {
+      // TODO: Implement join club functionality when membership routes are ready
+      navigate(`/bookclub/${clubId}`);
+    } catch (error) {
+      console.error('Error joining club:', error);
+    }
+  };
+
+  const handleApplyToClub = async (clubId) => {
+    try {
+      // TODO: Implement apply to club functionality when membership routes are ready
+      console.log('Applying to club:', clubId);
+    } catch (error) {
+      console.error('Error applying to club:', error);
+    }
+  };
+
+  if (isLoading) {
+    return <div className="loading">Loading book clubs...</div>;
+  }
+
+  if (error) {
+    return <div className="error">Error: {error}</div>;
+  }
 
   return (
-    
     <div className="book-club-page">
-      
       <div className="book-club-listing">
-        <button className="create-button" onClick={() => navigate('/bookclub/create')}>
-          + Create a Club
-        </button>
         <button className="back-button" onClick={handleBack}>
           &lt; Back
         </button>
+
+        {console.log('Rendering create button, authUser:', authUser)}
+        {authUser && (
+            <button className="create-club-btn" onClick={() => setShowCreateModal(true)}>
+                Create Club
+            </button>
+        )}
 
         <h1>Book Clubs</h1>
         <p>Discover and join online book discussion forums that match your reading interests. Connect with fellow readers and participate in thoughtful literary conversations.</p>
 
         <div className="search-bar">
-          <input type="text" placeholder="Search book clubs..." />
+          <input 
+            type="text" 
+            placeholder="Search book clubs..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </div>
 
-        <p>Showing {bookClubs.length} book clubs</p>
+        <p>Showing {filteredClubs.length} book clubs</p>
 
         <div className="book-clubs-grid">
-          {bookClubs.map((club) => (
-           <div
-           key={club.id}
-           className={`book-club-item ${joinedClubs.includes(club.id) ? '' : 'clickable-unjoined'}`}
-           onClick={() => {
-             if (!joinedClubs.includes(club.id)) {
-               setPreviewClub(club); // open modal only if not joined
-             } else {
-               navigate(`/bookclub/${club.id}`);
-             }
-           }}
-         >
-         
+          {filteredClubs.map((club) => (
+            <div
+              key={club._id}
+              className="book-club-item"
+              onClick={() => setPreviewClub(club)}
+            >
               <div className="club-image"></div>
               <div className="club-details">
                 <h2>{club.name}</h2>
                 <p>{club.description}</p>
-                <p>{club.members} members</p>
+                <p>{club.membersCount} members</p>
                 <div className="genre-tags">
-                  {club.genre.map((tag, index) => (
-                    <span key={index} className="genre-tag">{tag}</span>
+                  {club.genres?.map((genre, index) => (
+                    <span key={index} className="genre-tag">{genre}</span>
                   ))}
                 </div>
-                {joinedClubs.includes(club.id) ? (
-                  <span ></span>
-                  ): appliedClubs.includes(club.id) ? (
-                  <span className="applied-text">Applied...</span>
-                  ): ( <button className="join-button" onClick={(e) => { e.stopPropagation(); club.name === "Sci-Fi Explorers" ? applyToClub(club.id) : joinClub(club.id); }} >
-                    {club.name === "Sci-Fi Explorers" ? "Apply to Join" : "Join"}
+                {club.members?.includes(authUser?._id) ? (
+                  <button 
+                    className="join-button joined"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/bookclub/${club._id}`);
+                    }}
+                  >
+                    Enter Club
+                  </button>
+                ) : club.applications?.includes(authUser?._id) ? (
+                  <span className="applied-text">Application Pending...</span>
+                ) : (
+                  <button 
+                    className="join-button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleApplyToClub(club._id);
+                    }}
+                  >
+                    Apply to Join
                   </button>
                 )}
               </div>
@@ -108,17 +253,106 @@ const BookClubListing = () => {
           ))}
         </div>
       </div>
+
+      {/* Preview Club Modal */}
       {previewClub && (
-  <div className="modal-overlay" onClick={() => setPreviewClub(null)}>
-    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-      <h2>{previewClub.name}</h2>
-      <p>{previewClub.description}</p>
-      <p><strong>Genres:</strong> {previewClub.genre.join(', ')}</p>
-      <p><em>You must join this club to access full features.</em></p>
-      <button onClick={() => setPreviewClub(null)}>Close</button>
-    </div>
-  </div>
-)}
+        <div className="modal-overlay" onClick={() => setPreviewClub(null)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>{previewClub.name}</h2>
+            <p>{previewClub.description}</p>
+            <p><strong>Admin:</strong> {previewClub.adminName}</p>
+            <p><strong>Genres:</strong> {previewClub.genres?.join(', ')}</p>
+            <p><strong>Members:</strong> {previewClub.members?.length || 0}</p>
+            <p><em>You must join this club to access full features.</em></p>
+            <button onClick={() => setPreviewClub(null)}>Close</button>
+          </div>
+        </div>
+      )}
+
+      {/* Create Club Modal */}
+      {showCreateModal && (
+        <div className="modal-overlay" onClick={() => setShowCreateModal(false)}>
+          <div className="modal-content create-club-modal" onClick={(e) => e.stopPropagation()}>
+            <h2>Create a New Book Club</h2>
+            <form onSubmit={handleCreateClub}>
+              <div className="form-group">
+                <label>Club Name</label>
+                <input
+                  type="text"
+                  value={clubName}
+                  onChange={(e) => setClubName(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="image-upload-container">
+                <label className="image-upload-label">
+                  <div className="upload-icon">
+                    <FiUpload />
+                  </div>
+                  <span>Click to upload club image</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setClubImage(e.target.files[0])}
+                  />
+                </label>
+              </div>
+
+              <div className="form-group">
+                <label>Description</label>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Genres</label>
+                <div className="genre-input-container">
+                  <select
+                    value={selectedGenre}
+                    onChange={(e) => setSelectedGenre(e.target.value)}
+                    className="genre-select"
+                  >
+                    <option value="">Select a genre</option>
+                    {GENRE_OPTIONS.map((genre) => (
+                      <option key={genre} value={genre}>{genre}</option>
+                    ))}
+                  </select>
+                  <button type="button" onClick={handleAddGenre} disabled={!selectedGenre}>
+                    Add
+                  </button>
+                </div>
+                <div className="genre-tags">
+                  {newClub.genres.map((genre, index) => (
+                    <span key={index} className="genre-tag">
+                      {genre}
+                      <button
+                        type="button"
+                        className="remove-genre"
+                        onClick={() => handleRemoveGenre(genre)}
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="modal-buttons">
+                <button type="submit" className="create-button">
+                    Create Club
+                </button>
+                <button type="button" onClick={() => setShowCreateModal(false)}>
+                    Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

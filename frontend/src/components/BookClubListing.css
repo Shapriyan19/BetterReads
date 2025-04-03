@@ -1,6 +1,7 @@
 /* Apply styles specifically to the book club listing page */
 .book-club-page {
-    background-color: #c97272; 
+    min-height: 100vh;
+    background-color: #F4F1F9;
     overflow-y: auto;
     width: 100vw;
 }
@@ -8,30 +9,38 @@
 .book-club-page .book-club-listing {
     font-family: sans-serif;
     padding: 20px;
-    color: white;
-    position: relative; /* Add position relative for back button */
+    color: #333;
+    position: relative;
 }
 
 .book-club-page .back-button {
     position: absolute;
     top: 10px;
     left: 10px;
-    background-color: #007bff;
+    background-color: #775591;
     color: white;
     border: none;
     padding: 8px 15px;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.book-club-page .back-button:hover {
+    background-color: #5d4372;
 }
 
 .book-club-page .book-club-listing h1 {
     text-align: center;
     margin-bottom: 10px;
+    color: #000000;
+    font-weight: bold;
 }
 
 .book-club-page .book-club-listing p {
     text-align: center;
     margin-bottom: 20px;
+    color: #666;
 }
 
 .book-club-page .search-bar {
@@ -41,119 +50,165 @@
 }
 
 .book-club-page .search-bar input[type="text"] {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    padding: 8px 12px;
+    border: 1px solid #eee;
+    border-radius: 6px;
     width: 300px;
-    background-color: white;
-    color: black;
+    background-color: #fff;
+    color: #000;
+    height: 40px;
+    box-sizing: border-box;
+    font-size: 15px;
 }
 
 .book-club-page .book-clubs-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
+    gap: 32px;
+    padding: 0px 50px;
+    margin-bottom: 40px;
 }
 
 .book-club-page .book-club-item {
-    border: 1px solid #ddd;
-    border-radius: 8px;
+    border: none;
+    border-radius: 12px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    background-color: #444;
+    background-color: #ffffff;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.book-club-page .book-club-item:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
 }
 
 .book-club-page .club-image {
-    background-color: #f0f0f0;
-    height: 150px;
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    background-color: #f5f5f5;
 }
 
 .book-club-page .club-details {
     padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .book-club-page .club-details h2 {
-    margin-bottom: 10px;
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
 }
 
 .book-club-page .club-details p {
-    margin-bottom: 10px;
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+    line-height: 1.5;
 }
 
 .book-club-page .genre-tags {
     display: flex;
-    gap: 5px;
+    gap: 8px;
+    flex-wrap: wrap;
     margin-bottom: 10px;
 }
 
 .book-club-page .genre-tag {
-    background-color: #666;
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-size: 0.8em;
+    background-color: #f8f4fb;
+    color: #775591;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    border: 1px solid #e9e3f0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.book-club-page .genre-tag button {
+    background: none;
+    border: none;
+    color: #775591;
+    padding: 0;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.book-club-page .genre-tag button:hover {
+    color: #5d4372;
 }
 
 .join-button {
-    background-color: #007bff;
+    background-color: #775591;
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
+    padding: 8px 16px;
+    border-radius: 6px;
     cursor: pointer;
     align-self: flex-start;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
 }
 
-.book-club-page .book-club-listing {
-    position: relative;
-    font-family: sans-serif;
-    padding: 20px;
-    color: white;
-  }
-  
+.join-button:hover {
+    background-color: #5d4372;
+}
 
-.create-button {
+.book-club-page .create-club-btn {
     position: absolute;
-  top: 20px;
-  right: 20px;
-  background-color: #775591;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  border-radius: 6px;
-  cursor: pointer;
-  width: auto;
-  max-width: 200px;
-  white-space: nowrap;
-  transition: background-color 0.3s ease;
+    top: 20px;
+    right: 20px;
+    background-color: #775591;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    width: auto;
+    max-width: 200px;
+    white-space: nowrap;
+    transition: background-color 0.3s ease;
+    z-index: 999;
 }
-  
-.create-button:hover {
-    background-color: #684b81;
+
+.book-club-page .create-club-btn:hover {
+    background-color: #5d4372;
 }
 
 .book-club-item.clickable {
     cursor: pointer;
-    transition: transform 0.2s ease;
-  }
-  
-  .book-club-item.clickable:hover {
-    transform: scale(1.02);
-    box-shadow: 0 0 12px rgba(0,0,0,0.2);
-  }
-  .book-club-item.clickable-unjoined {
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-  
-  .book-club-item.clickable-unjoined:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 16px rgba(119, 85, 145, 0.3); /* purple-ish glow */
-  }
+}
 
-  .modal-overlay {
+.book-club-item.clickable:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+}
+
+.book-club-item.clickable-unjoined {
+    cursor: pointer;
+}
+
+.book-club-item.clickable-unjoined:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 20px rgba(119, 85, 145, 0.2);
+}
+
+.modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -163,36 +218,203 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 999;
-  }
-  
-  .modal-content {
-    background-color: #f7f2ef;
-    padding: 30px 40px;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: #ffffff;
+    padding: 32px;
     border-radius: 12px;
     width: 90%;
     max-width: 500px;
-    color: #443329;
-    text-align: left;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
-  }
-  .modal-content h2 {
+    color: #333;
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    z-index: 1001;
+}
+
+.modal-content h2 {
+    margin-bottom: 32px;
+    color: #333;
+    font-size: 24px;
+    font-weight: 500;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 28px;
+}
+
+.form-group:last-of-type {
+    margin-bottom: 24px;
+}
+
+.form-group label {
+    display: block;
     margin-bottom: 10px;
-  }
-  
-  .modal-content p {
-    margin: 8px 0;
-  }
-  
-  .modal-content button {
-    margin-top: 20px;
-    padding: 10px 16px;
+    color: #666;
+    font-size: 16px;
+}
+
+.form-group input[type="text"],
+.form-group textarea {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 15px;
+    background-color: #f5f5f5;
+    box-sizing: border-box;
+}
+
+.form-group textarea {
+    min-height: 120px;
+    resize: vertical;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.image-upload-container {
+    border: 2px dashed #e9e3f0;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    background-color: #f8f4fb;
+    margin-bottom: 28px;
+    transition: border-color 0.3s ease;
+}
+
+.image-upload-container:hover {
+    border-color: #775591;
+}
+
+.image-upload-container input[type="file"] {
+    display: none;
+}
+
+.image-upload-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    color: #775591;
+}
+
+.image-upload-label span {
+    font-size: 14px;
+    color: #666;
+}
+
+.upload-icon {
+    width: 40px;
+    height: 40px;
+    background-color: #e9e3f0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+}
+
+.upload-icon svg {
+    width: 24px;
+    height: 24px;
+    color: #775591;
+}
+
+.genre-input-container {
+    margin-bottom: 12px;
+}
+
+.genre-input-container select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f5f5f5;
+    margin-bottom: 8px;
+    font-size: 15px;
+    color: #333;
+}
+
+.genre-input-container button {
+    width: 100%;
+    padding: 12px;
+    background-color: #f8f4fb;
+    color: #775591;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+}
+
+.genre-input-container button:hover {
+    background-color: #e9e3f0;
+}
+
+.genre-input-container button:disabled {
+    background-color: #e9e3f0;
+    color: #999;
+    cursor: not-allowed;
+}
+
+.modal-buttons {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.modal-buttons button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.modal-buttons button[type="submit"] {
+    background-color: #775591;
+    color: white;
+    font-weight: 500;
+    order: 1;
+}
+
+.modal-buttons button[type="submit"]:hover {
+    background-color: #5d4372;
+}
+
+.modal-buttons button[type="button"] {
+    background-color: #f8f4fb;
+    color: #775591;
+    order: 2;
+}
+
+.modal-buttons button[type="button"]:hover {
+    background-color: #e9e3f0;
+}
+
+.modal-buttons .create-button {
     background-color: #775591;
     color: white;
     border: none;
-    border-radius: 6px;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 4px;
     cursor: pointer;
-  }
-  .modal-content button:hover {
-    background-color: #684b81;
-  }
+    width: 100%;
+    transition: background-color 0.3s ease;
+}
+
+.modal-buttons .create-button:hover {
+    background-color: #5d4372;
+}
