@@ -40,8 +40,8 @@ export const useClubStore = create((set) => ({
             // Process the clubs data to ensure members is properly handled
             const processedClubs = res.data.data.map(club => ({
                 ...club,
-                members: club.members || [],
-                membersCount: club.members?.length || 0
+                members: club.roles.map(role => role.user),
+                membersCount: club.roles.length
             }));
             
             console.log('Processed clubs:', processedClubs);
@@ -63,9 +63,9 @@ export const useClubStore = create((set) => ({
         try {
             const res = await axiosInstance.get(`/clubs/${clubId}`);
             const club = {
-                ...res.data,
-                members: res.data.members || [],
-                membersCount: res.data.members?.length || 0
+                ...res.data.data,
+                members: res.data.data.roles.map(role => role.user),
+                membersCount: res.data.data.roles.length
             };
             set({ currentClub: club });
             return club;

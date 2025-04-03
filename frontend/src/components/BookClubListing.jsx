@@ -225,7 +225,7 @@ const BookClubListing = () => {
                     <span key={index} className="genre-tag">{genre}</span>
                   ))}
                 </div>
-                {club.members?.includes(authUser?._id) ? (
+                {club.roles?.some(role => role.user === authUser?._id) ? (
                   <button 
                     className="join-button joined"
                     onClick={(e) => {
