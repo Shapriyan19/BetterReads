@@ -4,6 +4,26 @@
     background-color: #F4F1F9;
     overflow-y: auto;
     width: 100vw;
+    display: flex;
+    flex-direction: column;
+}
+
+.book-club-header {
+    width: 100%;  
+    background-color: #000000;
+    backdrop-filter: blur(6px);
+    box-sizing: border-box;  
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 30px;
+    height: 60px;
+}
+
+.book-club-title {
+    font-size: 30px;
+    font-weight: bold;
+    color: #c7c8d7; 
 }
 
 .book-club-page .book-club-listing {
@@ -11,6 +31,7 @@
     padding: 20px;
     color: #333;
     position: relative;
+    flex: 1;
 }
 
 .book-club-page .back-button {

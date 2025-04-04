@@ -193,6 +193,10 @@ const BookClubListing = () => {
 
   return (
     <div className="book-club-page">
+      <header className="book-club-header">
+        <div className="book-club-title">Book Clubs</div>
+      </header>
+
       <div className="book-club-listing">
         <button className="back-button" onClick={handleBack}>
           &lt; Back
@@ -213,9 +217,6 @@ const BookClubListing = () => {
             </>
           )}
         </div>
-
-        <h1>Book Clubs</h1>
-        <p>Discover and join online book discussion forums that match your reading interests. Connect with fellow readers and participate in thoughtful literary conversations.</p>
 
         <div className="search-bar">
           <input 
