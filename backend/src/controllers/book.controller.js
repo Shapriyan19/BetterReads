@@ -240,7 +240,7 @@ export const postReview=async (req,res,next)=>{
         const {firstname,lastname,bookName,profilePic,stars,review}=req.body;
         var userName=firstname+lastname;
         if(!userName || !bookName || !stars){
-            res.status(400).json({message: "All field except review are required"});
+            res.status(400).json({message: "Both rating and review are required"});
         }
 
         // Validate star rating
@@ -262,7 +262,7 @@ export const postReview=async (req,res,next)=>{
         };
     } catch (error) {
         console.log("error in postReview: ",error);
-        res.status(500).json({message:"Internal server error"});
+        return res.status(500).json({message:"Internal server error"});
     }
 };
 
@@ -271,19 +271,19 @@ export const getReview=async (req,res)=>{
         const bookName = req.body.bookName || req.query.bookName;
 
         if (!bookName){
-            res.status(400).json({message: "All field except review are required"});
+            res.status(400).json({message: "Book name is required"});
         }
         const reviews=await Review.find({bookName:bookName});
         if (!reviews || reviews.length === 0) {
             return res.status(200).json({ message: "No reviews found for this book", reviews: [] });
         }
         else{
-            res.status(200).json({reviews});
+            return res.status(200).json({reviews});
         }
 
     } catch (error) {
         console.log("error in getReview: ",error);
-        res.status(500).json({message:"Internal server error"});
+        return res.status(500).json({message:"Internal server error"});
     }
 };
 
@@ -381,5 +381,68 @@ export const getPlaylist = async (req, res) => {
 //     const tracks=req.body.songs;
 //     res.status(200).json({tracks});
 // }
+
+export const postRating = async (req, res) => {
+    try {
+        const { userName, bookName, stars } = req.body;
+        
+        if (!userName || !bookName || !stars) {
+            return res.status(400).json({ message: "Both rating and review are required" });
+        }
+        // Validate star rating
+        if (stars < 1 || stars > 5 || !Number.isInteger(stars)) {
+            return res.status(400).json({ message: "Star rating must be an integer between 1 and 5" });
+        }
+        // Create a new review with just the rating
+        const newReview = new Review({
+            userName,
+            bookName,
+            stars,
+            review: "" // Empty review for rating-only submissions
+        });
+        await newReview.save();
+        
+        // Calculate and return the average rating
+        const allReviews = await Review.find({ bookName });
+        const averageRating = allReviews.reduce((acc, review) => acc + review.stars, 0) / allReviews.length;
+        
+        return res.status(200).json({
+            message: "Rating submitted successfully",
+            averageRating: averageRating.toFixed(1),
+            totalRatings: allReviews.length
+        });
+    } catch (error) {
+        console.log("error in postRating: ", error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+};
+export const getAverageRating = async (req, res) => {
+    try {
+        const { bookName } = req.query;
+        
+        if (!bookName) {
+            return res.status(400).json({ message: "Book name is required" });
+        }
+        
+        const reviews = await Review.find({ bookName });
+        
+        if (!reviews || reviews.length === 0) {
+            return res.status(200).json({
+                averageRating: 0,
+                totalRatings: 0
+            });
+        }
+        
+        const averageRating = reviews.reduce((acc, review) => acc + review.stars, 0) / reviews.length;
+        
+        return res.status(200).json({
+            averageRating: averageRating.toFixed(1),
+            totalRatings: reviews.length
+        });
+    } catch (error) {
+        console.log("error in getAverageRating: ", error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+};
 
 
