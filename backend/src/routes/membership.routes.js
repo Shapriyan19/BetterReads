@@ -21,7 +21,7 @@ router.put('/:clubId/demote/:userId', protectRoute, isClubAdmin, demoteRole);
 router.delete('/:clubId/members/:userId', protectRoute, isClubAdmin, removeMember);
 
 // Get all members of a club
-router.get('/:clubId/members', protectRoute, isClubMember, getMembers);
+router.get('/:clubId/members', protectRoute, getMembers);
 
 // Transfer club ownership (main admin only)
 router.put('/:clubId/transfer-ownership/:userId', protectRoute, transferOwnership);

@@ -228,7 +228,7 @@ export const removeMember=async (req, res) => {
     }
 };
 
-export const getMembers=async (req, res) => {
+export const getMembers = async (req, res) => {
     try {
         const club = await Club.findById(req.params.clubId);
         
@@ -239,18 +239,23 @@ export const getMembers=async (req, res) => {
             });
         }
         
-        // Fetch user details for all members
+        // Get all user IDs from roles
         const memberIds = club.roles.map(role => role.user);
+        
+        // Fetch user details for all members
         const members = await User.find(
             { _id: { $in: memberIds } },
-            'firstName lastName email profilePic location'
+            'firstName lastName'  // Only get necessary fields
         );
         
-        // Combine with role information
+        // Combine user details with their roles
         const membersWithRoles = members.map(member => {
             const role = club.roles.find(r => r.user === member._id.toString());
             return {
-                user: member,
+                user: {
+                    firstName: member.firstName,
+                    lastName: member.lastName
+                },
                 role: role.role
             };
         });
@@ -261,6 +266,7 @@ export const getMembers=async (req, res) => {
             data: membersWithRoles
         });
     } catch (error) {
+        console.error('Error in getMembers:', error);
         res.status(500).json({
             success: false,
             message: 'Server error'

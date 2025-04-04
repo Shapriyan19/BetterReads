@@ -68,9 +68,6 @@ const BookClubDetails = ({ isOwner = false, isMember = false, club, onClose }) =
         className="club-details-card"
         onClick={(e) => e.stopPropagation()} // prevents bubbling
       >
-        <button className="close-button" onClick={onClose}>
-          ×
-        </button>
         {(isOwner || isMember) ? (
           <>
             <div className="tabs">

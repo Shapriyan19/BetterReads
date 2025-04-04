@@ -33,9 +33,8 @@ export const protectRoute=async(req,res,next)=>{
 export const isClubAdmin = async (req, res, next) => {
     const clubId = req.params.clubId;
     
-    
     try {
-        const club = await Club.default.findById(clubId);
+        const club = await Club.findById(clubId);
         
         if (!club) {
             return res.status(404).json({ success: false, message: 'Club not found' });
@@ -63,7 +62,7 @@ export const isClubMember = async (req, res, next) => {
     const clubId = req.params.clubId;
     
     try {
-        const club = await Club.default.findById(clubId);
+        const club = await Club.findById(clubId);
         
         if (!club) {
             return res.status(404).json({ success: false, message: 'Club not found' });

@@ -13,15 +13,28 @@ export const useClubStore = create((set) => ({
     createClub: async (formData) => {
         set({ isLoading: true, error: null });
         try {
+            // Log the FormData contents
+            console.log('Sending FormData:');
+            for (let pair of formData.entries()) {
+                console.log(pair[0] + ': ' + pair[1]);
+            }
+
             const res = await axiosInstance.post("/clubs", formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
+                withCredentials: true
             });
-            toast.success("Book club created successfully!");
-            return res.data;
+            
+            if (res.data.success) {
+                toast.success("Book club created successfully!");
+                return res.data;
+            } else {
+                throw new Error(res.data.message || "Failed to create book club");
+            }
         } catch (error) {
             console.error('Error creating book club:', error);
+            console.error('Error response:', error.response?.data);
             set({ error: error.response?.data?.message || "Failed to create book club" });
             toast.error(error.response?.data?.message || "Failed to create book club");
             throw error;
@@ -30,11 +43,55 @@ export const useClubStore = create((set) => ({
         }
     },
 
+    // Join a club
+    joinClub: async (clubId) => {
+        set({ isLoading: true, error: null });
+        try {
+            const res = await axiosInstance.post(`/clubs/${clubId}/join`);
+            toast.success("Successfully joined the club!");
+            
+            // Update clubs and userClubs state locally
+            set((state) => {
+                const updatedClubs = state.clubs.map(club => {
+                    if (club._id === clubId) {
+                        // Add the current user to the club's roles
+                        const updatedClub = {
+                            ...club,
+                            roles: [...club.roles, { role: 'member', user: res.data.data.roles[res.data.data.roles.length - 1].user }],
+                            membersCount: club.membersCount + 1
+                        };
+                        return updatedClub;
+                    }
+                    return club;
+                });
+
+                // Add the joined club to userClubs
+                const joinedClub = updatedClubs.find(club => club._id === clubId);
+                const updatedUserClubs = [...state.userClubs, joinedClub];
+
+                return {
+                    clubs: updatedClubs,
+                    userClubs: updatedUserClubs,
+                    isLoading: false
+                };
+            });
+            
+            return res.data;
+        } catch (error) {
+            console.error('Error joining club:', error);
+            set({ error: error.response?.data?.message || "Failed to join club", isLoading: false });
+            toast.error(error.response?.data?.message || "Failed to join club");
+            throw error;
+        }
+    },
+
     // Get all book clubs
     getClubs: async () => {
         set({ isLoading: true, error: null });
         try {
+            console.log('Fetching clubs...');
             const res = await axiosInstance.get("/clubs");
+            console.log('Clubs response:', res.data);
             
             // Process the clubs data to ensure members is properly handled
             const processedClubs = res.data.data.map(club => ({
@@ -43,10 +100,12 @@ export const useClubStore = create((set) => ({
                 membersCount: club.roles.length
             }));
             
+            console.log('Processed clubs:', processedClubs);
             set({ clubs: processedClubs, isLoading: false });
             return processedClubs;
         } catch (error) {
             console.error('Error fetching book clubs:', error);
+            console.error('Error response:', error.response?.data);
             set({ error: error.response?.data?.message || "Failed to fetch book clubs", isLoading: false });
             toast.error(error.response?.data?.message || "Failed to fetch book clubs");
             throw error;
@@ -129,6 +188,27 @@ export const useClubStore = create((set) => ({
             set({ error: error.response?.data?.message || "Failed to fetch your clubs", isLoading: false });
             toast.error(error.response?.data?.message || "Failed to fetch your clubs");
             throw error;
+        }
+    },
+
+    // Get club members with details
+    getClubMembers: async (clubId) => {
+        set({ isLoading: true, error: null });
+        try {
+            const res = await axiosInstance.get(`/membership/${clubId}/members`);
+            console.log('Members response:', res.data); // Add logging
+            if (res.data.success) {
+                return res.data.data;
+            } else {
+                throw new Error(res.data.message || 'Failed to fetch members');
+            }
+        } catch (error) {
+            console.error('Error fetching club members:', error);
+            set({ error: error.response?.data?.message || "Failed to fetch club members", isLoading: false });
+            toast.error(error.response?.data?.message || "Failed to fetch club members");
+            throw error;
+        } finally {
+            set({ isLoading: false });
         }
     }
 })); 

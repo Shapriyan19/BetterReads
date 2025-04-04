@@ -5,9 +5,10 @@ export const createClub = async (req, res) => {
     try {
         console.log('Received request body:', req.body);
         console.log('Received files:', req.file);
+        console.log('User info:', req.user);
         
-        const { name, description, adminName } = req.body;
-        console.log('Extracted fields:', { name, description, adminName });
+        const { name, description, adminName, genres, roles } = req.body;
+        console.log('Extracted fields:', { name, description, adminName, genres, roles });
         
         // Validate required fields
         if (!name || !name.trim()) {
@@ -19,22 +20,24 @@ export const createClub = async (req, res) => {
         }
 
         if (!description || !description.trim()) {
+            console.log('Description validation failed:', { description });
             return res.status(400).json({
                 success: false,
                 message: "Club description is required"
             });
         }
 
-        let genres = [];
-        let roles = [];
+        let parsedGenres = [];
+        let parsedRoles = [];
         
         // Parse genres
         try {
             if (req.body.genres) {
-                genres = JSON.parse(req.body.genres);
-                if (!Array.isArray(genres)) {
+                parsedGenres = JSON.parse(req.body.genres);
+                if (!Array.isArray(parsedGenres)) {
                     throw new Error('Genres must be an array');
                 }
+                console.log('Parsed genres:', parsedGenres);
             }
         } catch (error) {
             console.error("Error parsing genres:", error);
@@ -47,24 +50,17 @@ export const createClub = async (req, res) => {
         // Parse roles
         try {
             if (req.body.roles) {
-                roles = JSON.parse(req.body.roles);
-                if (!Array.isArray(roles)) {
+                parsedRoles = JSON.parse(req.body.roles);
+                if (!Array.isArray(parsedRoles)) {
                     throw new Error('Roles must be an array');
                 }
-                // Validate each role object
-                const validRoles = roles.every(role => 
-                    role.role && typeof role.role === 'string' &&
-                    role.user && typeof role.user === 'string'
-                );
-                if (!validRoles) {
-                    throw new Error('Invalid role format');
-                }
+                console.log('Parsed roles:', parsedRoles);
             }
         } catch (error) {
             console.error("Error parsing roles:", error);
             return res.status(400).json({ 
                 success: false,
-                message: "Invalid roles format. Each role must have 'role' and 'user' fields."
+                message: "Invalid roles format. Please provide a valid array of roles."
             });
         }
 
@@ -95,8 +91,8 @@ export const createClub = async (req, res) => {
             adminName: adminName || `${req.user.firstName} ${req.user.lastName}`,
             description: description.trim(),
             image: imageUrl,
-            genres,
-            roles: roles.length > 0 ? roles : [{
+            genres: parsedGenres,
+            roles: parsedRoles.length > 0 ? parsedRoles : [{
                 role: 'admin',
                 user: req.user._id.toString()
             }]
@@ -117,16 +113,18 @@ export const createClub = async (req, res) => {
     }
 };
 
-export const getClubs= async (req, res) => {
+export const getClubs = async (req, res) => {
     try {
-        const clubs = await Club.find();
+        console.log('Fetching all clubs...');
+        const clubs = await Club.find().populate('roles.user', 'firstName lastName');
+        console.log('Found clubs:', clubs);
         
         res.status(200).json({
             success: true,
-            count: clubs.length,
             data: clubs
         });
     } catch (error) {
+        console.error('Error fetching clubs:', error);
         res.status(500).json({
             success: false,
             message: 'Server error'
