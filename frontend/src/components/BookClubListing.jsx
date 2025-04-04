@@ -130,8 +130,11 @@ const BookClubListing = () => {
                 roles: []
             });
             
-            // Refresh the clubs list
-            getClubs();
+            // Refresh both all clubs and user clubs
+            await getClubs();
+            if (authUser) {
+                await getUserClubs();
+            }
         }
     } catch (error) {
         console.error('Error creating club:', error);

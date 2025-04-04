@@ -27,6 +27,12 @@ export const useClubStore = create((set) => ({
             });
             
             if (res.data.success) {
+                // Add the new club to the clubs array
+                set((state) => ({
+                    clubs: [...state.clubs, res.data.data],
+                    userClubs: [...state.userClubs, res.data.data]
+                }));
+                
                 toast.success("Book club created successfully!");
                 return res.data;
             } else {
