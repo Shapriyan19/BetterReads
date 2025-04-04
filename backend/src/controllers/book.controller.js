@@ -111,11 +111,22 @@ export const recommendedBooks= async (req,res)=>{
         
         let booksMap = new Map(); // Use a Map to store unique books by key
         
+        // Calculate how many books to fetch per preference to get 30 total
+        const booksPerPreference = Math.ceil(30 / preferences.length);
+        
         for (let i=0;i<preferences.length;i++){
             const preference_book=await fetch(`https://openlibrary.org/search.json?q=subject:${preferences[i]}&fields=key,title,author_name,first_publish_year,cover_i,subject,edition_count,isbn`).then(a=>a.json());
             if (preference_book["docs"]) {
-                for (let j = 0; j < Math.min(10, preference_book["docs"].length); j++) {
-                    const book = preference_book["docs"][j];
+                // Filter books to ensure they match the preference
+                const matchingBooks = preference_book["docs"].filter(book => {
+                    // Check if any of the book's subjects match the current preference
+                    return book.subject?.some(subject => 
+                        subject.toLowerCase().includes(preferences[i].toLowerCase())
+                    );
+                });
+
+                for (let j = 0; j < Math.min(booksPerPreference, matchingBooks.length); j++) {
+                    const book = matchingBooks[j];
                     // Only add the book if we haven't seen its key before
                     if (!booksMap.has(book.key)) {
                         // Find the first subject that matches user's preferences
@@ -125,18 +136,78 @@ export const recommendedBooks= async (req,res)=>{
                             )
                         );
                         
-                        // If no matching subject found, use the first available subject or the current preference
-                        book.primary_subject = matchingSubject || book.subject?.[0] || preferences[i];
+                        // If no matching subject found, use the current preference
+                        book.primary_subject = matchingSubject || preferences[i];
                         booksMap.set(book.key, book);
                     }
                 }
             }
         }
         
-        // Convert Map values back to array
-        const books = Array.from(booksMap.values());
+        // Convert Map values back to array and ensure we have exactly 30 books
+        let books = Array.from(booksMap.values());
+        
+        // If we have fewer than 30 books, fetch more from the first preference
+        if (books.length < 30) {
+            const firstPreference = preferences[0];
+            const additionalBooks = await fetch(`https://openlibrary.org/search.json?q=subject:${firstPreference}&fields=key,title,author_name,first_publish_year,cover_i,subject,edition_count,isbn`).then(a=>a.json());
+            
+            if (additionalBooks["docs"]) {
+                // Filter additional books to ensure they match the preference
+                const matchingAdditionalBooks = additionalBooks["docs"].filter(book => 
+                    book.subject?.some(subject => 
+                        subject.toLowerCase().includes(firstPreference.toLowerCase())
+                    )
+                );
+
+                for (let i = 0; i < matchingAdditionalBooks.length && books.length < 30; i++) {
+                    const book = matchingAdditionalBooks[i];
+                    if (!booksMap.has(book.key)) {
+                        book.primary_subject = firstPreference;
+                        books.push(book);
+                        booksMap.set(book.key, book);
+                    }
+                }
+            }
+        }
+        
+        // If we still have fewer than 30 books, fetch from general fiction
+        if (books.length < 30) {
+            const fictionBooks = await fetch(`https://openlibrary.org/search.json?q=subject:Fiction&fields=key,title,author_name,first_publish_year,cover_i,subject,edition_count,isbn`).then(a=>a.json());
+            
+            if (fictionBooks["docs"]) {
+                // Only add fiction books if they match at least one preference
+                const matchingFictionBooks = fictionBooks["docs"].filter(book => 
+                    book.subject?.some(subject => 
+                        preferences.some(pref => 
+                            subject.toLowerCase().includes(pref.toLowerCase())
+                        )
+                    )
+                );
+
+                for (let i = 0; i < matchingFictionBooks.length && books.length < 30; i++) {
+                    const book = matchingFictionBooks[i];
+                    if (!booksMap.has(book.key)) {
+                        // Find the first subject that matches user's preferences
+                        const matchingSubject = book.subject?.find(subject => 
+                            preferences.some(pref => 
+                                subject.toLowerCase().includes(pref.toLowerCase())
+                            )
+                        );
+                        
+                        book.primary_subject = matchingSubject || 'Fiction';
+                        books.push(book);
+                        booksMap.set(book.key, book);
+                    }
+                }
+            }
+        }
+        
+        // Ensure we have exactly 30 books
+        books = books.slice(0, 30);
+        
         return res.status(200).json(books);
-    }catch(error){
+    } catch(error) {
         console.log("error in recommendedBooks: ",error);
         res.status(500).json({message:"Internal server error"});
     }

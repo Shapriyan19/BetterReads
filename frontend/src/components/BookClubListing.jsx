@@ -244,17 +244,8 @@ const BookClubListing = () => {
                   ))}
                 </div>
                 {(() => {
-                  console.log('Club:', club.name);
-                  console.log('Club roles:', club.roles);
-                  console.log('Auth user:', authUser);
-                  const isMember = club.roles?.some(role => {
-                    console.log('Checking role:', role);
-                    // Compare both the role.user (string ID) and role.user._id (object ID) cases
-                    return role.user === authUser?._id || role.user?._id === authUser?._id;
-                  });
-                  console.log('Is member:', isMember);
-                  
-                  if (authUser && isMember) {
+                  // In My Book Clubs view, always show Enter Club
+                  if (showMyClubs) {
                     return (
                       <button 
                         className="join-button joined"
@@ -266,7 +257,23 @@ const BookClubListing = () => {
                         Enter Club
                       </button>
                     );
-                  } else if (!authUser) {
+                  }
+
+                  // In All Clubs view, check membership status
+                  console.log('Checking membership for club:', club.name);
+                  console.log('Club roles:', club.roles);
+                  console.log('Auth user:', authUser?._id);
+                  
+                  const isMember = club.roles?.some(role => {
+                    console.log('Checking role:', role);
+                    const isMatch = role.user === authUser?._id;
+                    console.log('Is match:', isMatch);
+                    return isMatch;
+                  });
+                  
+                  console.log('Is member:', isMember);
+                  
+                  if (!authUser) {
                     return (
                       <button 
                         className="join-button"
@@ -276,6 +283,18 @@ const BookClubListing = () => {
                         }}
                       >
                         Apply to Join
+                      </button>
+                    );
+                  } else if (isMember) {
+                    return (
+                      <button 
+                        className="join-button joined"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/bookclub/${club._id}`);
+                        }}
+                      >
+                        Enter Club
                       </button>
                     );
                   } else if (club.applications?.includes(authUser._id)) {
