@@ -8,10 +8,11 @@ import bookCover from "../assets/placeholder.jpg";
 import { useAuthStore } from "../store/useAuthStore";
 import { useBookStore } from "../store/useBookStore";
 import toast from "react-hot-toast";
+import { Dialog, DialogTitle, DialogContent, Box, Typography } from '@mui/material';
 
 export default function HomePage () {
     const { logout, authUser } = useAuthStore();
-    const { recommendedBooks, getRecommendedBooks, getBookDetails, searchBooks, isLoading, isLoadingDetails } = useBookStore();
+    const { recommendedBooks, getRecommendedBooks, getBookDetails, searchBooks, isLoading, isLoadingDetails, getReviews, postReview, postRating, getAverageRating, bookReviews, isLoadingReviews, averageRating, totalRatings } = useBookStore();
     
     /* displaying availability */
     const [branches, setBranches] = useState([]);
@@ -27,6 +28,9 @@ export default function HomePage () {
     const [isSearching, setIsSearching] = useState(false);
     const [recommendedBooksLoaded, setRecommendedBooksLoaded] = useState(false);
     const [showAllCategories, setShowAllCategories] = useState(false);
+    const [reviewText, setReviewText] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [open, setOpen] = useState(false);
 
     const navigate = useNavigate();
 
@@ -94,8 +98,9 @@ export default function HomePage () {
     });
 
     const openModal = async (book) => {
+        setSelectedBook(book);
+        setOpen(true);
         try {
-            setSelectedBook(book);
             const isbn = book.isbn?.[0] || book.isbn_13?.[0] || book.isbn_10?.[0];
             if (isbn) {
                 const bookDetails = await getBookDetails(isbn);
@@ -103,18 +108,23 @@ export default function HomePage () {
                     ...prev,
                     ...bookDetails
                 }));
-            } else {
-                console.log('No ISBN available for this book');
+            }
+
+            await Promise.all([
+                getReviews(book.title),
+                getAverageRating(book.title)
+            ]);
+        } catch (error) {
+            console.error('Error fetching book data:', error);
+            if (!isbn) {
                 toast.error('Book details not available - ISBN missing');
             }
-        } catch (error) {
-            console.error('Error fetching book details:', error);
-            toast.error('Failed to load book details');
         }
     };
 
-    const closeModal = () => {
+    const handleClose = () => {
         setSelectedBook(null);
+        setOpen(false);
     };
 
     useEffect(() => {
@@ -161,6 +171,53 @@ export default function HomePage () {
             }
         } else {
             toast.error('Please enter at least 3 characters to search');
+        }
+    };
+
+    const handleSubmit = async () => {
+        if (!rating) {
+            toast.error("Please select a rating");
+            return;
+        }
+
+        setIsSubmitting(true);
+        try {
+            // If there's review text, submit both rating and review
+            if (reviewText.trim() !== "") {
+                const reviewData = {
+                    firstname: authUser.firstName || "",
+                    lastname: authUser.lastName || "",
+                    bookName: selectedBook.title,
+                    profilePic: authUser.profilePic || "",
+                    stars: rating,
+                    review: reviewText
+                };
+                
+                await postReview(reviewData);
+                toast.success("Review submitted successfully!");
+                setReviewText("");
+            } else {
+                // If no review text, just submit the rating
+                const ratingData = {
+                    userName: authUser.firstName + authUser.lastName,
+                    bookName: selectedBook.title,
+                    stars: rating
+                };
+                await postRating(ratingData);
+                toast.success("Rating submitted successfully!");
+            }
+            
+            // Refresh reviews and average rating
+            await Promise.all([
+                getReviews(selectedBook.title),
+                getAverageRating(selectedBook.title)
+            ]);
+            
+        } catch (error) {
+            console.error("Error submitting:", error);
+            toast.error(error.response?.data?.message || "Failed to submit");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -270,9 +327,9 @@ export default function HomePage () {
             </main>
 
             {selectedBook && (
-                <div className="modal-overlay" onClick={closeModal}>
+                <div className="modal-overlay" onClick={handleClose}>
                     <div className="modal" onClick={(e) => e.stopPropagation()}>
-                        <span className="close-icon" onClick={closeModal}>&times;</span>
+                        <span className="close-icon" onClick={handleClose}>&times;</span>
                         {isLoadingDetails ? (
                             <div className="modal-content loading-container">
                                 <Loader2 className="animate-spin" size={24} />
@@ -333,12 +390,16 @@ export default function HomePage () {
                                     </div>
                                     <p><strong>ISBN:</strong> {selectedBook.isbn?.[0] || selectedBook.isbn_13?.[0] || selectedBook.isbn_10?.[0] || 'Not available'}</p>
                                     
-                                    {rating && (
-                                        <div className="total-book-rating">
-                                            <Rating name="read-only" value={rating} readOnly />
-                                            <span className="rating-text">{rating} out of 5</span>
-                                        </div>
-                                    )}
+                                    <Box sx={{ display: 'flex', alignItems: 'center', mt: 1, mb: 2 }}>
+                                        <Rating 
+                                            value={averageRating} 
+                                            precision={0.5} 
+                                            readOnly 
+                                        />
+                                        <Typography variant="body2" sx={{ ml: 1 }}>
+                                            ({totalRatings} {totalRatings === 1 ? 'rating' : 'ratings'})
+                                        </Typography>
+                                    </Box>
                                     
                                     <p><strong>Description:</strong></p>
                                     <div className="description-section">
@@ -346,18 +407,67 @@ export default function HomePage () {
                                     </div>
                                     
                                     <div className="rating-container">
-                                        <h3 className="modal-label"><strong>Give a Rating:</strong></h3>
+                                        <h3 className="modal-label"><strong>Rate this book:</strong></h3>
                                         <Rating
-                                            name="simple-controlled"
                                             value={rating}
-                                            onChange={(event, newValue) => {
-                                                setRating(newValue);
-                                            }}
+                                            onChange={(event, newValue) => setRating(newValue)}
+                                            precision={1}
                                         />
+                                        <Typography variant="body2" sx={{ ml: 1 }}>
+                                            {rating ? `You rated this book ${rating} stars` : 'Click to rate'}
+                                        </Typography>
                                     </div>
                                     
                                     <div className="review-container">
-                                        <h3 className="modal-label"><strong>Make a Review:</strong></h3>
+                                        <h3 className="modal-label"><strong>Write a review (optional):</strong></h3>
+                                        <textarea
+                                            placeholder="Write your review here..."
+                                            value={reviewText}
+                                            onChange={(e) => setReviewText(e.target.value)}
+                                            className="review-textarea"
+                                        />
+
+                                        <button 
+                                            className="submit-button" 
+                                            onClick={handleSubmit}
+                                            disabled={isSubmitting || !rating}
+                                        >
+                                            {isSubmitting ? "Submitting..." : "Submit"}
+                                        </button>
+
+                                        <div className="reviews-list">
+                                            <h4>Reviews:</h4>
+                                            {isLoadingReviews ? (
+                                                <div className="loading-container">
+                                                    <Loader2 className="animate-spin" size={24} />
+                                                    <p>Loading reviews...</p>
+                                                </div>
+                                            ) : bookReviews && bookReviews.length > 0 ? (
+                                                bookReviews.map((review, index) => (
+                                                    <div key={index} className="review-item">
+                                                        <div className="review-header">
+                                                            <div className="review-user">
+                                                                {review.profilePic ? (
+                                                                    <img src={review.profilePic} alt={review.userName} className="review-profile-pic" />
+                                                                ) : (
+                                                                    <div className="review-profile-placeholder">{review.userName.charAt(0)}</div>
+                                                                )}
+                                                                <span className="review-username">{review.userName}</span>
+                                                            </div>
+                                                            <div className="review-rating">
+                                                                <Rating name="read-only" value={review.stars} readOnly size="small" />
+                                                            </div>
+                                                        </div>
+                                                        <p className="review-text">{review.review}</p>
+                                                        <div className="review-date">
+                                                            {new Date(review.createdAt).toLocaleDateString()}
+                                                        </div>
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <p className="no-reviews">No reviews yet. Be the first to review this book!</p>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
