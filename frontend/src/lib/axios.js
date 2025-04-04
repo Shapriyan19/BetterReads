@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const axiosInstance = axios.create({
+const axiosInstance = axios.create({
     baseURL: "http://localhost:5001/api",
     withCredentials: true,
     headers: {
@@ -26,10 +26,12 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response?.status === 401) {
-            // Handle unauthorized access
+        // Only redirect if we're not already on the login page
+        if (error.response?.status === 401 && !window.location.pathname.includes('/login')) {
             window.location.href = '/login';
         }
         return Promise.reject(error);
     }
 );
+
+export default axiosInstance;

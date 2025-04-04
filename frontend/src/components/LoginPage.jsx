@@ -3,36 +3,41 @@ import "./LoginPage.css";
 import { Link, useNavigate } from "react-router-dom";
 import Logo from './BetterReadsWord';
 import { useAuthStore } from "../store/useAuthStore";
+import { toast } from "react-hot-toast";
 
 const LoginPage = () => { 
     const [email, setEmail] = useState(""); 
     const [password, setPassword] = useState(""); 
-    const [error, setError] = useState(""); 
-    const { login, isLoggingIn } = useAuthStore();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const { login } = useAuthStore();
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => { 
         e.preventDefault(); 
 
         if (!email || !password) {
-            setError("Both fields are required.");
+            toast.error("Both fields are required.");
             return;
         }
 
         // Basic email validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
-            setError("Please enter a valid email address.");
+            toast.error("Please enter a valid email address.");
             return;
         }
 
-        setError(""); 
+        if (isSubmitting) return;
+        setIsSubmitting(true);
 
         try {
             await login({ email, password });
             navigate("/home");
         } catch (error) {
-            setError(error.message || "Login failed. Please try again.");
+            const errorMessage = error.response?.data?.message || "Login failed. Please try again.";
+            toast.error(errorMessage);
+        } finally {
+            setIsSubmitting(false);
         }
     }
 
@@ -41,9 +46,6 @@ const LoginPage = () => {
             <div className="login-box"> 
                 <div className="login-content">
                     <h2>Login</h2>
-
-                    {/* Show error message if there is an error */}
-                    {error && <p className="error-message">{error}</p>} 
                     
                     <form onSubmit={handleSubmit}>
                         <div className="input-group">
@@ -54,7 +56,7 @@ const LoginPage = () => {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)} 
                                 required 
-                                disabled={isLoggingIn}
+                                disabled={isSubmitting}
                             />
                         </div>
 
@@ -66,12 +68,12 @@ const LoginPage = () => {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)} 
                                 required 
-                                disabled={isLoggingIn}
+                                disabled={isSubmitting}
                             />
                         </div>
 
-                        <button type="submit" disabled={isLoggingIn}>
-                            {isLoggingIn ? "Logging in..." : "Login"}
+                        <button type="submit" disabled={isSubmitting}>
+                            {isSubmitting ? "Logging in..." : "Login"}
                         </button>
 
                         {/* Sign Up & Forgot Password Links */}

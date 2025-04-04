@@ -1,8 +1,8 @@
 import { create } from "zustand";
-import { axiosInstance } from "../lib/axios.js";
-import toast from "react-hot-toast";
+import axiosInstance from "../lib/axios";
+import { toast } from "react-hot-toast";
 
-export const useClubStore = create((set) => ({
+export const useClubStore = create((set, get) => ({
     clubs: [],
     userClubs: [],
     currentClub: null,
