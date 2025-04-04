@@ -4,80 +4,106 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: rgba(20, 20, 20, 0.5); /* slightly darker overlay */
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
-  }
-  
-  .club-details-card {
-    background-color: #ab9688; /* soft cream background */
+}
+
+.club-details-card {
+    background-color: #ffffff;
     width: 80%;
     max-width: 800px;
     height: 80vh;
-    border-radius: 16px;
-    padding: 30px;
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    padding: 15px 30px 30px 30px;
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-  }
-  
-  /* Tabs row */
-  .tabs {
+    position: relative;
+}
+
+.close-button {
+    position: absolute;
+    top: -15px;
+    right: 5px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #666;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+    z-index: 1001;
+}
+
+.close-button:hover {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+/* Tabs row */
+.tabs {
     display: flex;
     justify-content: space-around;
-    border-bottom: 2px solid #cbbeb6;
+    border-bottom: 2px solid #e9e3f0;
     margin-bottom: 20px;
-  }
-  
-  /* Individual tab */
-  .tab {
+    margin-top: 5px;
+}
+
+/* Individual tab */
+.tab {
     flex: 1;
     text-align: center;
     padding: 12px 0;
     cursor: pointer;
     font-weight: bold;
     color: #775591;
-    background-color: #e8dcd3;
+    background-color: #f8f4fb;
     border-bottom: 3px solid transparent;
     transition: background-color 0.3s, border-color 0.3s;
-  }
-  
-  /* Hover effect */
-  .tab:hover {
-    background-color: #d6c2b7;
-  }
-  
-  /* Active tab */
-  .tab.active {
-    background-color: #cbbeb6;
+}
+
+/* Hover effect */
+.tab:hover {
+    background-color: #e9e3f0;
+}
+
+/* Active tab */
+.tab.active {
+    background-color: #e9e3f0;
     border-bottom: 3px solid #775591;
-    color: #443329;
-  }
-  
-  .tab-content {
+    color: #333;
+}
+
+.tab-content {
     padding: 10px 20px;
-    color: #443329;
+    color: #333;
     flex-grow: 1;
-  }
-  
-  .tab-panel ul {
+}
+
+.tab-panel ul {
     padding-left: 20px;
-  }
-  
-  .tab-panel li {
+}
+
+.tab-panel li {
     margin-bottom: 8px;
-  }
-  
-  /* Optional: smooth fade-in for panel content */
-  .tab-panel {
+}
+
+/* Optional: smooth fade-in for panel content */
+.tab-panel {
     animation: fadeIn 0.3s ease;
-  }
-  
-  @keyframes fadeIn {
+}
+
+@keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
-  }
+}
   

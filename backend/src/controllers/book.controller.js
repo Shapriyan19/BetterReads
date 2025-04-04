@@ -340,45 +340,42 @@ export const getBookDetails=async (req,res)=>{
     }
 };
 
-// export const getPlaylist = async (req, res, next) => {
-//     try {
-//         const { bookCategory } = req.body || req.params;
+export const getPlaylist = async (req, res) => {
+    try {
+        const { bookCategory } = req.body || req.params;
 
-//         if (!bookCategory) {
-//             return res.status(400).json({ message: "Book Category is required" });
-//         }
+        if (!bookCategory) {
+            return res.status(400).json({ message: "Book Category is required" });
+        }
 
-//         const prompt = `can you give a playlist of 10 songs when I am reading a book of category or genre ${bookCategory}, just give the songs as json;`;
+        const prompt = `can you give a playlist of 10 songs when I am reading a book of category or genre ${bookCategory}, just give the songs as json;`;
 
-//         const result = await model.generateContent(prompt);
-//         if (!result || !result.response) {
-//             return res.status(500).json({ message: "Failed to generate AI playlist" });
-//         }
+        const result = await model.generateContent(prompt);
+        if (!result || !result.response) {
+            return res.status(500).json({ message: "Failed to generate AI playlist" });
+        }
 
-//         // Extract text response
-//         let playlistText = result.response.text();
+        // Extract text response
+        let playlistText = result.response.text();
 
-//         // Remove code block formatting (```json ... ```)
-//         playlistText = playlistText.replace(/```json|```/g, "").trim();
+        // Remove code block formatting (```json ... ```)
+        playlistText = playlistText.replace(/```json|```/g, "").trim();
 
-//         // Parse into JSON object
-//         let playlist;
-//         try {
-//             playlist = JSON.parse(playlistText);
-//         } catch (error) {
-//             return res.status(500).json({ message: "Invalid JSON format from AI response" });
-//         }
+        // Parse into JSON object
+        let playlist;
+        try {
+            playlist = JSON.parse(playlistText);
+        } catch (error) {
+            return res.status(500).json({ message: "Invalid JSON format from AI response" });
+        }
 
-        
-//         req.body.songs= {songs: playlist.songs};
-//         res.status(200).json({ songs: playlist.songs });
-//         // req.body.abc="abc";
-//         next();
-//     } catch (error) {
-//         console.log("Error in getPlaylist:", error);
-//         res.status(500).json({ message: "Internal server error" });
-//     }
-// };
+        // Return the playlist directly
+        return res.status(200).json(playlist);
+    } catch (error) {
+        console.log("Error in getPlaylist:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
 
 // export const getTracks = async (req,res) =>{
 //     const tracks=req.body.songs;

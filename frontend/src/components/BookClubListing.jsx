@@ -5,6 +5,7 @@ import { useClubStore } from '../store/useClubStore';
 import { useAuthStore } from '../store/useAuthStore';
 import { FiUpload } from 'react-icons/fi';
 import { toast } from 'react-hot-toast';
+import BookClubDetails from './BookClubDetails';
 
 const GENRE_OPTIONS = [
   'Fiction',
@@ -46,6 +47,7 @@ const BookClubListing = () => {
   const [clubName, setClubName] = useState('');
   const [clubImage, setClubImage] = useState(null);
   const [description, setDescription] = useState('');
+  const [selectedClub, setSelectedClub] = useState(null);
 
   // Fetch both all clubs and user clubs on component mount
   useEffect(() => {
@@ -163,12 +165,12 @@ const BookClubListing = () => {
 
   console.log('Filtered clubs:', filteredClubs);
 
-  const handleJoinClub = async (clubId) => {
-    try {
-      // TODO: Implement join club functionality when membership routes are ready
-      navigate(`/bookclub/${clubId}`);
-    } catch (error) {
-      console.error('Error joining club:', error);
+  const handleEnterClub = (e, club) => {
+    e.stopPropagation();
+    const isMember = club.roles?.some(role => role.user === authUser?._id);
+    const isAdmin = club.admin === authUser?._id;
+    if (isMember || isAdmin) {
+      setSelectedClub(club);
     }
   };
 
@@ -231,7 +233,7 @@ const BookClubListing = () => {
             <div
               key={club._id}
               className="book-club-item"
-              onClick={() => setPreviewClub(club)}
+              onClick={() => setSelectedClub(club)}
             >
               <div className="club-image"></div>
               <div className="club-details">
@@ -244,34 +246,19 @@ const BookClubListing = () => {
                   ))}
                 </div>
                 {(() => {
-                  // In My Book Clubs view, always show Enter Club
                   if (showMyClubs) {
                     return (
                       <button 
                         className="join-button joined"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/bookclub/${club._id}`);
-                        }}
+                        onClick={(e) => handleEnterClub(e, club)}
                       >
                         Enter Club
                       </button>
                     );
                   }
 
-                  // In All Clubs view, check membership status
-                  console.log('Checking membership for club:', club.name);
-                  console.log('Club roles:', club.roles);
-                  console.log('Auth user:', authUser?._id);
-                  
-                  const isMember = club.roles?.some(role => {
-                    console.log('Checking role:', role);
-                    const isMatch = role.user === authUser?._id;
-                    console.log('Is match:', isMatch);
-                    return isMatch;
-                  });
-                  
-                  console.log('Is member:', isMember);
+                  const isMember = club.roles?.some(role => role.user === authUser?._id);
+                  const isAdmin = club.admin === authUser?._id;
                   
                   if (!authUser) {
                     return (
@@ -285,14 +272,11 @@ const BookClubListing = () => {
                         Apply to Join
                       </button>
                     );
-                  } else if (isMember) {
+                  } else if (isMember || isAdmin) {
                     return (
                       <button 
                         className="join-button joined"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/bookclub/${club._id}`);
-                        }}
+                        onClick={(e) => handleEnterClub(e, club)}
                       >
                         Enter Club
                       </button>
@@ -319,19 +303,13 @@ const BookClubListing = () => {
         </div>
       </div>
 
-      {/* Preview Club Modal */}
-      {previewClub && (
-        <div className="modal-overlay" onClick={() => setPreviewClub(null)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h2>{previewClub.name}</h2>
-            <p>{previewClub.description}</p>
-            <p><strong>Admin:</strong> {previewClub.adminName}</p>
-            <p><strong>Genres:</strong> {previewClub.genres?.join(', ')}</p>
-            <p><strong>Members:</strong> {previewClub.members?.length || 0}</p>
-            <p><em>You must join this club to access full features.</em></p>
-            <button onClick={() => setPreviewClub(null)}>Close</button>
-          </div>
-        </div>
+      {selectedClub && (
+        <BookClubDetails 
+          isOwner={selectedClub.admin === authUser?._id}
+          isMember={selectedClub.roles?.some(role => role.user === authUser?._id)}
+          club={selectedClub}
+          onClose={() => setSelectedClub(null)}
+        />
       )}
 
       {/* Create Club Modal */}

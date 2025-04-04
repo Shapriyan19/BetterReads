@@ -1,25 +1,35 @@
 import React, { useState } from 'react';
 import './BookClubDetails.css';
-import { useNavigate } from 'react-router-dom';
 import BookClubChat from './BookClubChat';
 
-const BookClubDetails = ({ isOwner = false }) => {
+const BookClubDetails = ({ isOwner = false, isMember = false, club, onClose }) => {
   const [activeTab, setActiveTab] = useState('details');
-  const navigate = useNavigate();
 
   const renderTabContent = () => {
     switch (activeTab) {
       case 'details':
         return (
           <div className="tab-panel">
-            <h2>The Literary Circle</h2>
-            <p>Description: A cozy corner for lovers of fiction and classics to gather, read, and reflect.</p>
-            <p>Suggested Books:</p>
+            <h2>{club.name}</h2>
+            <p>Description: {club.description}</p>
+            <p>Admin: {club.adminName}</p>
+            <p>Members: {club.membersCount}</p>
+            <p>Genres:</p>
             <ul>
-              <li>Pride and Prejudice</li>
-              <li>1984</li>
-              <li>The Great Gatsby</li>
+              {club.genres?.map((genre, index) => (
+                <li key={index}>{genre}</li>
+              ))}
             </ul>
+            {club.books && (
+              <>
+                <p>Suggested Books:</p>
+                <ul>
+                  {club.books.map((book, index) => (
+                    <li key={index}>{book}</li>
+                  ))}
+                </ul>
+              </>
+            )}
           </div>
         );
       case 'members':
@@ -27,9 +37,9 @@ const BookClubDetails = ({ isOwner = false }) => {
           <div className="tab-panel">
             <h3>Member List</h3>
             <ul>
-              <li>@alice</li>
-              <li>@bob</li>
-              <li>@charlie</li>
+              {club.roles?.map((role, index) => (
+                <li key={index}>@{role.userName} {role.role === 'admin' ? '(Admin)' : ''}</li>
+              ))}
             </ul>
           </div>
         );
@@ -53,20 +63,31 @@ const BookClubDetails = ({ isOwner = false }) => {
   };
 
   return (
-    <div className="club-details-overlay" onClick={() => navigate('/bcl')}>
+    <div className="club-details-overlay" onClick={onClose}>
       <div
         className="club-details-card"
         onClick={(e) => e.stopPropagation()} // prevents bubbling
       >
-        <div className="tabs">
-          <div className={activeTab === 'details' ? 'tab active' : 'tab'} onClick={() => setActiveTab('details')}>Club Details</div>
-          <div className={activeTab === 'members' ? 'tab active' : 'tab'} onClick={() => setActiveTab('members')}>Members</div>
-          <div className={activeTab === 'chat' ? 'tab active' : 'tab'} onClick={() => setActiveTab('chat')}>Chat</div>
-          {isOwner && (
-            <div className={activeTab === 'settings' ? 'tab active' : 'tab'} onClick={() => setActiveTab('settings')}>Settings</div>
-          )}
-        </div>
-        <div className="tab-content">{renderTabContent()}</div>
+        <button className="close-button" onClick={onClose}>
+          ×
+        </button>
+        {(isOwner || isMember) ? (
+          <>
+            <div className="tabs">
+              <div className={activeTab === 'details' ? 'tab active' : 'tab'} onClick={() => setActiveTab('details')}>Club Details</div>
+              <div className={activeTab === 'members' ? 'tab active' : 'tab'} onClick={() => setActiveTab('members')}>Members</div>
+              <div className={activeTab === 'chat' ? 'tab active' : 'tab'} onClick={() => setActiveTab('chat')}>Chat</div>
+              {isOwner && (
+                <div className={activeTab === 'settings' ? 'tab active' : 'tab'} onClick={() => setActiveTab('settings')}>Settings</div>
+              )}
+            </div>
+            <div className="tab-content">{renderTabContent()}</div>
+          </>
+        ) : (
+          <div className="tab-content">
+            {renderTabContent()}
+          </div>
+        )}
       </div>
     </div>
   );
