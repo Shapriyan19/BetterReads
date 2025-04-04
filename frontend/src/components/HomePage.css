@@ -398,7 +398,7 @@
 .modal-content {
     flex: 1;
     overflow-y: auto;
-    padding-right: 20px;
+    padding-right: 10px;
     max-height: 70vh;
 }
 
@@ -714,4 +714,81 @@
 .submit-rating-button:disabled {
     background-color: #a8a8a8;
     cursor: not-allowed;
+}
+
+.review-container {
+    margin: 16px 0;
+    width: calc(100% - 32px);
+    background-color: #f8f4fb;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.review-textarea {
+    width: calc(100% - 2px);
+    min-height: 100px;
+    max-height: 300px;
+    padding: 12px;
+    border: 1px solid #e9e3f0;
+    border-radius: 6px;
+    background-color: #ffffff;
+    color: #333;
+    font-size: 14px;
+    line-height: 1.5;
+    resize: vertical;
+    margin: 8px 0;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.review-textarea:focus {
+    outline: none;
+    border-color: #775591;
+    box-shadow: 0 0 0 2px rgba(119, 85, 145, 0.1);
+}
+
+.review-textarea::placeholder {
+    color: #999;
+}
+
+.modal-label {
+    font-size: 15px;
+    color: #333;
+    margin-bottom: 4px;
+    font-weight: 500;
+    display: block;
+}
+
+.submit-button {
+    background-color: #775591;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 12px;
+    width: 100%;
+}
+
+.submit-button:hover {
+    background-color: #5d4372;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(93, 67, 114, 0.2);
+}
+
+.submit-button:disabled {
+    background-color: #e9e3f0;
+    color: #999;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.submit-button:active {
+    transform: translateY(0);
+    box-shadow: none;
 }
