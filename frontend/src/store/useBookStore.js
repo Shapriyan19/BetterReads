@@ -7,9 +7,11 @@ export const useBookStore = create((set, get) => ({
     isLoading: false,
     isLoadingDetails: false,
     isLoadingReviews: false,
+    isLoadingAvailability: false,
     bookReviews: [],
     averageRating: 0,
     totalRatings: 0,
+    availability: [],
     error: null,
 
     getRecommendedBooks: async (email) => {
@@ -133,6 +135,37 @@ export const useBookStore = create((set, get) => ({
         } finally {
             set({ isLoading: false });
         }
-
+    },
+    getAvailability: async (isbn) => {
+        set({ isLoadingAvailability: true, error: null });
+        try {
+            // First try to get the title ID (BID)
+            const bookDetails = await axiosInstance.post("/book/get-book-details", { bookISBN: isbn });
+            const bid = bookDetails.data?.identifiers?.bibid?.[0] || bookDetails.data?.identifiers?.bnb?.[0];
+            
+            if (!bid && !isbn) {
+                throw new Error("No valid identifier found for this book");
+            }
+            
+            // Now get availability with either BID (preferred) or ISBN
+            const res = await axiosInstance.post("/book/get-availability", { 
+                bookName: isbn,
+                bid: bid,
+                fieldName: bid ? "BID" : "ISBN" // Specify which field we're using
+            });
+            
+            set({ 
+                isLoadingAvailability: false,
+                availability: res.data.data?.items || []
+            });
+            return res.data.data?.items || [];
+        } catch (error) {
+            console.error('Error fetching book availability:', error);
+            set({ 
+                error: error.response?.data?.message || "Failed to fetch book availability",
+                isLoadingAvailability: false 
+            });
+            throw error;
+        }
     }
 })); 

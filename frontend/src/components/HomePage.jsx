@@ -12,13 +12,14 @@ import { Dialog, DialogTitle, DialogContent, Box, Typography } from '@mui/materi
 
 export default function HomePage () {
     const { logout, authUser } = useAuthStore();
-    const { recommendedBooks, getRecommendedBooks, getBookDetails, searchBooks, isLoading, isLoadingDetails, getReviews, postReview, postRating, getAverageRating, bookReviews, isLoadingReviews, averageRating, totalRatings } = useBookStore();
+    const { recommendedBooks, getRecommendedBooks, getBookDetails, searchBooks, isLoading, isLoadingDetails, getReviews, postReview, postRating, getAverageRating, bookReviews, isLoadingReviews, averageRating, totalRatings, getAvailability, availability, isLoadingAvailability } = useBookStore();
     
     /* displaying availability */
     const [branches, setBranches] = useState([]);
     const [selectedBranch, setSelectedBranch] = useState("");
     const [mapModalOpen, setMapModalOpen] = useState(false);
-    const [availability, setAvailability] = useState([]);
+    const [locationData, setLocationData] = useState([]);
+    const [isLoadingLocations, setIsLoadingLocations] = useState(false);
     
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("All");
@@ -100,6 +101,10 @@ export default function HomePage () {
     const openModal = async (book) => {
         setSelectedBook(book);
         setOpen(true);
+        // Reset location data for new book
+        setLocationData([]);
+        setSelectedBranch("");
+        
         try {
             const isbn = book.isbn?.[0] || book.isbn_13?.[0] || book.isbn_10?.[0];
             if (isbn) {
@@ -125,6 +130,8 @@ export default function HomePage () {
     const handleClose = () => {
         setSelectedBook(null);
         setOpen(false);
+        setLocationData([]);
+        setSelectedBranch("");
     };
 
     useEffect(() => {
@@ -218,6 +225,60 @@ export default function HomePage () {
             toast.error(error.response?.data?.message || "Failed to submit");
         } finally {
             setIsSubmitting(false);
+        }
+    };
+
+    const handleViewLocations = async () => {
+        if (!selectedBook) return;
+        
+        setIsLoadingLocations(true);
+        setLocationData([]);
+        let hasShownToast = false;
+        
+        try {
+            // Get the ISBN of the selected book
+            const isbn = selectedBook.isbn?.[0] || selectedBook.isbn_13?.[0] || selectedBook.isbn_10?.[0];
+            
+            if (!isbn) {
+                toast.error("ISBN information not available for this book");
+                hasShownToast = true;
+                return;
+            }
+            
+            // Fetch availability data
+            const availabilityData = await getAvailability(isbn);
+            
+            if (availabilityData && availabilityData.length > 0) {
+                setLocationData(availabilityData);
+                // Open the map modal
+                setMapModalOpen(true);
+            } else {
+                toast.error("No availability information found for this book");
+                hasShownToast = true;
+            }
+        } catch (error) {
+            console.error("Error fetching availability:", error);
+            
+            // Extract the most useful error message
+            let errorMessage = "Could not fetch availability information";
+            
+            // Check for the specific "brn not found" error
+            if (error.response?.data?.error?.message === "brn not found" || 
+                error.response?.data?.message?.includes("brn not found")) {
+                errorMessage = "Book not found in library system";
+            } else if (error.response?.data?.message) {
+                errorMessage = error.response.data.message;
+            } else if (error.response?.data?.error?.message) {
+                errorMessage = error.response.data.error.message;
+            } else if (error.message) {
+                errorMessage = error.message;
+            }
+            
+            if (!hasShownToast) {
+                toast.error(errorMessage);
+            }
+        } finally {
+            setIsLoadingLocations(false);
         }
     };
 
@@ -348,20 +409,25 @@ export default function HomePage () {
                                             value={selectedBranch}
                                             onChange={(e) => setSelectedBranch(e.target.value)}
                                             className="branch-select"
+                                            disabled={isLoadingLocations || locationData.length === 0}
                                         >
                                             <option value="">View Availability</option>
-                                            {branches.map((branch) => {
-                                                const match = availability.find((a) => a.BranchName === branch.Name);
-                                                const count = match?.AvailableCount ?? 0;
-                                                return (
-                                                    <option key={branch.ID} value={branch.ID}>
-                                                        {branch.Name} — {count} available
+                                            {locationData.length > 0 ? (
+                                                locationData.map((item, index) => (
+                                                    <option key={index} value={item.location?.code || ""}>
+                                                        {item.location?.name || "Unknown"} — {item.status?.name === "On Loan" ? "Loaned" : item.status?.name || "Unknown"}
                                                     </option>
-                                                );
-                                            })}
+                                                ))
+                                            ) : (
+                                                <option value="" disabled>No availability data</option>
+                                            )}
                                         </select>
-                                        <button className="view-map-button" onClick={() => setMapModalOpen(true)}>
-                                            View Locations
+                                        <button 
+                                            className="view-map-button" 
+                                            onClick={handleViewLocations}
+                                            disabled={isLoadingLocations}
+                                        >
+                                            {isLoadingLocations ? "Loading..." : "View Locations"}
                                         </button>
                                     </div>
                                 </div>
@@ -390,7 +456,7 @@ export default function HomePage () {
                                     </div>
                                     <p><strong>ISBN:</strong> {selectedBook.isbn?.[0] || selectedBook.isbn_13?.[0] || selectedBook.isbn_10?.[0] || 'Not available'}</p>
                                     
-                                    <Box sx={{ display: 'flex', alignItems: 'center', mt: 1, mb: 2 }}>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', mt: 1, mb: 2 }}>
                                         <Rating 
                                             value={averageRating} 
                                             precision={0.5} 
@@ -481,8 +547,49 @@ export default function HomePage () {
                     <div className="modal show" onClick={(e) => e.stopPropagation()}>
                         <span className="close-icon" onClick={() => setMapModalOpen(false)}>&times;</span>
                         <h2>Library Branch Locations</h2>
-                        <img src={singaporeMap} alt="Map of Singapore" className="map-image" />
-                        <p>Availability is listed in the dropdown above.</p>
+                        
+                        {isLoadingLocations ? (
+                            <div className="loading-container">
+                                <Loader2 className="animate-spin" size={24} />
+                                <p>Loading availability information...</p>
+                            </div>
+                        ) : (
+                            <>
+                                <img src={singaporeMap} alt="Map of Singapore" className="map-image" />
+                                
+                                {locationData.length > 0 ? (
+                                    <div className="location-list">
+                                        <h3>Available at:</h3>
+                                        <ul>
+                                            {locationData.map((item, index) => (
+                                                <li key={index}>
+                                                    <strong>{item.location?.name || "Unknown Location"}</strong>
+                                                    <div className="item-status">
+                                                        <span className={`status-indicator ${item.status?.name === "On Loan" ? "status-loaned" : "status-available"}`}></span>
+                                                        {item.status?.name || "Unknown"}
+                                                    </div>
+                                                    {item.status?.setDate && (
+                                                        <div className="availability-date">
+                                                            Available after: {new Date(item.status.setDate).toLocaleDateString()}
+                                                        </div>
+                                                    )}
+                                                    {item.callNumber && (
+                                                        <div className="call-number">
+                                                            Call No: {item.formattedCallNumber || item.callNumber}
+                                                        </div>
+                                                    )}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                ) : (
+                                    <div className="no-availability">
+                                        <p>This book was not found in the library system.</p>
+                                        <p>It may be available through other sources or not yet added to the library catalog.</p>
+                                    </div>
+                                )}
+                            </>
+                        )}
                     </div>
                 </div>
             )}

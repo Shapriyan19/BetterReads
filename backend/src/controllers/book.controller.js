@@ -293,8 +293,26 @@ export const getAvailabilityInfo= async (req,res)=>{
     const API_KEY="8(I<YgZlt6JB-BHg@G18#TTTe`w).eai"
     const APP_CODE="DEV-Shanmugapriyan"
     try{
-        const {bookName}=req.body;
-        const url = `${baseUrl}${endpoint}?ISBN=${bookName}`;
+        const {bookName, fieldName = "ISBN", bid} = req.body;
+        
+        // Validate parameters
+        if (!bookName && !bid) {
+            console.log("Error: Either ISBN or BID is required but neither was provided");
+            return res.status(400).json({ message: "Either ISBN or BID is required" });
+        }
+        
+        if (!fieldName) {
+            console.log("Error: FieldName is required but was not provided");
+            return res.status(400).json({ message: "FieldName is required" });
+        }
+        
+        // Use BID if available, otherwise use ISBN
+        const identifier = fieldName === "BID" ? (bid || bookName) : bookName;
+        
+        console.log(`Fetching availability using ${fieldName}: ${identifier}`);
+        const url = `${baseUrl}${endpoint}?${fieldName}=${identifier}`;
+        
+        console.log("Request URL:", url);
 
         const response = await fetch(url, {
             method: "GET",
@@ -306,13 +324,50 @@ export const getAvailabilityInfo= async (req,res)=>{
         });
     
         if (!response.ok) {
-            console.log("Error:", response);
-            return;
+            const errorText = await response.text();
+            console.log("NLB API Error Status:", response.status, response.statusText);
+            console.log("NLB API Error Response:", errorText);
+            
+            try {
+                // Try to parse error as JSON if possible
+                const errorJson = JSON.parse(errorText);
+                console.log("Parsed error:", errorJson);
+                
+                // Check for specific error types
+                if (errorJson.message === "brn not found") {
+                    return res.status(404).json({ 
+                        message: "Book not found in library system",
+                        error: errorJson,
+                        status: response.status 
+                    });
+                }
+                
+                return res.status(response.status).json({ 
+                    message: `Error from NLB API: ${errorJson.message || response.statusText}`,
+                    error: errorJson,
+                    status: response.status 
+                });
+            } catch (e) {
+                // If not JSON, return as text
+                return res.status(response.status).json({ 
+                    message: `Error from NLB API: ${response.statusText}`,
+                    error: errorText,
+                    status: response.status 
+                });
+            }
         }
+        
         const data = await response.json();
+        console.log("NLB API Success Response:", data);
+        
+        if (!data || !data.items || data.items.length === 0) {
+            console.log(`No availability information found for ${fieldName}: ${identifier}`);
+            return res.status(404).json({ message: "No availability information found for this book" });
+        }
+        
         res.status(200).json({data});
     }catch(error){
-        console.log("error in getAvailabilityInfo: ",error);
+        console.log("error in getAvailabilityInfo: ", error);
         res.status(500).json({message:"Internal server error"});
     }
 }
