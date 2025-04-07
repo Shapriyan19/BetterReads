@@ -395,7 +395,7 @@ export const getBookDetails=async (req,res)=>{
     }
 };
 
-export const getPlaylist = async (req, res) => {
+export const getPlaylist = async (req, res, next) => {
     try {
         const { bookCategory } = req.body || req.params;
 
@@ -424,18 +424,110 @@ export const getPlaylist = async (req, res) => {
             return res.status(500).json({ message: "Invalid JSON format from AI response" });
         }
 
-        // Return the playlist directly
-        return res.status(200).json(playlist);
+        // Store the playlist in req.body and call next() without sending a response
+        req.body.playlist = playlist;
+        req.body.bookCategory=bookCategory;
+        next();
     } catch (error) {
         console.log("Error in getPlaylist:", error);
         res.status(500).json({ message: "Internal server error" });
     }
 };
 
-// export const getTracks = async (req,res) =>{
-//     const tracks=req.body.songs;
-//     res.status(200).json({tracks});
-// }
+export const getTracks = async (req,res) =>{
+    const playlist = req.body.playlist;
+    const bookCategory = req.body.bookCategory;
+    console.log("Book category:", bookCategory);
+    console.log("Playlist:", playlist);
+    
+    // Check if playlist is valid
+    if (!playlist || !Array.isArray(playlist) || playlist.length === 0) {
+        console.error("Invalid playlist format:", playlist);
+        return res.status(400).json({ message: "Invalid playlist format" });
+    }
+    
+    const tracks = [];
+
+    const getAccessToken = async () => {
+        try {
+            // Create the base64 encoded credentials string
+            const credentials = Buffer.from(process.env.SPOTIFY_CLIENT_ID + ":" + process.env.SPOTIFY_CLIENT_SECRET).toString("base64");
+            
+            const response = await fetch("https://accounts.spotify.com/api/token", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "Authorization": "Basic " + credentials
+                },
+                body: "grant_type=client_credentials"
+            });
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error("Spotify API error response:", errorText);
+                throw new Error(`Spotify API error: ${response.status} ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            return data.access_token;
+        } catch (error) {
+            console.error("Error getting Spotify access token:", error);
+            throw error;
+        }
+    };
+    
+    try {
+        const token = await getAccessToken();
+        console.log("Got Spotify token:", token.substring(0, 10) + "...");
+        
+        for (let i = 0; i < playlist.length; i++) {
+            // Check if the playlist item has a title property
+            if (!playlist[i] || !playlist[i].title) {
+                console.error("Invalid playlist item:", playlist[i]);
+                continue;
+            }
+            
+            const song = playlist[i].title;
+            console.log(`Searching for song: ${song}`);
+            
+            // Use the exact same format as the curl example
+            const result = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(song)}&type=track`, {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+            
+            if (!result.ok) {
+                const errorText = await result.text();
+                console.error(`Error searching for track "${song}":`, result.status, result.statusText);
+                console.error("Error details:", errorText);
+                continue;
+            }
+            
+            const data = await result.json();
+            console.log(`Found ${data.tracks?.items?.length || 0} tracks for "${song}"`);
+            
+            // Extract the external_urls.spotify, uri, and album cover image
+            if (data.tracks && data.tracks.items && data.tracks.items.length > 0) {
+                const track = data.tracks.items[0];
+                tracks.push({
+                    songName: song,
+                    external_urls: track.external_urls,
+                    // uri: track.uri,
+                    albumCover: track.album?.images?.[0]?.url || null
+                });
+            }
+        }
+        
+        // Return the tracks in the format expected by the client
+        res.status(200).json({ tracks });
+    } catch (error) {
+        console.error("Error in getTracks:", error);
+        // Only send one error response
+        res.status(500).json({ message: "Failed to fetch tracks from Spotify" });
+    }
+}
 
 export const postRating = async (req, res) => {
     try {

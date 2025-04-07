@@ -385,11 +385,30 @@
 }
 
 .rating-container {
+    margin: 16px 0;
+    width: calc(100% - 32px);
+    background-color: #f8f4fb;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     display: flex;
+    flex-direction: column;
     align-items: flex-start;
-    cursor: pointer;
-    gap: 10px;
-    text-align: left;
+    gap: 8px;
+}
+
+.rating-container h3 {
+    color: #775591;
+    margin-bottom: 8px;
+}
+
+.rating-container .MuiRating-root {
+    color: #775591;
+}
+
+.rating-container .MuiTypography-root {
+    color: #666;
+    margin-top: 4px;
 }
 
 .modal-label {
@@ -737,6 +756,35 @@
     overflow: visible;
 }
 
+.review-container h3 {
+    color: #775591;
+    margin-bottom: 16px;
+}
+
+.rating-section {
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e9e3f0;
+}
+
+.rating-section .MuiRating-root {
+    color: #775591;
+}
+
+.rating-section .MuiTypography-root {
+    color: #666;
+}
+
+.review-text-section {
+    margin-bottom: 16px;
+}
+
+.review-text-section h4 {
+    color: #775591;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
 .review-textarea {
     width: calc(100% - 2px);
     min-height: 100px;
@@ -922,4 +970,120 @@
     color: #775591;
     margin-top: 5px;
     font-weight: 500;
+}
+
+/* Spotify Section Styles */
+.spotify-section {
+    margin: 20px 0;
+    padding: 15px;
+    background-color: #f8f4fb;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.get-songs-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #775591; /* Updated to match theme */
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 15px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.get-songs-button:hover {
+    background-color: #684b81;
+}
+
+.get-songs-button:disabled {
+    background-color: #a8a8a8;
+    cursor: not-allowed;
+}
+
+.tracks-container {
+    margin-top: 15px;
+}
+
+.tracks-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 15px 0;
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #e9e3f0;
+    border-radius: 4px;
+    background-color: #ffffff;
+}
+
+.track-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    border-bottom: 1px solid #e9e3f0;
+}
+
+.track-item:last-child {
+    border-bottom: none;
+}
+
+.track-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+.track-cover {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    object-fit: cover;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.track-name {
+    font-weight: 500;
+    flex: 1;
+}
+
+.spotify-link {
+    background-color: #775591;
+    color: white;
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+}
+
+.spotify-link:hover {
+    background-color: #684b81;
+}
+
+.refresh-songs-button {
+    background-color: #f0f0f0;
+    color: #333;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.refresh-songs-button:hover {
+    background-color: #e0e0e0;
+}
+
+.refresh-songs-button:disabled {
+    background-color: #f5f5f5;
+    color: #999;
+    cursor: not-allowed;
 }

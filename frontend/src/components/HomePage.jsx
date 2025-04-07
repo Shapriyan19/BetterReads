@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react"; 
 import "./HomePage.css"; 
 import { useNavigate } from "react-router-dom";
-import {Search, User, Loader2 } from "lucide-react";
+import {Search, User, Loader2, Music } from "lucide-react";
 import singaporeMap from "../assets/SingaporeMapFrame.webp";
 import Rating from '@mui/material/Rating';
 import bookCover from "../assets/placeholder.jpg";
@@ -12,7 +12,7 @@ import { Dialog, DialogTitle, DialogContent, Box, Typography } from '@mui/materi
 
 export default function HomePage () {
     const { logout, authUser } = useAuthStore();
-    const { recommendedBooks, getRecommendedBooks, getBookDetails, searchBooks, isLoading, isLoadingDetails, getReviews, postReview, postRating, getAverageRating, bookReviews, isLoadingReviews, averageRating, totalRatings, getAvailability, availability, isLoadingAvailability } = useBookStore();
+    const { recommendedBooks, getRecommendedBooks, getBookDetails, searchBooks, isLoading, isLoadingDetails, getReviews, postReview, postRating, getAverageRating, bookReviews, isLoadingReviews, averageRating, totalRatings, getAvailability, availability, isLoadingAvailability, getSpotifyTracks, spotifyTracks, isLoadingTracks } = useBookStore();
     
     /* displaying availability */
     const [branches, setBranches] = useState([]);
@@ -32,6 +32,7 @@ export default function HomePage () {
     const [reviewText, setReviewText] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [open, setOpen] = useState(false);
+    const [showTracks, setShowTracks] = useState(false);
 
     const navigate = useNavigate();
 
@@ -104,6 +105,8 @@ export default function HomePage () {
         // Reset location data for new book
         setLocationData([]);
         setSelectedBranch("");
+        // Reset tracks state
+        setShowTracks(false);
         
         try {
             const isbn = book.isbn?.[0] || book.isbn_13?.[0] || book.isbn_10?.[0];
@@ -132,6 +135,8 @@ export default function HomePage () {
         setOpen(false);
         setLocationData([]);
         setSelectedBranch("");
+        // Reset tracks state
+        setShowTracks(false);
     };
 
     useEffect(() => {
@@ -279,6 +284,36 @@ export default function HomePage () {
             }
         } finally {
             setIsLoadingLocations(false);
+        }
+    };
+
+    const handleGetSuggestedSongs = async () => {
+        if (!selectedBook) return;
+        
+        try {
+            // Get the primary subject/category of the book
+            const bookCategory = selectedBook.primary_subject || 
+                               (selectedBook.subject && selectedBook.subject[0]) || 
+                               (selectedBook.subjects && selectedBook.subjects[0]) || 
+                               "Fiction";
+            
+            // Format the category for better search results
+            const formattedCategory = bookCategory
+                .split('_')
+                .join(' ')
+                .split('/')
+                .join(' & ')
+                .toLowerCase()
+                .split(' ')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(' ');
+            
+            console.log("Sending book category:", formattedCategory);
+            await getSpotifyTracks(formattedCategory);
+            setShowTracks(true);
+        } catch (error) {
+            console.error('Error getting suggested songs:', error);
+            toast.error('Failed to get suggested songs');
         }
     };
 
@@ -472,26 +507,92 @@ export default function HomePage () {
                                         <p>{selectedBook.description?.value || selectedBook.description || 'No description available.'}</p>
                                     </div>
                                     
-                                    <div className="rating-container">
-                                        <h3 className="modal-label"><strong>Rate this book:</strong></h3>
-                                        <Rating
-                                            value={rating}
-                                            onChange={(event, newValue) => setRating(newValue)}
-                                            precision={1}
-                                        />
-                                        <Typography variant="body2" sx={{ ml: 1 }}>
-                                            {rating ? `You rated this book ${rating} stars` : 'Click to rate'}
-                                        </Typography>
+                                    <div className="spotify-section">
+                                        <h3 className="modal-label"><strong>Suggested Songs:</strong></h3>
+                                        {!showTracks ? (
+                                            <button 
+                                                className="get-songs-button" 
+                                                onClick={handleGetSuggestedSongs}
+                                                disabled={isLoadingTracks}
+                                            >
+                                                {isLoadingTracks ? (
+                                                    <>
+                                                        <Loader2 className="animate-spin" size={16} />
+                                                        <span>Loading songs...</span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Music size={16} />
+                                                        <span>Get Suggested Songs</span>
+                                                    </>
+                                                )}
+                                            </button>
+                                        ) : (
+                                            <div className="tracks-container">
+                                                {spotifyTracks.length > 0 ? (
+                                                    <ul className="tracks-list">
+                                                        {spotifyTracks.map((track, index) => (
+                                                            <li key={index} className="track-item">
+                                                                <div className="track-info">
+                                                                    {track.albumCover && (
+                                                                        <img 
+                                                                            src={track.albumCover} 
+                                                                            alt={`${track.songName} album cover`} 
+                                                                            className="track-cover"
+                                                                        />
+                                                                    )}
+                                                                    <span className="track-name">{track.songName}</span>
+                                                                </div>
+                                                                <a 
+                                                                    href={track.external_urls.spotify} 
+                                                                    target="_blank" 
+                                                                    rel="noopener noreferrer"
+                                                                    className="spotify-link"
+                                                                >
+                                                                    Listen on Spotify
+                                                                </a>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                ) : (
+                                                    <p>No songs found for this category.</p>
+                                                )}
+                                                <button 
+                                                    className="refresh-songs-button" 
+                                                    onClick={handleGetSuggestedSongs}
+                                                    disabled={isLoadingTracks}
+                                                >
+                                                    Refresh Songs
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                     
                                     <div className="review-container">
-                                        <h3 className="modal-label"><strong>Write a review (optional):</strong></h3>
-                                        <textarea
-                                            placeholder="Write your review here..."
-                                            value={reviewText}
-                                            onChange={(e) => setReviewText(e.target.value)}
-                                            className="review-textarea"
-                                        />
+                                        <h3 className="modal-label"><strong>Rate and Review this book:</strong></h3>
+                                        
+                                        <div className="rating-section">
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                                                <Rating
+                                                    value={rating}
+                                                    onChange={(event, newValue) => setRating(newValue)}
+                                                    precision={1}
+                                                />
+                                                <Typography variant="body2">
+                                                    {rating ? `You rated this book ${rating} stars` : 'Click to rate'}
+                                                </Typography>
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="review-text-section">
+                                            <h4 className="modal-label"><strong>Write a review (optional):</strong></h4>
+                                            <textarea
+                                                placeholder="Write your review here..."
+                                                value={reviewText}
+                                                onChange={(e) => setReviewText(e.target.value)}
+                                                className="review-textarea"
+                                            />
+                                        </div>
 
                                         <button 
                                             className="submit-button" 

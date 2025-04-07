@@ -8,10 +8,12 @@ export const useBookStore = create((set, get) => ({
     isLoadingDetails: false,
     isLoadingReviews: false,
     isLoadingAvailability: false,
+    isLoadingTracks: false,
     bookReviews: [],
     averageRating: 0,
     totalRatings: 0,
     availability: [],
+    spotifyTracks: [],
     error: null,
 
     getRecommendedBooks: async (email) => {
@@ -165,6 +167,24 @@ export const useBookStore = create((set, get) => ({
                 error: error.response?.data?.message || "Failed to fetch book availability",
                 isLoadingAvailability: false 
             });
+            throw error;
+        }
+    },
+    getSpotifyTracks: async (bookCategory) => {
+        set({ isLoadingTracks: true, error: null });
+        try {
+            console.log("Sending request with bookCategory:", bookCategory);
+            const res = await axiosInstance.post("/book/get-playlist", { bookCategory });
+            console.log("Response from get-playlist:", res.data);
+            set({ spotifyTracks: res.data.tracks || [], isLoadingTracks: false });
+            return res.data.tracks || [];
+        } catch (error) {
+            console.error('Error fetching Spotify tracks:', error);
+            set({ 
+                error: error.response?.data?.message || "Failed to fetch Spotify tracks",
+                isLoadingTracks: false 
+            });
+            toast.error(error.response?.data?.message || "Failed to fetch Spotify tracks");
             throw error;
         }
     }
