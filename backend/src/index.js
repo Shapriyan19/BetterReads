@@ -7,6 +7,7 @@ import bookRoutes from "./routes/book.routes.js";
 import clubRoutes from "./routes/club.routes.js";
 import membershipRoutes from "./routes/membership.routes.js";
 import cors from "cors";
+import fileUpload from "express-fileupload";
 
 dotenv.config();
 const app = express();
@@ -19,6 +20,11 @@ app.use(cookieParser());
 app.use(cors({
     origin: "http://localhost:5173",
     credentials: true,
+}));
+app.use(fileUpload({
+    useTempFiles: true,
+    tempFileDir: '/tmp/',
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
 }));
 
 // Routes

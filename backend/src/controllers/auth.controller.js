@@ -7,6 +7,7 @@ import passwordcheck from "../lib/passwordcheck.js";
 import pingenertation from "../lib/pingeneration.js";
 import BookVault from "../models/bookvaults.model.js";
 import cloudinary from "../lib/cloudinary.js";
+import mongoose from "mongoose";
 
 export const signup = async (req, res) => {
     try {    
@@ -167,24 +168,70 @@ export const logout = (req,res)=>{
 
 export const updateProfile= async(req,res)=>{
     try {
-        const {profilePic}=req.body;
-        const userId= req.user._id;
+        console.log("Received update profile request");
+        console.log("Request body:", req.body);
+        console.log("Request files:", req.files);
+        
+        const userId = req.user._id;
+        let profilePic = "";
 
-        if(!profilePic){
-            return res.status(400).json({message: "Profile pic is required"});
+        // Check if profilePic is in the request files
+        if (req.files && req.files.profilePic) {
+            console.log("Processing uploaded file...");
+            const file = req.files.profilePic;
+            console.log("File details:", {
+                name: file.name,
+                size: file.size,
+                mimetype: file.mimetype,
+                tempFilePath: file.tempFilePath
+            });
+            
+            try {
+                const result = await cloudinary.uploader.upload(file.tempFilePath);
+                console.log("Cloudinary upload result:", result);
+                profilePic = result.secure_url;
+            } catch (cloudinaryError) {
+                console.error("Error uploading to Cloudinary:", cloudinaryError);
+                return res.status(500).json({ message: "Error uploading image to cloud storage" });
+            }
+        } else {
+            console.log("No file found in request");
+            return res.status(400).json({ message: "Profile picture file is required" });
         }
 
-        const uploadResponse=await cloudinary.uploader.upload(profilePic);
-        const updateUser=await User.findByIdAndUpdate(
+        console.log("Updating user profile with new picture URL:", profilePic);
+        const updateUser = await User.findByIdAndUpdate(
             userId,
-            {profilePic: uploadResponse.secure_url},
-            {new: true} //sends updated user
+            { profilePic: profilePic },
+            { new: true }
         );
 
+        if (!updateUser) {
+            console.log("User not found for update");
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Update all reviews by this user with the new profile picture
+        const userName = updateUser.firstName + updateUser.lastName;
+        console.log("Updating all reviews for user:", userName);
+        
+        try {
+            const Review = mongoose.model("Review");
+            const updateResult = await Review.updateMany(
+                { userName: userName },
+                { profilePic: profilePic }
+            );
+            console.log("Updated reviews:", updateResult.modifiedCount);
+        } catch (reviewError) {
+            console.error("Error updating reviews:", reviewError);
+            // Continue with the response even if review update fails
+        }
+
+        console.log("Profile updated successfully");
         res.status(200).json(updateUser);
     } catch (error) {
-        console.log("error in update profile: ",error);
-        res.status(500).json({message:"Internal server error"});
+        console.error("Error in updateProfile:", error);
+        res.status(500).json({ message: "Internal server error" });
     }
 };
 
