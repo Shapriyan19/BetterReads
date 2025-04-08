@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './BookClubDetails.css';
 import BookClubChat from './BookClubChat';
-import { FaTimes, FaCrown, FaUsers, FaLock, FaUserCircle } from 'react-icons/fa';
+import { FaTimes, FaCrown, FaUsers, FaLock, FaUserCircle, FaTrash } from 'react-icons/fa';
 import { FiUpload } from 'react-icons/fi';
 import { toast } from 'react-hot-toast';
 import { useClubStore } from '../store/useClubStore';
@@ -19,7 +19,8 @@ const BookClubDetails = ({ isOwner = false, isMember = false, club, onClose }) =
   const [clubImage, setClubImage] = useState(club?.image || null);
   const [genres, setGenres] = useState(club?.genres || []);
   const [selectedGenre, setSelectedGenre] = useState('');
-  const { updateClub } = useClubStore();
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const { updateClub, deleteClub } = useClubStore();
 
   const handleAddGenre = () => {
     if (selectedGenre && !genres.includes(selectedGenre)) {
@@ -62,6 +63,16 @@ const BookClubDetails = ({ isOwner = false, isMember = false, club, onClose }) =
     } catch (error) {
       console.error('Error updating club:', error);
       toast.error(error.response?.data?.message || 'Failed to update club settings');
+    }
+  };
+
+  const handleDeleteClub = async () => {
+    try {
+      await deleteClub(club._id);
+      onClose(); // Close the modal after successful deletion
+    } catch (error) {
+      console.error('Error deleting club:', error);
+      toast.error(error.response?.data?.message || 'Failed to delete club');
     }
   };
 
@@ -271,8 +282,39 @@ const BookClubDetails = ({ isOwner = false, isMember = false, club, onClose }) =
                 <button type="submit" className="update-button">
                   Update Club Settings
                 </button>
+                <button 
+                  type="button" 
+                  className="delete-button"
+                  onClick={() => setShowDeleteConfirm(true)}
+                >
+                  <FaTrash /> Delete Club
+                </button>
               </div>
             </form>
+
+            {/* Delete Confirmation Modal */}
+            {showDeleteConfirm && (
+              <div className="confirmation-overlay" onClick={() => setShowDeleteConfirm(false)}>
+                <div className="confirmation-modal" onClick={e => e.stopPropagation()}>
+                  <h3>Delete Club</h3>
+                  <p>Are you sure you want to delete this club? All data will be lost and this action cannot be undone.</p>
+                  <div className="confirmation-buttons">
+                    <button 
+                      className="confirm-delete"
+                      onClick={handleDeleteClub}
+                    >
+                      Yes, Delete Club
+                    </button>
+                    <button 
+                      className="cancel-delete"
+                      onClick={() => setShowDeleteConfirm(false)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         );
       default:

@@ -215,7 +215,15 @@ const BookClubListing = () => {
   };
 
   if (isLoading) {
-    return <div className="loading">Loading book clubs...</div>;
+    return (
+      <div className="book-club-page">
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <h2>Loading Book Clubs</h2>
+          <p>Please wait while we fetch the latest clubs...</p>
+        </div>
+      </div>
+    );
   }
 
   if (error) {
