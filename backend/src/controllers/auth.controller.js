@@ -170,24 +170,26 @@ export const updateProfile= async(req,res)=>{
     try {
         console.log("Received update profile request");
         console.log("Request body:", req.body);
-        console.log("Request files:", req.files);
+        console.log("Request file:", req.file);
         
         const userId = req.user._id;
         let profilePic = "";
 
-        // Check if profilePic is in the request files
-        if (req.files && req.files.profilePic) {
+        // Check if profilePic is in the request file
+        if (req.file) {
             console.log("Processing uploaded file...");
-            const file = req.files.profilePic;
             console.log("File details:", {
-                name: file.name,
-                size: file.size,
-                mimetype: file.mimetype,
-                tempFilePath: file.tempFilePath
+                name: req.file.originalname,
+                size: req.file.size,
+                mimetype: req.file.mimetype
             });
             
             try {
-                const result = await cloudinary.uploader.upload(file.tempFilePath);
+                // Convert buffer to base64
+                const b64 = Buffer.from(req.file.buffer).toString("base64");
+                let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+                
+                const result = await cloudinary.uploader.upload(dataURI);
                 console.log("Cloudinary upload result:", result);
                 profilePic = result.secure_url;
             } catch (cloudinaryError) {

@@ -8,7 +8,7 @@ const router=express.Router();
 router.post("/signup", upload.single('profilePic'), signup);
 router.post("/login", login);
 router.post("/logout", logout);
-router.put("/update-profile", protectRoute, updateProfile);
+router.put("/update-profile", protectRoute, upload.single('profilePic'), updateProfile);
 router.get("/check", protectRoute, checkAuth);
 
 // Forgot password routes

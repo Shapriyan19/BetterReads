@@ -14,7 +14,7 @@ export const joinClub = async (req, res) => {
         
         // Check if user is already a member
         const existingMember = club.roles.find(
-            role => role.user.toString() === req.user._id.toString()
+            role => role.user.equals(req.user._id)
         );
         
         if (existingMember) {

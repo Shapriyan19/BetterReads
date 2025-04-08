@@ -108,7 +108,7 @@ export const createClub = async (req, res) => {
             genres: parsedGenres,
             roles: parsedRoles.length > 0 ? parsedRoles : [{
                 role: 'admin',
-                user: req.user._id.toString()
+                user: req.user._id
             }]
         });
 
@@ -239,7 +239,7 @@ export const deleteClub= async (req, res) => {
 export const getUserClubs = async (req, res) => {
     try {
         const clubs = await Club.find({
-            'roles.user': req.user._id.toString()
+            'roles.user': req.user._id,
         }).populate({
             path: 'roles.user',
             select: 'firstName lastName profilePic'
