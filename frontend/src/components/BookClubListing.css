@@ -28,23 +28,30 @@
 
 .book-club-page .book-club-listing {
     font-family: sans-serif;
-    padding: 20px;
+    padding: 20px 50px;
     color: #333;
     position: relative;
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
 }
 
 .book-club-page .back-button {
-    position: absolute;
-    top: 10px;
-    left: 10px;
     background-color: #775591;
     color: white;
     border: none;
-    padding: 8px 15px;
+    padding: 8px 16px;
     border-radius: 6px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    width: fit-content;
+    align-self: flex-start;
 }
 
 .book-club-page .back-button:hover {
@@ -90,101 +97,144 @@
     margin-bottom: 40px;
 }
 
-.book-club-page .book-club-item {
-    border: none;
+.book-club-item {
+    background: white;
     border-radius: 12px;
     overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
     display: flex;
     flex-direction: column;
-    background-color: #ffffff;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+    min-height: 400px;
 }
 
-.book-club-page .book-club-item:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+.book-club-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.book-club-page .club-image {
+.club-image {
     width: 100%;
     height: 200px;
-    object-fit: cover;
-    background-color: #f5f5f5;
+    background-color: #f0f0f0;
+    position: relative;
+    overflow: hidden;
 }
 
-.book-club-page .club-details {
+.club-image::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.3), transparent);
+    pointer-events: none;
+}
+
+.book-club-item .club-details {
     padding: 20px;
     display: flex;
     flex-direction: column;
     gap: 12px;
+    padding-bottom: 60px;
 }
 
-.book-club-page .club-details h2 {
+.book-club-item .club-details h2 {
     margin: 0;
     font-size: 18px;
     font-weight: 600;
     color: #333;
 }
 
-.book-club-page .club-details p {
+.book-club-item .club-details p {
     margin: 0;
     color: #666;
     font-size: 14px;
     line-height: 1.5;
 }
 
-.book-club-page .genre-tags {
+.book-club-item .genre-tags {
     display: flex;
-    gap: 8px;
+    gap: 2px;
     flex-wrap: wrap;
-    margin-bottom: 10px;
+    min-height: 14px;
+    padding: 0;
+    margin-top: -4px;
 }
 
-.book-club-page .genre-tag {
+.genre-tag {
     background-color: #f8f4fb;
     color: #775591;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 500;
-    border: 1px solid #e9e3f0;
-    display: flex;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 400;
+    border: none;
+    display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
+    transition: all 0.2s ease;
+    line-height: 1.2;
+    height: auto;
+    margin: 2px;
 }
 
-.book-club-page .genre-tag button {
+.genre-tag:hover {
+    background-color: #f0e8f7;
+}
+
+.genre-tag .remove-genre {
     background: none;
     border: none;
-    color: #775591;
+    color: #a389b5;
     padding: 0;
-    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    font-size: 14px;
     line-height: 1;
     cursor: pointer;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    margin-left: 2px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
 }
 
-.book-club-page .genre-tag button:hover {
-    color: #5d4372;
+.genre-tag .remove-genre:hover {
+    color: #775591;
+    background-color: rgba(119, 85, 145, 0.1);
 }
 
-.join-button {
+.genre-tag .remove-genre::after {
+    content: '×';
+    display: block;
+    transform: translateY(-1px);
+    opacity: 0.8;
+}
+
+.join-button, .apply-button {
     background-color: #775591;
     color: white;
     border: none;
     padding: 8px 16px;
     border-radius: 6px;
     cursor: pointer;
-    align-self: flex-start;
     font-size: 14px;
     font-weight: 500;
     transition: background-color 0.3s ease;
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    right: 16px;
+    width: calc(100% - 32px);
+    text-align: center;
 }
 
-.join-button:hover {
+.join-button:hover, .apply-button:hover {
     background-color: #5d4372;
 }
 
@@ -301,7 +351,7 @@
 .image-upload-container {
     border: 2px dashed #e9e3f0;
     border-radius: 8px;
-    padding: 20px;
+    padding: 24px;
     text-align: center;
     background-color: #f8f4fb;
     margin-bottom: 28px;
@@ -320,7 +370,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
     cursor: pointer;
     color: #775591;
 }
@@ -328,6 +378,13 @@
 .image-upload-label span {
     font-size: 14px;
     color: #666;
+}
+
+.file-format-info {
+    font-size: 12px;
+    color: #888;
+    margin-top: 8px;
+    font-style: italic;
 }
 
 .upload-icon {
@@ -348,41 +405,69 @@
 }
 
 .genre-input-container {
-    margin-bottom: 12px;
+    margin-bottom: 16px;
 }
 
-.genre-input-container select {
+.genre-input-container .genre-select {
     width: 100%;
     padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background-color: #f5f5f5;
+    border: 1px solid #e9e3f0;
+    border-radius: 8px;
+    background-color: #fff;
     margin-bottom: 8px;
-    font-size: 15px;
+    font-size: 14px;
     color: #333;
+    transition: all 0.2s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23775591' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    padding-right: 40px;
 }
 
-.genre-input-container button {
+.genre-input-container .genre-select:hover {
+    border-color: #775591;
+}
+
+.genre-input-container .genre-select:focus {
+    outline: none;
+    border-color: #775591;
+    box-shadow: 0 0 0 2px rgba(119, 85, 145, 0.1);
+}
+
+.add-genre-button {
     width: 100%;
     padding: 12px;
     background-color: #f8f4fb;
     color: #775591;
-    border: none;
-    border-radius: 4px;
+    border: 1px solid #e9e3f0;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 14px;
     font-weight: 500;
-    transition: background-color 0.3s ease;
+    transition: all 0.2s ease;
 }
 
-.genre-input-container button:hover {
-    background-color: #e9e3f0;
+.add-genre-button:hover:not(:disabled) {
+    background-color: #775591;
+    color: white;
+    border-color: #775591;
 }
 
-.genre-input-container button:disabled {
-    background-color: #e9e3f0;
+.add-genre-button:disabled {
+    background-color: #f0f0f0;
     color: #999;
+    border-color: #e0e0e0;
     cursor: not-allowed;
+}
+
+.genre-tags {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    min-height: 22px;
+    padding: 1px 0;
 }
 
 .modal-buttons {
@@ -473,4 +558,26 @@
 
 .book-club-page .create-club-btn {
     position: static;
+}
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.loading-message {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    font-size: 18px;
+    color: #333;
 }

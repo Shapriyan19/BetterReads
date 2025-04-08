@@ -1,7 +1,7 @@
 import User from "../models/users.model.js";
 import Club from "../models/clubs.model.js";
 
-export const joinClub= async (req, res) => {
+export const joinClub = async (req, res) => {
     try {
         const club = await Club.findById(req.params.clubId);
         
@@ -14,7 +14,7 @@ export const joinClub= async (req, res) => {
         
         // Check if user is already a member
         const existingMember = club.roles.find(
-            role => role.user === req.user._id.toString()
+            role => role.user.toString() === req.user._id.toString()
         );
         
         if (existingMember) {
@@ -27,17 +27,25 @@ export const joinClub= async (req, res) => {
         // Add user as a member
         club.roles.push({
             role: 'member',
-            user: req.user._id.toString()
+            user: req.user._id
         });
         
         await club.save();
         
+        // Fetch the updated club with populated user data
+        const updatedClub = await Club.findById(club._id)
+            .populate({
+                path: 'roles.user',
+                select: 'firstName lastName profilePic'
+            });
+        
         res.status(200).json({
             success: true,
             message: 'Successfully joined the club',
-            data: club
+            data: updatedClub
         });
     } catch (error) {
+        console.error('Error in joinClub:', error);
         res.status(500).json({
             success: false,
             message: 'Server error'
@@ -45,7 +53,7 @@ export const joinClub= async (req, res) => {
     }
 };
 
-export const leaveClub= async (req, res) => {
+export const leaveClub = async (req, res) => {
     try {
         const club = await Club.findById(req.params.clubId);
         
@@ -66,7 +74,7 @@ export const leaveClub= async (req, res) => {
         
         // Find role index
         const roleIndex = club.roles.findIndex(
-            role => role.user === req.user._id.toString()
+            role => role.user.toString() === req.user._id.toString()
         );
         
         if (roleIndex === -1) {
@@ -92,14 +100,14 @@ export const leaveClub= async (req, res) => {
     }
 };
 
-export const promoteRole= async (req, res) => {
+export const promoteRole = async (req, res) => {
     try {
         const club = req.club;
         const userId = req.params.userId;
         
         // Find the member's role
         const roleIndex = club.roles.findIndex(
-            role => role.user === userId && role.role === 'member'
+            role => role.user.toString() === userId && role.role === 'member'
         );
         
         if (roleIndex === -1) {
@@ -113,10 +121,17 @@ export const promoteRole= async (req, res) => {
         club.roles[roleIndex].role = 'admin';
         await club.save();
         
+        // Fetch updated club with populated data
+        const updatedClub = await Club.findById(club._id)
+            .populate({
+                path: 'roles.user',
+                select: 'firstName lastName profilePic'
+            });
+        
         res.status(200).json({
             success: true,
             message: 'Member promoted to admin',
-            data: club
+            data: updatedClub
         });
     } catch (error) {
         res.status(500).json({
@@ -177,7 +192,7 @@ export const demoteRole= async (req, res) => {
     }
 };
 
-export const removeMember=async (req, res) => {
+export const removeMember = async (req, res) => {
     try {
         const club = req.club;
         const userId = req.params.userId;
@@ -201,7 +216,7 @@ export const removeMember=async (req, res) => {
         
         // Find the role
         const roleIndex = club.roles.findIndex(
-            role => role.user === userId
+            role => role.user.toString() === userId
         );
         
         if (roleIndex === -1) {
@@ -215,10 +230,17 @@ export const removeMember=async (req, res) => {
         club.roles.splice(roleIndex, 1);
         await club.save();
         
+        // Fetch updated club with populated data
+        const updatedClub = await Club.findById(club._id)
+            .populate({
+                path: 'roles.user',
+                select: 'firstName lastName profilePic'
+            });
+        
         res.status(200).json({
             success: true,
             message: 'Member removed successfully',
-            data: club
+            data: updatedClub
         });
     } catch (error) {
         res.status(500).json({
@@ -230,7 +252,11 @@ export const removeMember=async (req, res) => {
 
 export const getMembers = async (req, res) => {
     try {
-        const club = await Club.findById(req.params.clubId);
+        const club = await Club.findById(req.params.clubId)
+            .populate({
+                path: 'roles.user',
+                select: 'firstName lastName profilePic'
+            });
         
         if (!club) {
             return res.status(404).json({
@@ -239,26 +265,15 @@ export const getMembers = async (req, res) => {
             });
         }
         
-        // Get all user IDs from roles
-        const memberIds = club.roles.map(role => role.user);
-        
-        // Fetch user details for all members
-        const members = await User.find(
-            { _id: { $in: memberIds } },
-            'firstName lastName'  // Only get necessary fields
-        );
-        
-        // Combine user details with their roles
-        const membersWithRoles = members.map(member => {
-            const role = club.roles.find(r => r.user === member._id.toString());
-            return {
-                user: {
-                    firstName: member.firstName,
-                    lastName: member.lastName
-                },
-                role: role.role
-            };
-        });
+        // Transform the populated data into the expected format
+        const membersWithRoles = club.roles.map(role => ({
+            user: {
+                firstName: role.user.firstName,
+                lastName: role.user.lastName,
+                profilePic: role.user.profilePic
+            },
+            role: role.role
+        }));
         
         res.status(200).json({
             success: true,
@@ -274,7 +289,7 @@ export const getMembers = async (req, res) => {
     }
 };
 
-export const transferOwnership=async (req, res) => {
+export const transferOwnership = async (req, res) => {
     try {
         const club = await Club.findById(req.params.clubId);
         
@@ -308,7 +323,7 @@ export const transferOwnership=async (req, res) => {
         
         // Make sure new admin has admin role
         const adminRoleIndex = club.roles.findIndex(
-            role => role.user === newAdminId
+            role => role.user.toString() === newAdminId
         );
         
         if (adminRoleIndex === -1) {
@@ -324,10 +339,17 @@ export const transferOwnership=async (req, res) => {
         
         await club.save();
         
+        // Fetch updated club with populated data
+        const updatedClub = await Club.findById(club._id)
+            .populate({
+                path: 'roles.user',
+                select: 'firstName lastName profilePic'
+            });
+        
         res.status(200).json({
             success: true,
             message: 'Club ownership transferred successfully',
-            data: club
+            data: updatedClub
         });
     } catch (error) {
         res.status(500).json({

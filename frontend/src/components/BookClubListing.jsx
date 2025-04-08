@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useClubStore } from '../store/useClubStore';
 import { useAuthStore } from '../store/useAuthStore';
 import { FiUpload } from 'react-icons/fi';
+import { FiChevronLeft } from 'react-icons/fi';
 import { toast } from 'react-hot-toast';
 import BookClubDetails from './BookClubDetails';
 
@@ -30,11 +31,10 @@ const GENRE_OPTIONS = [
 
 const BookClubListing = () => {
   const navigate = useNavigate();
-  const { clubs, userClubs, isLoading, error, getClubs, createClub, getUserClubs } = useClubStore();
+  const { clubs, userClubs, isLoading, error, getClubs, createClub, getUserClubs, getClub } = useClubStore();
   const { authUser } = useAuthStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [showMyClubs, setShowMyClubs] = useState(false);
-  const [previewClub, setPreviewClub] = useState(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newClub, setNewClub] = useState({
     name: '',
@@ -48,6 +48,7 @@ const BookClubListing = () => {
   const [clubImage, setClubImage] = useState(null);
   const [description, setDescription] = useState('');
   const [selectedClub, setSelectedClub] = useState(null);
+  const [isLoadingClub, setIsLoadingClub] = useState(false);
 
   // Fetch both all clubs and user clubs on component mount
   useEffect(() => {
@@ -72,8 +73,7 @@ const BookClubListing = () => {
     navigate(-1);
   };
 
-  const handleCreateClub = async (e) => {
-    e.preventDefault();
+  const handleCreateClub = async () => {
     try {
         if (!authUser) {
             console.error('User not logged in');
@@ -94,51 +94,71 @@ const BookClubListing = () => {
 
         // Create FormData object to handle file upload
         const formData = new FormData();
+        
+        // Add basic club info as strings
         formData.append('name', clubName.trim());
         formData.append('description', description.trim());
-        formData.append('genres', JSON.stringify(newClub.genres || []));
         formData.append('adminName', `${authUser.firstName} ${authUser.lastName}`);
-        formData.append('roles', JSON.stringify([{ 
-            role: 'admin', 
-            user: authUser._id 
-        }]));
 
-        if (clubImage) {
-            formData.append('image', clubImage);
+        // Add genres as a JSON string
+        const genres = Array.isArray(newClub.genres) ? newClub.genres : [];
+        formData.append('genres', JSON.stringify(genres));
+
+        // Add roles as a JSON string
+        const roles = [{
+            role: 'admin',
+            user: authUser._id
+        }];
+        formData.append('roles', JSON.stringify(roles));
+
+        // Add image if it exists and is valid
+        if (clubImage && clubImage instanceof File) {
+            // Validate image size (5MB limit)
+            if (clubImage.size > 5 * 1024 * 1024) {
+                toast.error('Image size must be less than 5MB');
+                return;
+            }
+            formData.append('image', clubImage, clubImage.name);
         }
 
         // Debug: Log FormData contents
-        console.log('FormData contents:');
-        for (let pair of formData.entries()) {
-            console.log(pair[0] + ': ' + pair[1]);
+        for (let [key, value] of formData.entries()) {
+            console.log(`FormData: ${key}:`, value instanceof File ? `File: ${value.name}` : value);
         }
 
-        const result = await createClub(formData);
-        
-        if (result.success) {
-            toast.success('Club created successfully!');
-            // Reset form
-            setShowCreateModal(false);
-            setClubName('');
-            setDescription('');
-            setClubImage(null);
-            setNewClub({ 
-                name: '', 
-                description: '', 
-                genres: [],
-                adminName: '',
-                roles: []
-            });
+        try {
+            const result = await createClub(formData);
             
-            // Refresh both all clubs and user clubs
-            await getClubs();
-            if (authUser) {
-                await getUserClubs();
+            if (result.success) {
+                toast.success('Club created successfully!');
+                // Reset form
+                setShowCreateModal(false);
+                setClubName('');
+                setDescription('');
+                setClubImage(null);
+                setNewClub({ 
+                    name: '', 
+                    description: '', 
+                    genres: [],
+                    adminName: '',
+                    roles: []
+                });
+                
+                // Refresh both all clubs and user clubs
+                await getClubs();
+                if (authUser) {
+                    await getUserClubs();
+                }
             }
+        } catch (error) {
+            console.error('Error from createClub:', error);
+            const errorMessage = error.response?.data?.message || 'Failed to create club. Please try again.';
+            toast.error(errorMessage);
+            throw error;
         }
     } catch (error) {
-        console.error('Error creating club:', error);
-        toast.error(error.response?.data?.message || 'Failed to create club. Please try again.');
+        console.error('Error in handleCreateClub:', error);
+        toast.error('An unexpected error occurred. Please try again.');
     }
   };
 
@@ -170,10 +190,19 @@ const BookClubListing = () => {
 
   const handleEnterClub = (e, club) => {
     e.stopPropagation();
-    const isMember = club.roles?.some(role => role.user === authUser?._id);
-    const isAdmin = club.admin === authUser?._id;
+    const isMember = club.roles?.some(role => role.user._id === authUser?._id);
+    const isAdmin = club.adminName === `${authUser?.firstName} ${authUser?.lastName}`;
     if (isMember || isAdmin) {
-      setSelectedClub(club);
+      setIsLoadingClub(true);
+      // Always fetch the complete club data to ensure we have the latest information
+      getClub(club._id).then(fullClubData => {
+        setSelectedClub(fullClubData);
+        setIsLoadingClub(false);
+      }).catch(error => {
+        console.error('Error fetching club details:', error);
+        toast.error('Failed to load club details');
+        setIsLoadingClub(false);
+      });
     }
   };
 
@@ -198,7 +227,7 @@ const BookClubListing = () => {
     <div className="book-club-page">
       <div className="book-club-listing">
         <button className="back-button" onClick={handleBack}>
-          &lt; Back
+          <FiChevronLeft /> Back
         </button>
 
         <div className="action-buttons">
@@ -238,7 +267,17 @@ const BookClubListing = () => {
               className="book-club-item"
               onClick={() => setSelectedClub(club)}
             >
-              <div className="club-image"></div>
+              <div 
+                className="club-image"
+                style={{
+                  backgroundImage: club.image 
+                    ? `url(${club.image})` 
+                    : 'url(/default-club-image.png)',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
               <div className="club-details">
                 <h2>{club.name}</h2>
                 <p>{club.description}</p>
@@ -260,8 +299,8 @@ const BookClubListing = () => {
                     );
                   }
 
-                  const isMember = club.roles?.some(role => role.user === authUser?._id);
-                  const isAdmin = club.admin === authUser?._id;
+                  const isMember = club.roles?.some(role => role.user._id === authUser?._id);
+                  const isAdmin = club.adminName === `${authUser?.firstName} ${authUser?.lastName}`;
                   
                   if (!authUser) {
                     return (
@@ -308,11 +347,17 @@ const BookClubListing = () => {
 
       {selectedClub && (
         <BookClubDetails 
-          isOwner={selectedClub.admin === authUser?._id}
-          isMember={selectedClub.roles?.some(role => role.user === authUser?._id)}
+          isOwner={selectedClub.adminName === `${authUser?.firstName} ${authUser?.lastName}`}
+          isMember={selectedClub.roles?.some(role => role.user._id === authUser?._id)}
           club={selectedClub}
           onClose={() => setSelectedClub(null)}
         />
+      )}
+
+      {isLoadingClub && (
+        <div className="loading-overlay">
+          <div className="loading-message">Loading club details...</div>
+        </div>
       )}
 
       {/* Create Club Modal */}
@@ -320,7 +365,10 @@ const BookClubListing = () => {
         <div className="modal-overlay" onClick={() => setShowCreateModal(false)}>
           <div className="modal-content create-club-modal" onClick={(e) => e.stopPropagation()}>
             <h2>Create a New Book Club</h2>
-            <form onSubmit={handleCreateClub}>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              handleCreateClub();
+            }}>
               <div className="form-group">
                 <label>Club Name</label>
                 <input
@@ -337,12 +385,22 @@ const BookClubListing = () => {
                     <FiUpload />
                   </div>
                   <span>Click to upload club image</span>
+                  <p className="file-format-info">Accepted formats: JPG, PNG, GIF (max 5MB)</p>
                   <input
                     type="file"
-                    accept="image/*"
-                    onChange={(e) => setClubImage(e.target.files[0])}
+                    accept="image/jpeg,image/png,image/gif"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file && file.size > 5 * 1024 * 1024) { // 5MB limit
+                        toast.error('Image size must be less than 5MB');
+                        e.target.value = '';
+                        return;
+                      }
+                      setClubImage(file);
+                    }}
                   />
                 </label>
+                {clubImage && <p className="file-name">Selected: {clubImage.name}</p>}
               </div>
 
               <div className="form-group">
@@ -367,7 +425,12 @@ const BookClubListing = () => {
                       <option key={genre} value={genre}>{genre}</option>
                     ))}
                   </select>
-                  <button type="button" onClick={handleAddGenre} disabled={!selectedGenre}>
+                  <button 
+                    type="button" 
+                    onClick={handleAddGenre} 
+                    disabled={!selectedGenre}
+                    className="add-genre-button"
+                  >
                     Add
                   </button>
                 </div>
@@ -379,9 +442,8 @@ const BookClubListing = () => {
                         type="button"
                         className="remove-genre"
                         onClick={() => handleRemoveGenre(genre)}
-                      >
-                        ×
-                      </button>
+                        aria-label={`Remove ${genre}`}
+                      />
                     </span>
                   ))}
                 </div>

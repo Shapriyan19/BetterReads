@@ -4,7 +4,7 @@ import cloudinary from "../lib/cloudinary.js";
 export const createClub = async (req, res) => {
     try {
         console.log('Received request body:', req.body);
-        console.log('Received files:', req.file);
+        console.log('Received file:', req.file);
         console.log('User info:', req.user);
         
         const { name, description, adminName, genres, roles } = req.body;
@@ -68,19 +68,33 @@ export const createClub = async (req, res) => {
         let imageUrl = "";
         if (req.file) {
             try {
+                // Validate file type
+                if (!req.file.mimetype.startsWith('image/')) {
+                    return res.status(400).json({
+                        success: false,
+                        message: "Only image files are allowed"
+                    });
+                }
+
                 // Convert buffer to base64
                 const b64 = Buffer.from(req.file.buffer).toString("base64");
                 let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
                 
+                console.log('Uploading image to Cloudinary...');
                 const result = await cloudinary.uploader.upload(dataURI, {
                     resource_type: "auto",
+                    folder: "book_clubs",
+                    transformation: [
+                        { width: 800, height: 600, crop: "limit" }
+                    ]
                 });
+                console.log('Cloudinary upload result:', result);
                 imageUrl = result.secure_url;
             } catch (error) {
                 console.error("Error uploading to cloudinary:", error);
                 return res.status(500).json({
                     success: false,
-                    message: "Error uploading image"
+                    message: "Error uploading image. Please try again."
                 });
             }
         }
@@ -116,7 +130,11 @@ export const createClub = async (req, res) => {
 export const getClubs = async (req, res) => {
     try {
         console.log('Fetching all clubs...');
-        const clubs = await Club.find().populate('roles.user', 'firstName lastName');
+        const clubs = await Club.find()
+            .populate({
+                path: 'roles.user',
+                select: 'firstName lastName profilePic'
+            });
         console.log('Found clubs:', clubs);
         
         res.status(200).json({
@@ -132,9 +150,13 @@ export const getClubs = async (req, res) => {
     }
 };
 
-export const getClub= async (req, res) => {
+export const getClub = async (req, res) => {
     try {
-        const club = await Club.findById(req.params.clubId);
+        const club = await Club.findById(req.params.clubId)
+            .populate({
+                path: 'roles.user',
+                select: 'firstName lastName profilePic'
+            });
         
         if (!club) {
             return res.status(404).json({
@@ -148,6 +170,7 @@ export const getClub= async (req, res) => {
             data: club
         });
     } catch (error) {
+        console.error('Error fetching club:', error);
         res.status(500).json({
             success: false,
             message: 'Server error'
@@ -217,6 +240,9 @@ export const getUserClubs = async (req, res) => {
     try {
         const clubs = await Club.find({
             'roles.user': req.user._id.toString()
+        }).populate({
+            path: 'roles.user',
+            select: 'firstName lastName profilePic'
         });
         
         res.status(200).json({
@@ -225,6 +251,7 @@ export const getUserClubs = async (req, res) => {
             data: clubs
         });
     } catch (error) {
+        console.error('Error in getUserClubs:', error);
         res.status(500).json({
             success: false,
             message: 'Server error'

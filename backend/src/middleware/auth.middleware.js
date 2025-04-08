@@ -42,7 +42,7 @@ export const isClubAdmin = async (req, res, next) => {
         
         // Check if user is admin
         const isAdmin = club.roles.some(
-            role => role.role === 'admin' && role.user === req.user._id.toString()
+            role => role.role === 'admin' && role.user.toString() === req.user._id.toString()
         );
         
         if (isAdmin) {
@@ -69,7 +69,7 @@ export const isClubMember = async (req, res, next) => {
         }
         
         const isMember = club.roles.some(
-            role => role.user === req.user._id.toString()
+            role => role.user.toString() === req.user._id.toString()
         );
         
         if (isMember) {
