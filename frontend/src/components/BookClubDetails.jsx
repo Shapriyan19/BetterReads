@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './BookClubDetails.css';
 import BookClubChat from './BookClubChat';
-import { FaTimes, FaCrown, FaUsers, FaLock, FaUserCircle, FaTrash } from 'react-icons/fa';
+import { FaTimes, FaCrown, FaUsers, FaLock, FaUserCircle, FaTrash, FaSignOutAlt } from 'react-icons/fa';
 import { FiUpload } from 'react-icons/fi';
 import { toast } from 'react-hot-toast';
 import { useClubStore } from '../store/useClubStore';
@@ -20,7 +20,7 @@ const BookClubDetails = ({ isOwner = false, isMember = false, club, onClose }) =
   const [genres, setGenres] = useState(club?.genres || []);
   const [selectedGenre, setSelectedGenre] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const { updateClub, deleteClub } = useClubStore();
+  const { updateClub, deleteClub, leaveClub } = useClubStore();
 
   const handleAddGenre = () => {
     if (selectedGenre && !genres.includes(selectedGenre)) {
@@ -73,6 +73,17 @@ const BookClubDetails = ({ isOwner = false, isMember = false, club, onClose }) =
     } catch (error) {
       console.error('Error deleting club:', error);
       toast.error(error.response?.data?.message || 'Failed to delete club');
+    }
+  };
+
+  const handleLeaveClub = async () => {
+    try {
+      await leaveClub(club._id);
+      // Close the modal after successfully leaving the club
+      onClose();
+    } catch (error) {
+      console.error('Error leaving club:', error);
+      // Don't show error toast here as it's already shown in the store
     }
   };
 
@@ -143,6 +154,17 @@ const BookClubDetails = ({ isOwner = false, isMember = false, club, onClose }) =
                     </div>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {isMember && !isOwner && (
+              <div className="club-info-section">
+                <button 
+                  className="leave-club-button"
+                  onClick={handleLeaveClub}
+                >
+                  <FaSignOutAlt /> Leave Club
+                </button>
               </div>
             )}
           </div>

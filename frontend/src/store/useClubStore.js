@@ -1,8 +1,9 @@
 import { create } from "zustand";
 import axiosInstance from "../lib/axios";
 import { toast } from "react-hot-toast";
+import { useAuthStore } from "./useAuthStore";
 
-export const useClubStore = create((set, get) => ({
+export const useClubStore = create((set) => ({
     clubs: [],
     userClubs: [],
     currentClub: null,
@@ -91,6 +92,49 @@ export const useClubStore = create((set, get) => ({
             console.error('Error joining club:', error);
             set({ error: error.response?.data?.message || "Failed to join club", isLoading: false });
             toast.error(error.response?.data?.message || "Failed to join club");
+            throw error;
+        }
+    },
+
+    // Leave a club
+    leaveClub: async (clubId) => {
+        set({ isLoading: true, error: null });
+        try {
+            await axiosInstance.delete(`/membership/${clubId}/leave`);
+            
+            // Get current user ID from auth store
+            const currentUserId = useAuthStore.getState().authUser?._id;
+            
+            // Update clubs and userClubs state locally
+            set((state) => {
+                const updatedClubs = state.clubs.map(club => {
+                    if (club._id === clubId) {
+                        // Remove the current user from the club's roles
+                        const updatedClub = {
+                            ...club,
+                            roles: club.roles.filter(role => role.user._id !== currentUserId),
+                            membersCount: club.membersCount - 1
+                        };
+                        return updatedClub;
+                    }
+                    return club;
+                });
+
+                // Remove the left club from userClubs
+                const updatedUserClubs = state.userClubs.filter(club => club._id !== clubId);
+
+                return {
+                    clubs: updatedClubs,
+                    userClubs: updatedUserClubs,
+                    isLoading: false
+                };
+            });
+
+            toast.success("Successfully left the club!");
+        } catch (error) {
+            console.error('Error leaving club:', error);
+            set({ error: error.response?.data?.message || "Failed to leave club", isLoading: false });
+            toast.error(error.response?.data?.message || "Failed to leave club");
             throw error;
         }
     },
