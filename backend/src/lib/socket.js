@@ -1,22 +1,39 @@
 import {Server} from "socket.io";
-import http from "http";
-import express from "express";
 
-const app=express();
-const server=http.createServer(app);
+// This function will be called from index.js with the HTTP server
+export const initializeSocket = (server) => {
+    const io = new Server(server, {
+        cors: {
+            origin: ["http://localhost:5173"]
+        },
+    });
 
-const io=new Server(server,{
-    cors:{
-    origin: ["http://localhost/5173"]
-    },
-});
+    io.on("connection", (socket) => {
+        console.log("A user connected", socket.id);
 
-io.on("connection",(socket)=>{
-    console.log("A user connected",socket.id);
+        // Join a club's chat room
+        socket.on("join_club_chat", (clubId) => {
+            socket.join(`club_${clubId}`);
+            console.log(`User ${socket.id} joined club chat: ${clubId}`);
+        });
 
-    socket.on("disconnet",()=>{
-        console.log("A user disconnected",socket.id);
-    })
-});
+        // Leave a club's chat room
+        socket.on("leave_club_chat", (clubId) => {
+            socket.leave(`club_${clubId}`);
+            console.log(`User ${socket.id} left club chat: ${clubId}`);
+        });
 
-export {io,app,server};
+        // Handle new chat messages - this is now handled by the backend controller
+        // We're keeping this for backward compatibility
+        socket.on("send_message", (data) => {
+            console.log("Received message from socket:", data);
+            // We don't need to do anything here as the backend controller handles this
+        });
+
+        socket.on("disconnect", () => {
+            console.log("A user disconnected", socket.id);
+        });
+    });
+
+    return io;
+};

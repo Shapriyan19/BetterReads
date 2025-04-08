@@ -6,7 +6,10 @@ import authRoutes from "./routes/auth.routes.js";
 import bookRoutes from "./routes/book.routes.js";
 import clubRoutes from "./routes/club.routes.js";
 import membershipRoutes from "./routes/membership.routes.js";
+import messagesRoutes from "./routes/messages.routes.js";
 import cors from "cors";
+import { initializeSocket } from "./lib/socket.js";
+import http from "http";
 
 dotenv.config();
 const app = express();
@@ -26,8 +29,19 @@ app.use("/api/auth", authRoutes);
 app.use("/api/book", bookRoutes);
 app.use('/api/clubs', clubRoutes);
 app.use('/api/membership', membershipRoutes);
+app.use('/api/messages', messagesRoutes);
 
-app.listen(PORT, () => {
+// Create HTTP server
+const server = http.createServer(app);
+
+// Initialize Socket.IO
+const io = initializeSocket(server);
+
+// Make io available to other modules
+app.set('io', io);
+
+// Start server
+server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
     connectDB();
 });
