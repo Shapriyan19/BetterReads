@@ -2,9 +2,68 @@ import React, { useState } from 'react';
 import './BookClubDetails.css';
 import BookClubChat from './BookClubChat';
 import { FaTimes, FaCrown, FaUsers, FaLock, FaUserCircle } from 'react-icons/fa';
+import { FiUpload } from 'react-icons/fi';
+import { toast } from 'react-hot-toast';
+import { useClubStore } from '../store/useClubStore';
+
+const GENRE_OPTIONS = [
+  'Fiction', 'Non-Fiction', 'Mystery', 'Science Fiction', 'Fantasy',
+  'Romance', 'Thriller', 'Biography', 'History', 'Self-Help',
+  'Poetry', 'Drama', 'Horror', 'Adventure', 'Comedy'
+];
 
 const BookClubDetails = ({ isOwner = false, isMember = false, club, onClose }) => {
   const [activeTab, setActiveTab] = useState('details');
+  const [clubName, setClubName] = useState(club?.name || '');
+  const [description, setDescription] = useState(club?.description || '');
+  const [clubImage, setClubImage] = useState(club?.image || null);
+  const [genres, setGenres] = useState(club?.genres || []);
+  const [selectedGenre, setSelectedGenre] = useState('');
+  const { updateClub } = useClubStore();
+
+  const handleAddGenre = () => {
+    if (selectedGenre && !genres.includes(selectedGenre)) {
+      setGenres([...genres, selectedGenre]);
+      setSelectedGenre('');
+    }
+  };
+
+  const handleRemoveGenre = (genreToRemove) => {
+    setGenres(genres.filter(genre => genre !== genreToRemove));
+  };
+
+  const handleUpdateClub = async (e) => {
+    e.preventDefault();
+    try {
+      const formData = new FormData();
+      formData.append('name', clubName);
+      formData.append('description', description);
+      formData.append('genres', JSON.stringify(genres));
+      
+      // Only append image if it's a new file
+      if (clubImage instanceof File) {
+        formData.append('image', clubImage);
+      } else if (clubImage) {
+        // If it's a string (existing image URL), append it as is
+        formData.append('image', clubImage);
+      }
+
+      // Debug: Log FormData contents
+      console.log('Sending update with FormData:');
+      for (let [key, value] of formData.entries()) {
+        console.log(`${key}:`, value instanceof File ? `File: ${value.name}` : value);
+      }
+
+      const result = await updateClub(club._id, formData);
+      console.log('Update result:', result);
+      
+      toast.success('Club settings updated successfully!');
+      onClose(); // Close the modal to refresh the parent component
+    } catch (error) {
+      console.error('Error updating club:', error);
+      toast.error(error.response?.data?.message || 'Failed to update club settings');
+    }
+  };
 
   const renderTabContent = () => {
     if (!club) {
@@ -122,9 +181,98 @@ const BookClubDetails = ({ isOwner = false, isMember = false, club, onClose }) =
         );
       case 'settings':
         return (
-          <div className="tab-panel">
+          <div className="tab-panel settings-panel">
             <h3>Edit Club Settings</h3>
-            <p>(Editable form placeholder like Club Creator page)</p>
+            <form onSubmit={handleUpdateClub}>
+              <div className="form-group">
+                <label>Club Name</label>
+                <input
+                  type="text"
+                  value={clubName}
+                  onChange={(e) => setClubName(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Description</label>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Club Image</label>
+                <div className="image-upload-container">
+                  <label className="image-upload-label">
+                    <div className="upload-icon">
+                      <FiUpload />
+                    </div>
+                    <span>Click to upload new club image</span>
+                    <p className="file-format-info">Accepted formats: JPG, PNG, GIF (max 5MB)</p>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/gif"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file && file.size > 5 * 1024 * 1024) {
+                          toast.error('Image size must be less than 5MB');
+                          e.target.value = '';
+                          return;
+                        }
+                        setClubImage(file);
+                      }}
+                    />
+                  </label>
+                  {clubImage && <p className="file-name">Selected: {clubImage.name}</p>}
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label>Genres</label>
+                <div className="genre-input-container">
+                  <select
+                    value={selectedGenre}
+                    onChange={(e) => setSelectedGenre(e.target.value)}
+                    className="genre-select"
+                  >
+                    <option value="">Select a genre</option>
+                    {GENRE_OPTIONS.map((genre) => (
+                      <option key={genre} value={genre}>{genre}</option>
+                    ))}
+                  </select>
+                  <button 
+                    type="button" 
+                    onClick={handleAddGenre} 
+                    disabled={!selectedGenre}
+                    className="add-genre-button"
+                  >
+                    Add
+                  </button>
+                </div>
+                <div className="genre-tags">
+                  {genres.map((genre, index) => (
+                    <span key={index} className="genre-tag">
+                      {genre}
+                      <button
+                        type="button"
+                        className="remove-genre"
+                        onClick={() => handleRemoveGenre(genre)}
+                        aria-label={`Remove ${genre}`}
+                      />
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="modal-buttons">
+                <button type="submit" className="update-button">
+                  Update Club Settings
+                </button>
+              </div>
+            </form>
           </div>
         );
       default:

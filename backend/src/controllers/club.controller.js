@@ -178,19 +178,81 @@ export const getClub = async (req, res) => {
     }
 };
 
-export const updateClub= async (req, res) => {
+export const updateClub = async (req, res) => {
     try {
-        const { description, image } = req.body;
+        console.log('Received update request:', req.body);
+        console.log('Received file:', req.file);
         
+        const { name, description, genres } = req.body;
+        let imageUrl = req.body.image; // Keep existing image if no new one uploaded
+        
+        // Handle new image upload if provided
+        if (req.file) {
+            try {
+                // Validate file type
+                if (!req.file.mimetype.startsWith('image/')) {
+                    return res.status(400).json({
+                        success: false,
+                        message: "Only image files are allowed"
+                    });
+                }
+
+                // Convert buffer to base64
+                const b64 = Buffer.from(req.file.buffer).toString("base64");
+                let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+                
+                console.log('Uploading image to Cloudinary...');
+                const result = await cloudinary.uploader.upload(dataURI, {
+                    resource_type: "auto",
+                    folder: "book_clubs",
+                    transformation: [
+                        { width: 800, height: 600, crop: "limit" }
+                    ]
+                });
+                console.log('Cloudinary upload result:', result);
+                imageUrl = result.secure_url;
+            } catch (error) {
+                console.error("Error uploading to cloudinary:", error);
+                return res.status(500).json({
+                    success: false,
+                    message: "Error uploading image. Please try again."
+                });
+            }
+        }
+
+        // Parse genres if provided
+        let parsedGenres = [];
+        if (genres) {
+            try {
+                parsedGenres = JSON.parse(genres);
+                if (!Array.isArray(parsedGenres)) {
+                    throw new Error('Genres must be an array');
+                }
+            } catch (error) {
+                console.error("Error parsing genres:", error);
+                return res.status(400).json({ 
+                    success: false,
+                    message: "Invalid genres format. Please provide a valid array of genres."
+                });
+            }
+        }
+
         const updateData = {};
-        if (description) updateData.description = description;
-        if (image) updateData.image = image;
+        if (name) updateData.name = name.trim();
+        if (description) updateData.description = description.trim();
+        if (parsedGenres.length > 0) updateData.genres = parsedGenres;
+        if (imageUrl) updateData.image = imageUrl;
+        
+        console.log('Updating club with data:', updateData);
         
         const club = await Club.findByIdAndUpdate(
             req.params.clubId,
             updateData,
             { new: true, runValidators: true }
-        );
+        ).populate({
+            path: 'roles.user',
+            select: 'firstName lastName profilePic'
+        });
         
         if (!club) {
             return res.status(404).json({
@@ -199,11 +261,13 @@ export const updateClub= async (req, res) => {
             });
         }
         
+        console.log('Updated club:', club);
         res.status(200).json({
             success: true,
             data: club
         });
     } catch (error) {
+        console.error('Error updating club:', error);
         res.status(400).json({
             success: false,
             message: error.message

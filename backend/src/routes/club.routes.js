@@ -17,7 +17,7 @@ router.get('/', getClubs);
 router.get('/:clubId',getClub);
 
 // Update club details
-router.put('/:clubId', protectRoute, isClubAdmin, updateClub);
+router.put('/:clubId', protectRoute, isClubAdmin, upload.single('image'), updateClub);
 
 // Delete a club (admin only)
 router.delete('/:clubId', protectRoute, isClubAdmin,deleteClub);

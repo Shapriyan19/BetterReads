@@ -154,6 +154,18 @@ export const useClubStore = create((set, get) => ({
         set({ isLoading: true, error: null });
         try {
             const res = await axiosInstance.put(`/clubs/${clubId}`, clubData);
+            
+            // Update the clubs and userClubs arrays with the updated club data
+            set((state) => ({
+                clubs: state.clubs.map(club => 
+                    club._id === clubId ? res.data.data : club
+                ),
+                userClubs: state.userClubs.map(club => 
+                    club._id === clubId ? res.data.data : club
+                ),
+                currentClub: state.currentClub?._id === clubId ? res.data.data : state.currentClub
+            }));
+            
             toast.success("Book club updated successfully!");
             return res.data;
         } catch (error) {
