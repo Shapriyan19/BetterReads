@@ -74,7 +74,11 @@ export const signup = async (req, res) => {
         let profilePic = "";
         if (req.file) {
             try {
-                const result = await cloudinary.uploader.upload(req.file.path);
+                // Convert buffer to base64
+                const b64 = Buffer.from(req.file.buffer).toString("base64");
+                let dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+                
+                const result = await cloudinary.uploader.upload(dataURI);
                 profilePic = result.secure_url;
             } catch (error) {
                 console.error("Error uploading to cloudinary:", error);
