@@ -89,7 +89,7 @@ const BookClubChat = ({ clubId }) => {
           userId: data.userId,
           username: data.username,
           timestamp: new Date(data.timestamp),
-          status: 'received'
+          status: data.userId === user._id ? 'sent' : 'received'
         }];
       });
     });
@@ -112,9 +112,9 @@ const BookClubChat = ({ clubId }) => {
   const handleContextMenu = (e, messageId) => {
     e.preventDefault();
     
-    // Only show context menu for user's own messages
+    // Show context menu for all messages except system messages
     const message = messages.find(msg => msg._id === messageId);
-    if (message && message.userId === user._id) {
+    if (message && !message.isSystem) {
       setContextMenu({
         visible: true,
         x: e.clientX,
