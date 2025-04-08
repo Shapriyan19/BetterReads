@@ -94,4 +94,61 @@ export const saveMessage = async (req, res) => {
       error: error.message
     });
   }
+};
+
+// Delete a message
+export const deleteMessage = async (req, res) => {
+  try {
+    const { messageId } = req.params;
+    const userId = req.user._id;
+    
+    // Find the message
+    const message = await Message.findById(messageId);
+    
+    if (!message) {
+      return res.status(404).json({
+        success: false,
+        message: "Message not found"
+      });
+    }
+    
+    // Check if user is the sender of the message
+    if (message.senderId.toString() !== userId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "You can only delete your own messages"
+      });
+    }
+    
+    // Delete the message
+    await Message.findByIdAndDelete(messageId);
+    
+    // Get io instance from app
+    const io = req.app.get('io');
+    if (!io) {
+      console.error("Socket.io instance not found in app");
+      return res.status(500).json({
+        success: false,
+        message: "Socket.io instance not available"
+      });
+    }
+    
+    // Emit message deletion to all users in the club's chat room
+    io.to(`club_${message.club}`).emit('message_deleted', {
+      messageId: messageId,
+      clubId: message.club
+    });
+    
+    res.status(200).json({
+      success: true,
+      message: "Message deleted successfully"
+    });
+  } catch (error) {
+    console.error("Error deleting message:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete message",
+      error: error.message
+    });
+  }
 }; 
