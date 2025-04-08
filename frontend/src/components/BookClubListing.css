@@ -28,23 +28,30 @@
 
 .book-club-page .book-club-listing {
     font-family: sans-serif;
-    padding: 20px;
+    padding: 20px 50px;
     color: #333;
     position: relative;
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
 }
 
 .book-club-page .back-button {
-    position: absolute;
-    top: 10px;
-    left: 10px;
     background-color: #775591;
     color: white;
     border: none;
-    padding: 8px 15px;
+    padding: 8px 16px;
     border-radius: 6px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    width: fit-content;
+    align-self: flex-start;
 }
 
 .book-club-page .back-button:hover {
@@ -473,4 +480,26 @@
 
 .book-club-page .create-club-btn {
     position: static;
+}
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.loading-message {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    font-size: 18px;
+    color: #333;
 }

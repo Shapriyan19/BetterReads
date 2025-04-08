@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useClubStore } from '../store/useClubStore';
 import { useAuthStore } from '../store/useAuthStore';
 import { FiUpload } from 'react-icons/fi';
+import { FiChevronLeft } from 'react-icons/fi';
 import { toast } from 'react-hot-toast';
 import BookClubDetails from './BookClubDetails';
 
@@ -30,11 +31,10 @@ const GENRE_OPTIONS = [
 
 const BookClubListing = () => {
   const navigate = useNavigate();
-  const { clubs, userClubs, isLoading, error, getClubs, createClub, getUserClubs } = useClubStore();
+  const { clubs, userClubs, isLoading, error, getClubs, createClub, getUserClubs, getClub } = useClubStore();
   const { authUser } = useAuthStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [showMyClubs, setShowMyClubs] = useState(false);
-  const [previewClub, setPreviewClub] = useState(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newClub, setNewClub] = useState({
     name: '',
@@ -48,6 +48,7 @@ const BookClubListing = () => {
   const [clubImage, setClubImage] = useState(null);
   const [description, setDescription] = useState('');
   const [selectedClub, setSelectedClub] = useState(null);
+  const [isLoadingClub, setIsLoadingClub] = useState(false);
 
   // Fetch both all clubs and user clubs on component mount
   useEffect(() => {
@@ -173,7 +174,16 @@ const BookClubListing = () => {
     const isMember = club.roles?.some(role => role.user === authUser?._id);
     const isAdmin = club.admin === authUser?._id;
     if (isMember || isAdmin) {
-      setSelectedClub(club);
+      setIsLoadingClub(true);
+      // Always fetch the complete club data to ensure we have the latest information
+      getClub(club._id).then(fullClubData => {
+        setSelectedClub(fullClubData);
+        setIsLoadingClub(false);
+      }).catch(error => {
+        console.error('Error fetching club details:', error);
+        toast.error('Failed to load club details');
+        setIsLoadingClub(false);
+      });
     }
   };
 
@@ -198,7 +208,7 @@ const BookClubListing = () => {
     <div className="book-club-page">
       <div className="book-club-listing">
         <button className="back-button" onClick={handleBack}>
-          &lt; Back
+          <FiChevronLeft /> Back
         </button>
 
         <div className="action-buttons">
@@ -313,6 +323,12 @@ const BookClubListing = () => {
           club={selectedClub}
           onClose={() => setSelectedClub(null)}
         />
+      )}
+
+      {isLoadingClub && (
+        <div className="loading-overlay">
+          <div className="loading-message">Loading club details...</div>
+        </div>
       )}
 
       {/* Create Club Modal */}
