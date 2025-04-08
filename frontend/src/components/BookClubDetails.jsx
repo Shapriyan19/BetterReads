@@ -209,7 +209,7 @@ const BookClubDetails = ({ isOwner = false, isMember = false, club, onClose }) =
         return (
           <div className="tab-panel">
             <h3>Club Chat</h3>
-            <BookClubChat />
+            <BookClubChat clubId={club._id} />
           </div>
         );
       case 'settings':

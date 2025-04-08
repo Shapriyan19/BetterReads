@@ -163,3 +163,12 @@
 .chat-messages::-webkit-scrollbar-thumb:hover {
     background: #555;
 }
+
+.loading-messages {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+    color: #6c757d;
+    font-style: italic;
+}
