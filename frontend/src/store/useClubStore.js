@@ -127,11 +127,16 @@ export const useClubStore = create((set, get) => ({
         set({ isLoading: true, error: null });
         try {
             const res = await axiosInstance.get(`/clubs/${clubId}`);
+            console.log('Fetched club data:', res.data);
+            
+            // Process the club data to ensure members is properly handled
             const club = {
                 ...res.data.data,
                 members: res.data.data.roles.map(role => role.user),
                 membersCount: res.data.data.roles.length
             };
+            
+            console.log('Processed club data:', club);
             set({ currentClub: club });
             return club;
         } catch (error) {

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './BookClubDetails.css';
 import BookClubChat from './BookClubChat';
-import { FaTimes, FaCrown, FaUsers, FaLock } from 'react-icons/fa';
+import { FaTimes, FaCrown, FaUsers, FaLock, FaUserCircle } from 'react-icons/fa';
 
 const BookClubDetails = ({ isOwner = false, isMember = false, club, onClose }) => {
   const [activeTab, setActiveTab] = useState('details');
@@ -83,24 +83,25 @@ const BookClubDetails = ({ isOwner = false, isMember = false, club, onClose }) =
             <h3>Members</h3>
             <div className="members-list">
               {club.roles?.map((role, index) => {
-                // Handle different role structures
-                const userName = role.userName || 
-                               (role.user?.firstName && role.user?.lastName ? 
-                                `${role.user.firstName} ${role.user.lastName}` : 
-                                'Unknown User');
-                
-                const userInitials = role.user?.firstName?.[0] || 
-                                   (userName !== 'Unknown User' ? userName[0] : '?');
+                const userName = role.user?.firstName && role.user?.lastName ? 
+                               `${role.user.firstName} ${role.user.lastName}` : 
+                               'Unknown User';
                 
                 return (
                   <div key={index} className="member-item">
                     <div className="member-avatar">
-                      {userInitials}
+                      {role.user?.profilePic ? (
+                        <img 
+                          src={role.user.profilePic} 
+                          alt={userName} 
+                          className="profile-pic"
+                        />
+                      ) : (
+                        <FaUserCircle className="default-avatar" />
+                      )}
                     </div>
                     <div className="member-info">
-                      <span className="member-name">
-                        {userName}
-                      </span>
+                      <span className="member-name">{userName}</span>
                       <div className={`member-role ${role.role === 'admin' ? 'admin' : ''}`}>
                         {role.role === 'admin' && <FaCrown className="role-icon" />}
                         <span>{role.role === 'admin' ? 'Admin' : 'Member'}</span>

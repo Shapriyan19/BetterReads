@@ -130,7 +130,11 @@ export const createClub = async (req, res) => {
 export const getClubs = async (req, res) => {
     try {
         console.log('Fetching all clubs...');
-        const clubs = await Club.find().populate('roles.user', 'firstName lastName');
+        const clubs = await Club.find()
+            .populate({
+                path: 'roles.user',
+                select: 'firstName lastName profilePic'
+            });
         console.log('Found clubs:', clubs);
         
         res.status(200).json({
@@ -146,9 +150,13 @@ export const getClubs = async (req, res) => {
     }
 };
 
-export const getClub= async (req, res) => {
+export const getClub = async (req, res) => {
     try {
-        const club = await Club.findById(req.params.clubId);
+        const club = await Club.findById(req.params.clubId)
+            .populate({
+                path: 'roles.user',
+                select: 'firstName lastName profilePic'
+            });
         
         if (!club) {
             return res.status(404).json({
@@ -162,6 +170,7 @@ export const getClub= async (req, res) => {
             data: club
         });
     } catch (error) {
+        console.error('Error fetching club:', error);
         res.status(500).json({
             success: false,
             message: 'Server error'
@@ -231,6 +240,9 @@ export const getUserClubs = async (req, res) => {
     try {
         const clubs = await Club.find({
             'roles.user': req.user._id.toString()
+        }).populate({
+            path: 'roles.user',
+            select: 'firstName lastName profilePic'
         });
         
         res.status(200).json({
@@ -239,6 +251,7 @@ export const getUserClubs = async (req, res) => {
             data: clubs
         });
     } catch (error) {
+        console.error('Error in getUserClubs:', error);
         res.status(500).json({
             success: false,
             message: 'Server error'
