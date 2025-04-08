@@ -280,7 +280,7 @@ const BookClubListing = () => {
               <div className="club-details">
                 <h2>{club.name}</h2>
                 <p>{club.description}</p>
-                <p>{club.membersCount} members</p>
+                <p>{club.membersCount} {club.membersCount === 1 ? 'member' : 'members'}</p>
                 <div className="genre-tags">
                   {club.genres?.map((genre, index) => (
                     <span key={index} className="genre-tag">{genre}</span>

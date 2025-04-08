@@ -155,19 +155,26 @@ export const useClubStore = create((set, get) => ({
         try {
             const res = await axiosInstance.put(`/clubs/${clubId}`, clubData);
             
+            // Process the club data to ensure members is properly handled
+            const updatedClub = {
+                ...res.data.data,
+                members: res.data.data.roles.map(role => role.user),
+                membersCount: res.data.data.roles.length
+            };
+            
             // Update the clubs and userClubs arrays with the updated club data
             set((state) => ({
                 clubs: state.clubs.map(club => 
-                    club._id === clubId ? res.data.data : club
+                    club._id === clubId ? updatedClub : club
                 ),
                 userClubs: state.userClubs.map(club => 
-                    club._id === clubId ? res.data.data : club
+                    club._id === clubId ? updatedClub : club
                 ),
-                currentClub: state.currentClub?._id === clubId ? res.data.data : state.currentClub
+                currentClub: state.currentClub?._id === clubId ? updatedClub : state.currentClub
             }));
             
             toast.success("Book club updated successfully!");
-            return res.data;
+            return { data: updatedClub };
         } catch (error) {
             console.error('Error updating book club:', error);
             set({ error: error.response?.data?.message || "Failed to update book club" });
