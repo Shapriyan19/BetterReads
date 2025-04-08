@@ -82,6 +82,22 @@
     opacity: 0.9;
 }
 
+.message.sent .message-username {
+    text-align: right;
+}
+
+.message.received .message-username {
+    text-align: left;
+}
+
+.message.sent .message-text {
+    text-align: right;
+}
+
+.message.received .message-text {
+    text-align: left;
+}
+
 .message-text {
     word-break: break-word;
     line-height: 1.4;
