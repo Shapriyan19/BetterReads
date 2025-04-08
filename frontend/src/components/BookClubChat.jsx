@@ -22,6 +22,7 @@ const BookClubChat = ({ clubId }) => {
   const messagesEndRef = useRef(null);
   const socketRef = useRef(null);
   const inputRef = useRef(null);
+  const prevMessagesLengthRef = useRef(0);
   const { authUser } = useAuthStore();
   
   // Mock user for demo (will be replaced with authUser)
@@ -157,8 +158,15 @@ const BookClubChat = ({ clubId }) => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  // Only scroll to bottom when new messages are added, not when messages are deleted
   useEffect(() => {
-    scrollToBottom();
+    // Check if messages were added (not deleted)
+    if (messages.length > prevMessagesLengthRef.current) {
+      scrollToBottom();
+    }
+    
+    // Update the previous messages length
+    prevMessagesLengthRef.current = messages.length;
   }, [messages]);
 
   // Handle key press in input field
