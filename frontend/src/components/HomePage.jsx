@@ -294,8 +294,7 @@ export default function HomePage () {
             // Get the primary subject/category of the book
             const bookCategory = selectedBook.primary_subject || 
                                (selectedBook.subject && selectedBook.subject[0]) || 
-                               (selectedBook.subjects && selectedBook.subjects[0]) || 
-                               "Fiction";
+                               (selectedBook.subjects && selectedBook.subjects[0]);
             
             // Format the category for better search results
             const formattedCategory = bookCategory
