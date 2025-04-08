@@ -57,7 +57,7 @@ export const useClubStore = create((set, get) => ({
     joinClub: async (clubId) => {
         set({ isLoading: true, error: null });
         try {
-            const res = await axiosInstance.post(`/clubs/${clubId}/join`);
+            const res = await axiosInstance.post(`/membership/${clubId}/join`);
             toast.success("Successfully joined the club!");
             
             // Update clubs and userClubs state locally

@@ -31,7 +31,7 @@ const GENRE_OPTIONS = [
 
 const BookClubListing = () => {
   const navigate = useNavigate();
-  const { clubs, userClubs, isLoading, error, getClubs, createClub, getUserClubs, getClub } = useClubStore();
+  const { clubs, userClubs, isLoading, error, getClubs, createClub, getUserClubs, getClub, joinClub } = useClubStore();
   const { authUser } = useAuthStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [showMyClubs, setShowMyClubs] = useState(false);
@@ -208,10 +208,9 @@ const BookClubListing = () => {
 
   const handleApplyToClub = async (clubId) => {
     try {
-      // TODO: Implement apply to club functionality when membership routes are ready
-      console.log('Applying to club:', clubId);
+        await joinClub(clubId);
     } catch (error) {
-      console.error('Error applying to club:', error);
+        console.error('Error joining club:', error);
     }
   };
 
@@ -311,7 +310,7 @@ const BookClubListing = () => {
                           toast.error('Please log in to join clubs');
                         }}
                       >
-                        Apply to Join
+                        Join as member
                       </button>
                     );
                   } else if (isMember || isAdmin) {
@@ -334,7 +333,7 @@ const BookClubListing = () => {
                           handleApplyToClub(club._id);
                         }}
                       >
-                        Apply to Join
+                        Join as member
                       </button>
                     );
                   }
