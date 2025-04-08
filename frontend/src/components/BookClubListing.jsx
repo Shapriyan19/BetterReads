@@ -267,7 +267,17 @@ const BookClubListing = () => {
               className="book-club-item"
               onClick={() => setSelectedClub(club)}
             >
-              <div className="club-image"></div>
+              <div 
+                className="club-image"
+                style={{
+                  backgroundImage: club.image 
+                    ? `url(${club.image})` 
+                    : 'url(/default-club-image.png)',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
               <div className="club-details">
                 <h2>{club.name}</h2>
                 <p>{club.description}</p>
@@ -375,9 +385,10 @@ const BookClubListing = () => {
                     <FiUpload />
                   </div>
                   <span>Click to upload club image</span>
+                  <p className="file-format-info">Accepted formats: JPG, PNG, GIF (max 5MB)</p>
                   <input
                     type="file"
-                    accept="image/*"
+                    accept="image/jpeg,image/png,image/gif"
                     onChange={(e) => {
                       const file = e.target.files[0];
                       if (file && file.size > 5 * 1024 * 1024) { // 5MB limit
@@ -414,7 +425,12 @@ const BookClubListing = () => {
                       <option key={genre} value={genre}>{genre}</option>
                     ))}
                   </select>
-                  <button type="button" onClick={handleAddGenre} disabled={!selectedGenre}>
+                  <button 
+                    type="button" 
+                    onClick={handleAddGenre} 
+                    disabled={!selectedGenre}
+                    className="add-genre-button"
+                  >
                     Add
                   </button>
                 </div>
@@ -426,9 +442,8 @@ const BookClubListing = () => {
                         type="button"
                         className="remove-genre"
                         onClick={() => handleRemoveGenre(genre)}
-                      >
-                        ×
-                      </button>
+                        aria-label={`Remove ${genre}`}
+                      />
                     </span>
                   ))}
                 </div>
