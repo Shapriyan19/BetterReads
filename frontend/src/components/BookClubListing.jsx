@@ -73,8 +73,7 @@ const BookClubListing = () => {
     navigate(-1);
   };
 
-  const handleCreateClub = async (e) => {
-    e.preventDefault();
+  const handleCreateClub = async () => {
     try {
         if (!authUser) {
             console.error('User not logged in');
@@ -95,51 +94,71 @@ const BookClubListing = () => {
 
         // Create FormData object to handle file upload
         const formData = new FormData();
+        
+        // Add basic club info as strings
         formData.append('name', clubName.trim());
         formData.append('description', description.trim());
-        formData.append('genres', JSON.stringify(newClub.genres || []));
         formData.append('adminName', `${authUser.firstName} ${authUser.lastName}`);
-        formData.append('roles', JSON.stringify([{ 
-            role: 'admin', 
-            user: authUser._id 
-        }]));
 
-        if (clubImage) {
-            formData.append('image', clubImage);
+        // Add genres as a JSON string
+        const genres = Array.isArray(newClub.genres) ? newClub.genres : [];
+        formData.append('genres', JSON.stringify(genres));
+
+        // Add roles as a JSON string
+        const roles = [{
+            role: 'admin',
+            user: authUser._id
+        }];
+        formData.append('roles', JSON.stringify(roles));
+
+        // Add image if it exists and is valid
+        if (clubImage && clubImage instanceof File) {
+            // Validate image size (5MB limit)
+            if (clubImage.size > 5 * 1024 * 1024) {
+                toast.error('Image size must be less than 5MB');
+                return;
+            }
+            formData.append('image', clubImage, clubImage.name);
         }
 
         // Debug: Log FormData contents
-        console.log('FormData contents:');
-        for (let pair of formData.entries()) {
-            console.log(pair[0] + ': ' + pair[1]);
+        for (let [key, value] of formData.entries()) {
+            console.log(`FormData: ${key}:`, value instanceof File ? `File: ${value.name}` : value);
         }
 
-        const result = await createClub(formData);
-        
-        if (result.success) {
-            toast.success('Club created successfully!');
-            // Reset form
-            setShowCreateModal(false);
-            setClubName('');
-            setDescription('');
-            setClubImage(null);
-            setNewClub({ 
-                name: '', 
-                description: '', 
-                genres: [],
-                adminName: '',
-                roles: []
-            });
+        try {
+            const result = await createClub(formData);
             
-            // Refresh both all clubs and user clubs
-            await getClubs();
-            if (authUser) {
-                await getUserClubs();
+            if (result.success) {
+                toast.success('Club created successfully!');
+                // Reset form
+                setShowCreateModal(false);
+                setClubName('');
+                setDescription('');
+                setClubImage(null);
+                setNewClub({ 
+                    name: '', 
+                    description: '', 
+                    genres: [],
+                    adminName: '',
+                    roles: []
+                });
+                
+                // Refresh both all clubs and user clubs
+                await getClubs();
+                if (authUser) {
+                    await getUserClubs();
+                }
             }
+        } catch (error) {
+            console.error('Error from createClub:', error);
+            const errorMessage = error.response?.data?.message || 'Failed to create club. Please try again.';
+            toast.error(errorMessage);
+            throw error;
         }
     } catch (error) {
-        console.error('Error creating club:', error);
-        toast.error(error.response?.data?.message || 'Failed to create club. Please try again.');
+        console.error('Error in handleCreateClub:', error);
+        toast.error('An unexpected error occurred. Please try again.');
     }
   };
 
@@ -336,7 +355,10 @@ const BookClubListing = () => {
         <div className="modal-overlay" onClick={() => setShowCreateModal(false)}>
           <div className="modal-content create-club-modal" onClick={(e) => e.stopPropagation()}>
             <h2>Create a New Book Club</h2>
-            <form onSubmit={handleCreateClub}>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              handleCreateClub();
+            }}>
               <div className="form-group">
                 <label>Club Name</label>
                 <input
@@ -356,9 +378,18 @@ const BookClubListing = () => {
                   <input
                     type="file"
                     accept="image/*"
-                    onChange={(e) => setClubImage(e.target.files[0])}
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file && file.size > 5 * 1024 * 1024) { // 5MB limit
+                        toast.error('Image size must be less than 5MB');
+                        e.target.value = '';
+                        return;
+                      }
+                      setClubImage(file);
+                    }}
                   />
                 </label>
+                {clubImage && <p className="file-name">Selected: {clubImage.name}</p>}
               </div>
 
               <div className="form-group">

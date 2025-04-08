@@ -23,7 +23,11 @@ export const useClubStore = create((set, get) => ({
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
-                withCredentials: true
+                withCredentials: true,
+                transformRequest: [(data) => {
+                    // Don't transform FormData
+                    return data;
+                }],
             });
             
             if (res.data.success) {
