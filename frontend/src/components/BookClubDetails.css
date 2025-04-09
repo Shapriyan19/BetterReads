@@ -378,14 +378,22 @@
     margin: -10px 0 30px 0;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 20px;
     box-shadow: 0 4px 12px rgba(119, 85, 145, 0.05);
+    text-align: center;
 }
 
 .non-member-banner .lock-icon {
     color: #775591;
     font-size: 28px;
     flex-shrink: 0;
+}
+
+.non-member-banner .banner-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .non-member-banner .banner-text h3 {
