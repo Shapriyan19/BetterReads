@@ -12,7 +12,7 @@ import { Dialog, DialogTitle, DialogContent, Box, Typography } from '@mui/materi
 
 export default function HomePage () {
     const { logout, authUser } = useAuthStore();
-    const { recommendedBooks, getRecommendedBooks, getBookDetails, searchBooks, isLoading, isLoadingDetails, getReviews, postReview, postRating, getAverageRating, bookReviews, isLoadingReviews, averageRating, totalRatings, getAvailability, availability, isLoadingAvailability, getSpotifyTracks, spotifyTracks, isLoadingTracks } = useBookStore();
+    const { recommendedBooks, getRecommendedBooks, getBookDetails, searchBooks, isLoading, isLoadingDetails, getReviews, postReview, postRating, getAverageRating, bookReviews, isLoadingReviews, averageRating, totalRatings, getAvailability, availability, isLoadingAvailability, getSpotifyTracks, spotifyTracks, isLoadingTracks, getAIReviewSummary, isLoadingAIReviewSummary, aiReviewSummary } = useBookStore();
     
     /* displaying availability */
     const [branches, setBranches] = useState([]);
@@ -122,6 +122,10 @@ export default function HomePage () {
                 getReviews(book.title),
                 getAverageRating(book.title)
             ]);
+            
+            // Get AI review summary
+            const authorName = book.author_name?.[0] || book.authors?.[0]?.name || 'Unknown Author';
+            getAIReviewSummary(book.title, authorName);
         } catch (error) {
             console.error('Error fetching book data:', error);
             if (!isbn) {
@@ -572,25 +576,25 @@ export default function HomePage () {
                                         
                                         <div className="rating-section">
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-                                                <Rating
-                                                    value={rating}
-                                                    onChange={(event, newValue) => setRating(newValue)}
-                                                    precision={1}
-                                                />
+                                        <Rating
+                                            value={rating}
+                                            onChange={(event, newValue) => setRating(newValue)}
+                                            precision={1}
+                                        />
                                                 <Typography variant="body2">
-                                                    {rating ? `You rated this book ${rating} stars` : 'Click to rate'}
-                                                </Typography>
+                                            {rating ? `You rated this book ${rating} stars` : 'Click to rate'}
+                                        </Typography>
                                             </div>
-                                        </div>
-                                        
+                                    </div>
+                                    
                                         <div className="review-text-section">
                                             <h4 className="modal-label"><strong>Write a review (optional):</strong></h4>
-                                            <textarea
-                                                placeholder="Write your review here..."
-                                                value={reviewText}
-                                                onChange={(e) => setReviewText(e.target.value)}
-                                                className="review-textarea"
-                                            />
+                                        <textarea
+                                            placeholder="Write your review here..."
+                                            value={reviewText}
+                                            onChange={(e) => setReviewText(e.target.value)}
+                                            className="review-textarea"
+                                        />
                                         </div>
 
                                         <button 
@@ -603,6 +607,23 @@ export default function HomePage () {
 
                                         <div className="reviews-list">
                                             <h4>Reviews:</h4>
+                                            
+                                            <div className="ai-review-summary-section">
+                                                <h3>AI Generated Review Summary</h3>
+                                                {isLoadingAIReviewSummary ? (
+                                                    <div className="loading-ai-summary">
+                                                        <Loader2 className="animate-spin" size={16} />
+                                                        <span>Generating AI summary...</span>
+                                                    </div>
+                                                ) : aiReviewSummary ? (
+                                                    <div className="ai-summary-content">
+                                                        <p>{aiReviewSummary}</p>
+                                                    </div>
+                                                ) : (
+                                                    <p className="no-ai-summary">AI summary not available for this book.</p>
+                                                )}
+                                            </div>
+                                            
                                             {isLoadingReviews ? (
                                                 <div className="loading-container">
                                                     <Loader2 className="animate-spin" size={24} />

@@ -9,11 +9,13 @@ export const useBookStore = create((set, get) => ({
     isLoadingReviews: false,
     isLoadingAvailability: false,
     isLoadingTracks: false,
+    isLoadingAIReviewSummary: false,
     bookReviews: [],
     averageRating: 0,
     totalRatings: 0,
     availability: [],
     spotifyTracks: [],
+    aiReviewSummary: "",
     error: null,
 
     getRecommendedBooks: async (email) => {
@@ -185,6 +187,52 @@ export const useBookStore = create((set, get) => ({
                 isLoadingTracks: false 
             });
             toast.error(error.response?.data?.message || "Failed to fetch Spotify tracks");
+            throw error;
+        }
+    },
+    
+    // Get AI review summary for a book
+    getAIReviewSummary: async (bookName, authorName) => {
+        set({ isLoadingAIReviewSummary: true, error: null, aiReviewSummary: "" });
+        try {
+            const res = await axiosInstance.get("/book/ai-review-summary", {
+                params: { 
+                    book_name: bookName,
+                    auth_name: authorName
+                }
+            });
+            
+            let summaryText = "";
+            
+            // Check if the response is in JSON format
+            if (res.data && res.data.summary) {
+                try {
+                    // Try to parse the summary if it's a JSON string
+                    if (typeof res.data.summary === 'string' && res.data.summary.trim().startsWith('{')) {
+                        const parsedSummary = JSON.parse(res.data.summary);
+                        summaryText = parsedSummary.summary || "";
+                    } else {
+                        // If not a JSON string, use as is
+                        summaryText = res.data.summary;
+                    }
+                } catch (parseError) {
+                    console.error('Error parsing JSON summary:', parseError);
+                    // Fallback to using the raw string
+                    summaryText = res.data.summary;
+                }
+            }
+            
+            set({ 
+                aiReviewSummary: summaryText,
+                isLoadingAIReviewSummary: false 
+            });
+            return summaryText;
+        } catch (error) {
+            console.error('Error fetching AI review summary:', error);
+            set({ 
+                error: error.response?.data?.message || "Failed to fetch AI review summary",
+                isLoadingAIReviewSummary: false 
+            });
             throw error;
         }
     }

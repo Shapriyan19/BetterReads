@@ -219,16 +219,48 @@ export const aiReviewSummary= async (req,res)=>{
 
         if (!book_name || !auth_name) {
             return res.status(400).json({ message: "Book name and author name are required" });
-          }
-        const prompt = `can you give summarization of review for the book ${book_name} by author ${auth_name} based on review of readers`;
-        // console.log(process.env.GEMINI_API_KEY);
-        const result=await model.generateContent(prompt);
+        }
+
+        // Updated prompt to request JSON format explicitly
+        const prompt = `Create a summary of reader reviews for the book "${book_name}" by ${auth_name}. 
+        Format your response as clean JSON with a single field "summary" containing the text summary.
+        The output should be valid JSON in the following format: {"summary": "your summary text here"}
+        Do not include code blocks like \`\`\`json or any other formatting.`;
+
+        const result = await model.generateContent(prompt);
+        
         if (!result || !result.response) {
             return res.status(500).json({ message: "Failed to generate AI review summary" });
-          }
-        //console.log(result.response.text);
-        const summary = result.response.text();
-        return res.status(200).json({ book: book_name, author: auth_name, summary });
+        }
+
+        // Get the text response
+        let rawSummary = result.response.text().trim();
+        
+        // Clean up the response to ensure it's valid JSON
+        // Remove any code block syntax if present
+        rawSummary = rawSummary.replace(/```json|```/g, "").trim();
+        
+        let parsedSummary;
+        try {
+            // Try to parse the JSON
+            parsedSummary = JSON.parse(rawSummary);
+            
+            // Return the parsed summary
+            return res.status(200).json({ 
+                book: book_name, 
+                author: auth_name, 
+                summary: parsedSummary.summary 
+            });
+        } catch (parseError) {
+            console.error("Error parsing AI response as JSON:", parseError);
+            
+            // If parsing failed, return the raw text
+            return res.status(200).json({ 
+                book: book_name, 
+                author: auth_name, 
+                summary: rawSummary 
+            });
+        }
     } catch (error) {
         console.log("error in aiReviewSummary: ",error);
         res.status(500).json({message:"Internal server error"});
