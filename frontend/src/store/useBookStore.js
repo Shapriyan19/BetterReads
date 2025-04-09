@@ -172,11 +172,11 @@ export const useBookStore = create((set, get) => ({
             throw error;
         }
     },
-    getSpotifyTracks: async (bookCategory) => {
+    getSpotifyTracks: async (bookCategory, bookName) => {
         set({ isLoadingTracks: true, error: null });
         try {
-            console.log("Sending request with bookCategory:", bookCategory);
-            const res = await axiosInstance.post("/book/get-playlist", { bookCategory });
+            console.log("Sending request with bookCategory:", bookCategory, "and bookName:", bookName);
+            const res = await axiosInstance.post("/book/get-playlist", { bookCategory, bookName });
             console.log("Response from get-playlist:", res.data);
             set({ spotifyTracks: res.data.tracks || [], isLoadingTracks: false });
             return res.data.tracks || [];

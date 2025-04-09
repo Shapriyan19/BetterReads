@@ -311,8 +311,8 @@ export default function HomePage () {
                 .map(word => word.charAt(0).toUpperCase() + word.slice(1))
                 .join(' ');
             
-            console.log("Sending book category:", formattedCategory);
-            await getSpotifyTracks(formattedCategory);
+            console.log("Sending book category:", formattedCategory, "and book name:", selectedBook.title);
+            await getSpotifyTracks(formattedCategory, selectedBook.title);
             setShowTracks(true);
         } catch (error) {
             console.error('Error getting suggested songs:', error);
@@ -367,7 +367,7 @@ export default function HomePage () {
             hours: "Closed",
             wheel: "Yes",
             cafe: "No",
-            desc: "The Bukit Batok Public Library is closed for renovations. Visit NLB’s pilot initiative, 'Browse-n-Borrow' at West Mall, level 2. It offers a curated selection of up to 750 books for loan. It also allows for reservations to be collected. Returns and payments are not supported.",
+            desc: "The Bukit Batok Public Library is closed for renovations. Visit NLB's pilot initiative, 'Browse-n-Borrow' at West Mall, level 2. It offers a curated selection of up to 750 books for loan. It also allows for reservations to be collected. Returns and payments are not supported.",
             top: "36%",
             left: "28%",
         },
