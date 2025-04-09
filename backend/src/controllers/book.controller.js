@@ -429,13 +429,13 @@ export const getBookDetails=async (req,res)=>{
 
 export const getPlaylist = async (req, res, next) => {
     try {
-        const { bookCategory } = req.body || req.params;
+        const { bookCategory, bookName } = req.body || req.params;
 
         if (!bookCategory) {
             return res.status(400).json({ message: "Book Category is required" });
         }
 
-        const prompt = `can you give a playlist of 10 songs when I am reading a book of category or genre ${bookCategory}, just give the songs as json {title:songName,artist:artistName};`;
+        const prompt = `can you give a playlist of 10 songs when I am reading a book of category or genre ${bookCategory} and book name ${bookName} , just give the songs as json {title:songName,artist:artistName};`;
 
         const result = await model.generateContent(prompt);
         if (!result || !result.response) {

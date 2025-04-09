@@ -311,8 +311,8 @@ export default function HomePage () {
                 .map(word => word.charAt(0).toUpperCase() + word.slice(1))
                 .join(' ');
             
-            console.log("Sending book category:", formattedCategory);
-            await getSpotifyTracks(formattedCategory);
+            console.log("Sending book category:", formattedCategory, "and book name:", selectedBook.title);
+            await getSpotifyTracks(formattedCategory, selectedBook.title);
             setShowTracks(true);
         } catch (error) {
             console.error('Error getting suggested songs:', error);
