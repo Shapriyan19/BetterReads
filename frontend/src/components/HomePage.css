@@ -1146,7 +1146,6 @@
     margin: 20px auto;
     border-radius: 6px;
     transform: scaleY(1.2);
-    transform: scaleX(1.1);
     transform-origin: top center;
     filter: brightness(1.7);
 }
