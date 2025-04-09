@@ -320,6 +320,138 @@ export default function HomePage () {
         }
     };
 
+    const libraryLocations = [
+        {
+            name: "National Library / Lee Kong Chian Reference Library / Central Arts/Public Library",
+            address: "100 Victoria Street, 188064" ,
+            hours: "Mon - Sun: 10:00 AM - 09:00 PM",
+            wheel: "Yes",
+            cafe: "No",
+            desc: "Closed at 5.00pm on eves of Christmas, New Year and Chinese New Year. Closed on Public Holidays.",
+            top: "51%",
+            left: "51%",
+        },
+        {
+            name: "Ang Mo Kio Public Library",
+            address: "4300 Ang Mo Kio Avenue 6, 569842",
+            hours: "Mon - Sun: 10:00 AM - 09:00 PM",
+            wheel: "Yes",
+            cafe: "Yes",
+            desc: "Closed at 5.00pm on eves of Christmas, New Year and Chinese New Year. Closed on Public Holidays.",
+            top: "29%",
+            left: "50%",
+        },
+        {
+            name: "Bedok Public Library",
+            address: "11 Bedok North Street 1 #02-03 & #03-04",
+            hours: "Mon - Sun: 10:00 AM - 09:00 PM",
+            wheel: "Yes",
+            cafe: "No",
+            desc: "Closed at 5.00pm on eves of Christmas, New Year and Chinese New Year. Closed on Public Holidays.",
+            top: "45%",
+            left: "69%",
+        },
+        {
+            name: "Bishan Public Library",
+            address: "5 Bishan Place #01-01, 579841",
+            hours: "Mon - Sun: 10:00 AM - 09:00 PM",
+            wheel: "Yes",
+            cafe: "Yes",
+            desc: "Closed at 5.00pm on eves of Christmas, New Year and Chinese New Year. Closed on Public Holidays.",
+            top: "35%",
+            left: "48%",
+        },
+        {
+            name: "Bukit Batok Public Library",
+            address: "1 Bukit Batok Central Link #03-01, 658713",
+            hours: "Closed",
+            wheel: "Yes",
+            cafe: "No",
+            desc: "The Bukit Batok Public Library is closed for renovations. Visit NLB’s pilot initiative, 'Browse-n-Borrow' at West Mall, level 2. It offers a curated selection of up to 750 books for loan. It also allows for reservations to be collected. Returns and payments are not supported.",
+            top: "36%",
+            left: "28%",
+        },
+        {
+            name: "Bukit Panjang Public Library",
+            address: "1 Jelebu Road #04-04 & 16/17",
+            hours: "Mon - Sun: 11:00 AM - 09:00 PM",
+            wheel: "Yes",
+            cafe: "No",
+            desc: "Closed at 5.00pm on eves of Christmas, New Year and Chinese New Year. Closed on Public Holidays.",
+            top: "27%",
+            left: "33%",
+        },
+        {
+            name: "Cheng San Public Library",
+            address: "90 Hougang Avenue 10 #03-11, 538766",
+            hours: "Mon - Sun: 11:00 AM - 09:00 PM",
+            wheel: "Yes",
+            cafe: "No",
+            desc: "Closed at 5.00pm on eves of Christmas, New Year and Chinese New Year. Closed on Public Holidays.",
+            top: "30%",
+            left: "63%",
+        },
+        {
+            name: "Choa Chu Kang Public Library",
+            address: "21 Choa Chu Kang Ave 4 #04-01/02 & #05-06, 689812",
+            hours: "Mon - Sun: 11:00 AM - 09:00 PM",
+            wheel: "Yes",
+            cafe: "No",
+            desc: "Closed at 5.00pm on eves of Christmas, New Year and Chinese New Year. Closed on Public Holidays. Study and Multimedia Zone: 9:00 AM – 10:00 PM(including Public Holidays, eves of Christmas, New Year, and Chinese New Year)",
+            top: "26%",
+            left: "26%",
+        },
+        {
+          name: "Jurong Regional Library",
+          address: "21 Jurong East Central 1, 609732",
+          hours: "Mon - Sun: 10:00 AM - 09:00 PM",
+          wheel: "",
+          cafe: "",
+          desc: "",
+          top: "65%",
+          left: "28%"
+        },
+        {
+          name: "Woodlands Regional Library",
+          address: "900 South Woodlands Drive, 730900",
+          hours: "Mon - Sun: 10:00 AM - 09:00 PM",
+          wheel: "",
+          cafe: "",
+          desc: "",
+          top: "14%",
+          left: "49%"
+        },
+        {
+          name: "Clementi Public Library",
+          address: "3155 Commonwealth Avenue West, #05-13/14/15, 129588",
+          hours: "Mon - Sun: 11:00 AM - 09:00 PM",
+          wheel: "",
+          cafe: "",
+          desc: "",
+          top: "70%",
+          left: "40%"
+        },
+        /* {
+            name: "",
+            address: "",
+            hours: "Mon - Sun: 10:00 AM - 09:00 PM",
+            wheel: "",
+            cafe: "",
+            desc: "Closed at 5.00pm on eves of Christmas, New Year and Chinese New Year. Closed on Public Holidays.",
+            top: "",
+            left: "",
+        }, */
+        // finish later
+      ];
+      
+      const [selectedLocation, setSelectedLocation] = useState(null);
+
+const handleMarkerClick = (location) => {
+  setSelectedLocation(location);
+};
+
+      
+
     return (
         <div className="home-container">
             <header className="home-header">
@@ -674,9 +806,32 @@ export default function HomePage () {
                                 <Loader2 className="animate-spin" size={24} />
                                 <p>Loading availability information...</p>
                             </div>
-                        ) : (
-                            <>
-                                <img src={singaporeMap} alt="Map of Singapore" className="map-image" />
+                        ) : ( <>
+
+                                <div className="map-container">
+                                        <img src={singaporeMap} alt="Map of Singapore" className="map-image" />
+                                        {libraryLocations.map((location, index) => (
+                                          <button
+                                            key={index}
+                                            className="location-marker"
+                                            style={{ top: location.top, left: location.left }}
+                                            onClick={() => handleMarkerClick(location)}
+                                          >
+                                            📍
+                                          </button>
+                                        ))}
+                                      </div>
+
+                                {selectedLocation && (
+                                    <div className="location-details">
+                                      <h3>{selectedLocation.name}</h3>
+                                      <p><strong>Address:</strong> {selectedLocation.address}</p>
+                                      <p><strong>Opening Hours:</strong> {selectedLocation.hours}</p>
+                                      <p><strong>Wheelchair Accessible:</strong> {selectedLocation.wheel}&emsp;&emsp;&emsp;<strong>Cafe:</strong> {selectedLocation.cafe}</p>
+                                      <p>{selectedLocation.desc}</p>
+                                    </div>
+                                  )}
+
                                 
                                 {locationData.length > 0 ? (
                                     <div className="location-list">

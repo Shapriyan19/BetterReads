@@ -1131,3 +1131,49 @@
     font-style: italic;
     font-size: 14px;
 }
+
+.map-container {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    background-color: #fbfbf9;
+    margin: 20px auto;
+}
+.map-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    margin: 20px auto;
+    border-radius: 6px;
+    transform: scaleY(1.2);
+    transform: scaleX(1.1);
+    transform-origin: top center;
+    filter: brightness(1.7);
+}
+.location-marker {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    background-color: #9153c1;
+    width: 23px; 
+    height: 23px; 
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    padding: 0; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    overflow: hidden;
+}
+  
+  .location-details {
+    background-color: #d7c6b4;
+    border-radius: 8px;
+    margin-top: 20px;
+    padding: 15px;
+    text-align: left;
+    border: 1px solid #e9e3f0;
+  }
+  
