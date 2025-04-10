@@ -190,7 +190,7 @@ const BookClubListing = () => {
 
   const handleEnterClub = (e, club) => {
     e.stopPropagation();
-    const isMember = club.roles?.some(role => role.user._id === authUser?._id);
+    const isMember = club.roles?.some(role => role.user && role.user._id === authUser?._id);
     const isAdmin = club.adminName === `${authUser?.firstName} ${authUser?.lastName}`;
     if (isMember || isAdmin) {
       setIsLoadingClub(true);
@@ -306,7 +306,7 @@ const BookClubListing = () => {
                     );
                   }
 
-                  const isMember = club.roles?.some(role => role.user._id === authUser?._id);
+                  const isMember = club.roles?.some(role => role.user && role.user._id === authUser?._id);
                   const isAdmin = club.adminName === `${authUser?.firstName} ${authUser?.lastName}`;
                   
                   if (!authUser) {
@@ -355,7 +355,7 @@ const BookClubListing = () => {
       {selectedClub && (
         <BookClubDetails 
           isOwner={selectedClub.adminName === `${authUser?.firstName} ${authUser?.lastName}`}
-          isMember={selectedClub.roles?.some(role => role.user._id === authUser?._id)}
+          isMember={selectedClub.roles?.some(role => role.user && role.user._id === authUser?._id)}
           club={selectedClub}
           onClose={() => setSelectedClub(null)}
         />
