@@ -115,7 +115,16 @@ export const signup = async (req, res) => {
                     from: '"Betterreads" <hailee0@ethereal.email>',
                     to: email,
                     subject: "Welcome to BetterReads",
-                    text: "Thanks for signing up for BetterReads",
+                    text: `Hi there!
+
+Welcome to BetterReads – your cozy corner on the internet for discovering, sharing, and diving into great books.
+
+We're thrilled to have you join our community of book lovers. Whether you're into thrillers, romance, sci-fi, or biographies, there's something here for every kind of reader.
+
+Start exploring, connect with fellow readers, and let’s turn pages together!
+
+Happy reading,
+The BetterReads Team`,
                 });
             } catch (error) {
                 console.log("Error in sending mail", error.message);
